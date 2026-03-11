@@ -9,14 +9,10 @@
     <style>
         body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         .texto-biblia { font-family: 'Lora', serif; line-height: 1.8; }
-        
-        /* Animações suaves */
         .gaveta { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); transform: translateY(100%); }
         .gaveta.aberta { transform: translateY(0); }
         .modal { transition: opacity 0.2s; opacity: 0; pointer-events: none; }
         .modal.aberto { opacity: 1; pointer-events: auto; }
-        
-        /* Scrollbar customizada para o chat */
         .scroll-suave::-webkit-scrollbar { width: 4px; }
         .scroll-suave::-webkit-scrollbar-thumb { background: #818cf8; border-radius: 4px; }
     </style>
@@ -86,7 +82,7 @@
                 <h3 class="font-bold text-xl">Chave da API</h3>
             </div>
             <p class="text-sm text-gray-600 dark:text-gray-400 mb-5 leading-relaxed">
-                Para o assistente funcionar, cole sua chave do <strong>Google AI Studio</strong>. Ela ficará salva apenas no seu celular.
+                Cole sua chave do <strong>Google AI Studio</strong>. Ela ficará salva de forma segura no seu navegador.
             </p>
             <input type="text" id="inputChaveApi" class="w-full p-4 border border-gray-300 dark:border-gray-600 rounded-xl mb-5 text-gray-900 dark:text-white dark:bg-gray-700 outline-none focus:ring-2 focus:ring-indigo-500 font-mono text-sm shadow-inner" placeholder="Ex: AIzaSyB...">
             <div class="flex gap-3">
@@ -97,24 +93,16 @@
     </div>
 
     <script>
-        // ESTADO GLOBAL DA APLICAÇÃO
         let bibliaCompleta = [];
         let indexLivro = 0;
         let indexCapitulo = 0;
 
-        // ----------------------------------------------------
-        // 1. LÓGICA DA BÍBLIA (CARREGAMENTO E EXIBIÇÃO)
-        // ----------------------------------------------------
         async function iniciarBiblia() {
-            // Puxa o JSON oficial da ARC direto do repositório fonte. Impossível falhar por falta de arquivo local.
             const urlArc = 'https://raw.githubusercontent.com/maatheusgois/bible/main/versions/pt-br/arc.json';
-            
             try {
                 const resposta = await fetch(urlArc);
                 if (!resposta.ok) throw new Error("Falha no download");
-                
                 bibliaCompleta = await resposta.json();
-                
                 preencherLivros();
                 exibirCapitulo();
             } catch (erro) {
@@ -122,23 +110,20 @@
                     <div class="text-center mt-20 p-6 bg-red-50 dark:bg-red-900/20 rounded-2xl">
                         <span class="text-4xl mb-2 block">⚠️</span>
                         <h2 class="text-red-600 dark:text-red-400 font-bold text-lg mb-2">Erro de Conexão</h2>
-                        <p class="text-sm text-gray-700 dark:text-gray-300">Não foi possível carregar a Bíblia da internet. Verifique seu Wi-Fi ou dados móveis e recarregue a página.</p>
+                        <p class="text-sm text-gray-700 dark:text-gray-300">Não foi possível carregar a Bíblia da internet.</p>
                     </div>`;
             }
         }
 
         function preencherLivros() {
             const selectLivro = document.getElementById('selLivro');
-            selectLivro.innerHTML = bibliaCompleta.map((livro, i) => 
-                `<option value="${i}">${livro.name}</option>`
-            ).join('');
+            selectLivro.innerHTML = bibliaCompleta.map((livro, i) => `<option value="${i}">${livro.name}</option>`).join('');
             preencherCapitulos();
         }
 
         function preencherCapitulos() {
             const selectCapitulo = document.getElementById('selCapitulo');
             const totalCapitulos = bibliaCompleta[indexLivro].chapters.length;
-            
             let htmlOpcoes = '';
             for(let i = 0; i < totalCapitulos; i++) {
                 htmlOpcoes += `<option value="${i}">Capítulo ${i + 1}</option>`;
@@ -149,12 +134,10 @@
 
         function exibirCapitulo() {
             if(bibliaCompleta.length === 0) return;
-
             const livroAtual = bibliaCompleta[indexLivro];
             const versiculos = livroAtual.chapters[indexCapitulo];
             
             let htmlLeitura = `<h2 class="text-3xl font-extrabold mb-8 text-indigo-900 dark:text-indigo-300 text-center">${livroAtual.name} ${indexCapitulo + 1}</h2>`;
-            
             versiculos.forEach((texto, i) => {
                 htmlLeitura += `
                 <div class="flex gap-4 mb-5 items-start">
@@ -162,51 +145,31 @@
                     <p class="flex-1 text-gray-800 dark:text-gray-200 leading-relaxed">${texto}</p>
                 </div>`;
             });
-            
             document.getElementById('areaLeitura').innerHTML = htmlLeitura;
             document.querySelector('main').scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Eventos de Navegação da Bíblia
         document.getElementById('selLivro').addEventListener('change', (e) => {
             indexLivro = parseInt(e.target.value);
-            indexCapitulo = 0;
-            preencherCapitulos();
-            exibirCapitulo();
+            indexCapitulo = 0; preencherCapitulos(); exibirCapitulo();
         });
 
         document.getElementById('selCapitulo').addEventListener('change', (e) => {
-            indexCapitulo = parseInt(e.target.value);
-            exibirCapitulo();
+            indexCapitulo = parseInt(e.target.value); exibirCapitulo();
         });
 
         document.getElementById('btnProximo').addEventListener('click', () => {
-            if (indexCapitulo < bibliaCompleta[indexLivro].chapters.length - 1) {
-                indexCapitulo++;
-            } else if (indexLivro < bibliaCompleta.length - 1) {
-                indexLivro++;
-                indexCapitulo = 0;
-            }
-            document.getElementById('selLivro').value = indexLivro;
-            preencherCapitulos();
-            exibirCapitulo();
+            if (indexCapitulo < bibliaCompleta[indexLivro].chapters.length - 1) { indexCapitulo++; } 
+            else if (indexLivro < bibliaCompleta.length - 1) { indexLivro++; indexCapitulo = 0; }
+            document.getElementById('selLivro').value = indexLivro; preencherCapitulos(); exibirCapitulo();
         });
 
         document.getElementById('btnAnterior').addEventListener('click', () => {
-            if (indexCapitulo > 0) {
-                indexCapitulo--;
-            } else if (indexLivro > 0) {
-                indexLivro--;
-                indexCapitulo = bibliaCompleta[indexLivro].chapters.length - 1;
-            }
-            document.getElementById('selLivro').value = indexLivro;
-            preencherCapitulos();
-            exibirCapitulo();
+            if (indexCapitulo > 0) { indexCapitulo--; } 
+            else if (indexLivro > 0) { indexLivro--; indexCapitulo = bibliaCompleta[indexLivro].chapters.length - 1; }
+            document.getElementById('selLivro').value = indexLivro; preencherCapitulos(); exibirCapitulo();
         });
 
-        // ----------------------------------------------------
-        // 2. LÓGICA DO ASSISTENTE IA (GEMINI)
-        // ----------------------------------------------------
         const gaveta = document.getElementById('gavetaChat');
         const listaMsg = document.getElementById('listaMensagens');
         const inputMsg = document.getElementById('campoPergunta');
@@ -223,75 +186,47 @@
 
         function salvarChave() {
             const chaveDigitada = inputChaveApi.value.trim();
-            if(chaveDigitada === '') {
-                alert("A chave não pode estar vazia.");
-                return;
-            }
+            if(chaveDigitada === '') return alert("A chave não pode estar vazia.");
             localStorage.setItem('chave_secreta_gemini', chaveDigitada);
             fecharModalChave();
-            
-            // Dá um feedback visual no chat
-            adicionarBalaoIA("Chave da API configurada com sucesso! Glória a Deus. O que deseja estudar agora?");
+            adicionarBalaoIA("Chave da API configurada com sucesso! O que deseja estudar agora?");
         }
 
         function adicionarBalaoUsuario(texto) {
-            listaMsg.innerHTML += `
-                <div class="flex justify-end mb-4">
-                    <div class="bg-indigo-100 dark:bg-indigo-900 text-indigo-900 dark:text-indigo-50 p-3 rounded-2xl rounded-tr-none max-w-[90%] shadow-sm font-sans text-sm">
-                        ${texto}
-                    </div>
-                </div>`;
+            listaMsg.innerHTML += `<div class="flex justify-end mb-4"><div class="bg-indigo-100 dark:bg-indigo-900 text-indigo-900 dark:text-indigo-50 p-3 rounded-2xl rounded-tr-none max-w-[90%] shadow-sm font-sans text-sm">${texto}</div></div>`;
             rolarChatParaBaixo();
         }
 
         function adicionarBalaoIA(texto) {
-            // Transforma quebras de linha em <br> para formatar bonitinho
             const textoFormatado = texto.replace(/\n/g, '<br>');
-            listaMsg.innerHTML += `
-                <div class="flex justify-start mb-4">
-                    <div class="bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 p-4 rounded-2xl rounded-tl-none max-w-[95%] shadow-sm border border-gray-100 dark:border-gray-700">
-                        ${textoFormatado}
-                    </div>
-                </div>`;
+            listaMsg.innerHTML += `<div class="flex justify-start mb-4"><div class="bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 p-4 rounded-2xl rounded-tl-none max-w-[95%] shadow-sm border border-gray-100 dark:border-gray-700">${textoFormatado}</div></div>`;
             rolarChatParaBaixo();
         }
 
-        function rolarChatParaBaixo() {
-            setTimeout(() => { listaMsg.scrollTop = listaMsg.scrollHeight; }, 50);
-        }
+        function rolarChatParaBaixo() { setTimeout(() => { listaMsg.scrollTop = listaMsg.scrollHeight; }, 50); }
 
         document.getElementById('btnEnviarMsg').addEventListener('click', async () => {
             const pergunta = inputMsg.value.trim();
             if (!pergunta) return;
 
             const chaveApi = localStorage.getItem('chave_secreta_gemini');
-            if (!chaveApi) {
-                abrirModalChave();
-                return;
-            }
+            if (!chaveApi) { abrirModalChave(); return; }
 
             adicionarBalaoUsuario(pergunta);
             inputMsg.value = '';
 
-            // Adiciona balão de "Carregando..."
             const idLoader = 'load-' + Date.now();
-            listaMsg.innerHTML += `
-                <div id="${idLoader}" class="flex justify-start mb-4">
-                    <div class="bg-gray-100 dark:bg-gray-800 text-gray-500 italic p-3 rounded-2xl rounded-tl-none text-sm animate-pulse">
-                        Meditando nas Escrituras...
-                    </div>
-                </div>`;
+            listaMsg.innerHTML += `<div id="${idLoader}" class="flex justify-start mb-4"><div class="bg-gray-100 dark:bg-gray-800 text-gray-500 italic p-3 rounded-2xl rounded-tl-none text-sm animate-pulse">Meditando nas Escrituras...</div></div>`;
             rolarChatParaBaixo();
 
-            // Preparar a chamada para a API
             const livroNome = bibliaCompleta[indexLivro].name;
             const capNumero = indexCapitulo + 1;
             
-            // PROTOCOLO DE HERMENÊUTICA
+            // O PROTOCOLO ESTÁ AQUI
             const promptDeSistema = `Você é um profundo conhecedor da Bíblia Sagrada. Sempre adote a ortodoxia Neo Testamentária, a ortodoxia do Protestantismo Histórico e a Ortodoxia Pentecostal Clássica das Assembleias de Deus. Responda com clareza. O usuário está lendo no momento: ${livroNome} capítulo ${capNumero}.`;
 
-            const urlEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${chaveApi}`;
-
+            // VERSÃO CORRETA DA API (v1beta e gemini-1.5-flash)
+            const urlEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${chaveApi}`;
             
             try {
                 const resposta = await fetch(urlEndpoint, {
@@ -303,35 +238,22 @@
                 });
                 
                 const dadosJson = await resposta.json();
-                document.getElementById(idLoader).remove(); // Tira o aviso de carregando
+                document.getElementById(idLoader).remove();
 
                 if (dadosJson.error) {
-                    if (dadosJson.error.code === 400 && dadosJson.error.message.includes("API key not valid")) {
-                        localStorage.removeItem('chave_secreta_gemini');
-                        adicionarBalaoIA("⚠️ A chave da API que você inseriu é inválida. Por favor, clique no botão '🔑 API Key' lá em cima e coloque a chave correta.");
-                    } else {
-                        adicionarBalaoIA(`⚠️ Erro na IA: ${dadosJson.error.message}`);
-                    }
+                    adicionarBalaoIA(`⚠️ Erro na IA: ${dadosJson.error.message}`);
                     return;
                 }
 
-                const textoResposta = dadosJson.candidates[0].content.parts[0].text;
-                adicionarBalaoIA(textoResposta);
+                adicionarBalaoIA(dadosJson.candidates[0].content.parts[0].text);
 
             } catch (erro) {
                 document.getElementById(idLoader).remove();
-                adicionarBalaoIA("⚠️ Ocorreu um erro de rede. Verifique sua conexão de internet e tente novamente.");
+                adicionarBalaoIA("⚠️ Ocorreu um erro de rede. Verifique sua conexão de internet.");
             }
         });
 
-        // ----------------------------------------------------
-        // 3. MODO ESCURO
-        // ----------------------------------------------------
-        document.getElementById('btnTema').addEventListener('click', () => {
-            document.documentElement.classList.toggle('dark');
-        });
-
-        // Inicia a Bíblia ao abrir a página
+        document.getElementById('btnTema').addEventListener('click', () => { document.documentElement.classList.toggle('dark'); });
         window.onload = iniciarBiblia;
     </script>
 </body>
