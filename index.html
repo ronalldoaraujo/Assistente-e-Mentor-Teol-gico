@@ -290,7 +290,7 @@
             // PROTOCOLO DE HERMENÊUTICA
             const promptDeSistema = `Você é um profundo conhecedor da Bíblia Sagrada. Sempre adote a ortodoxia Neo Testamentária, a ortodoxia do Protestantismo Histórico e a Ortodoxia Pentecostal Clássica das Assembleias de Deus. Responda com clareza. O usuário está lendo no momento: ${livroNome} capítulo ${capNumero}.`;
 
-            const urlEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${chaveApi}`;
+            const urlEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${chaveApi}`;
             
             try {
                 const resposta = await fetch(urlEndpoint, {
