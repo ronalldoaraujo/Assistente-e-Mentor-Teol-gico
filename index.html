@@ -222,11 +222,10 @@
             const livroNome = bibliaCompleta[indexLivro].name;
             const capNumero = indexCapitulo + 1;
             
-            // O PROTOCOLO ESTÁ AQUI
             const promptDeSistema = `Você é um profundo conhecedor da Bíblia Sagrada. Sempre adote a ortodoxia Neo Testamentária, a ortodoxia do Protestantismo Histórico e a Ortodoxia Pentecostal Clássica das Assembleias de Deus. Responda com clareza. O usuário está lendo no momento: ${livroNome} capítulo ${capNumero}.`;
 
-            // VERSÃO CORRETA DA API (v1beta e gemini-1.5-flash)
-            const urlEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${chaveApi}`;
+            // VERSÃO CORRIGIDA E ATUALIZADA DO MODELO PARA 2026
+            const urlEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${chaveApi}`;
             
             try {
                 const resposta = await fetch(urlEndpoint, {
