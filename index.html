@@ -1,185 +1,181 @@
 <!DOCTYPE html>
-<html lang="pt-pt">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Bíblia Sagrada ARC - Edição de Estudo</title>
+    <title>Bíblia ARC Digital</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Lora:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Lora:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-        .bible-text { font-family: 'Lora', serif; line-height: 1.9; }
-        .sticky-header { backdrop-filter: blur(12px); background-color: rgba(255, 255, 255, 0.85); }
-        .dark .sticky-header { background-color: rgba(17, 24, 39, 0.85); }
-        .chat-drawer { transition: transform 0.3s ease-in-out; transform: translateY(100%); }
+        body { font-family: 'Inter', sans-serif; }
+        .texto-biblico { font-family: 'Lora', serif; line-height: 1.8; }
+        .chat-drawer { transition: transform 0.3s cubic-bezier(0, 0, 0.2, 1); transform: translateY(100%); }
         .chat-drawer.open { transform: translateY(0); }
+        .scroll-custom::-webkit-scrollbar { width: 4px; }
+        .scroll-custom::-webkit-scrollbar-thumb { background: #6366f1; border-radius: 10px; }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors">
+<body class="bg-gray-50 text-gray-900 transition-colors duration-300 dark:bg-gray-900 dark:text-gray-100">
 
-    <header class="sticky top-0 z-40 border-b border-gray-200 dark:border-gray-800 sticky-header px-4 py-3">
-        <div class="max-w-md mx-auto flex justify-between items-center">
-            <h1 class="text-xl font-bold text-indigo-600 dark:text-indigo-400">ARC</h1>
-            <div class="flex gap-3">
-                <button onclick="configApiKey()" class="p-2 opacity-70">⚙️</button>
-                <button id="themeToggle" class="p-2 rounded-full bg-gray-200 dark:bg-gray-800">🌓</button>
+    <header class="fixed top-0 left-0 right-0 z-40 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b dark:border-gray-800">
+        <div class="max-w-md mx-auto px-4 py-3 flex flex-col gap-3">
+            <div class="flex justify-between items-center">
+                <h1 class="font-bold text-indigo-600 text-xl tracking-tight">ARC <span class="text-gray-400 font-light text-sm">Almeida Corrigida</span></h1>
+                <div class="flex items-center gap-4">
+                    <button onclick="resetarChave()" title="Configurar API" class="text-lg">⚙️</button>
+                    <button id="darkToggle" class="text-lg">🌓</button>
+                </div>
             </div>
-        </div>
-        
-        <div class="max-w-md mx-auto mt-3 grid grid-cols-2 gap-2">
-            <select id="bookSelect" class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl px-3 py-2 text-sm outline-none"></select>
-            <select id="chapterSelect" class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl px-3 py-2 text-sm outline-none"></select>
+            <div class="flex gap-2">
+                <select id="selectLivro" class="flex-[2] bg-gray-100 dark:bg-gray-800 p-2 rounded-lg text-sm outline-none"></select>
+                <select id="selectCapitulo" class="flex-1 bg-gray-100 dark:bg-gray-800 p-2 rounded-lg text-sm outline-none"></select>
+            </div>
         </div>
     </header>
 
-    <main class="max-w-md mx-auto p-6 pb-32 min-h-screen">
-        <div id="content" class="bible-text text-xl">
-            <div class="flex justify-center items-center h-64 text-gray-400 animate-pulse">Carregando as Escrituras...</div>
-        </div>
+    <main class="max-w-md mx-auto pt-32 pb-32 px-6 min-h-screen">
+        <div id="leituraDisplay" class="texto-biblico text-xl">
+            </div>
     </main>
 
-    <div id="chatDrawer" class="fixed inset-0 z-50 flex flex-col bg-white dark:bg-gray-900 chat-drawer">
-        <div class="p-4 border-b dark:border-gray-800 flex justify-between items-center bg-indigo-600 text-white">
-            <div>
-                <p class="font-bold">Assistente Teológico</p>
-                <p class="text-xs opacity-80">Ortodoxia Pentecostal Clássica</p>
-            </div>
-            <button onclick="toggleChat()" class="p-2 text-xl">✕</button>
-        </div>
-        <div id="chatMessages" class="flex-1 overflow-y-auto p-4 space-y-4 text-base">
-            <p class="bg-gray-100 dark:bg-gray-800 p-3 rounded-2xl">Paz do Senhor! Como posso auxiliar no seu estudo hoje?</p>
-        </div>
-        <div class="p-4 border-t dark:border-gray-800 flex gap-2 mb-2">
-            <input id="chatInput" type="text" placeholder="Pergunte sobre o texto..." class="flex-1 p-4 rounded-2xl border dark:border-gray-700 dark:bg-gray-800 outline-none">
-            <button id="sendBtn" class="bg-indigo-600 text-white px-6 rounded-2xl font-bold">↑</button>
-        </div>
-    </div>
-
-    <nav class="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-gray-50 dark:from-gray-900 via-gray-50 dark:via-gray-900 to-transparent z-40">
-        <div class="max-w-md mx-auto grid grid-cols-4 gap-2">
-            <button id="prevBtn" class="bg-white dark:bg-gray-800 shadow-md py-3 rounded-2xl font-bold">←</button>
-            <button onclick="toggleChat()" class="col-span-2 bg-indigo-600 text-white shadow-lg py-3 rounded-2xl font-bold flex items-center justify-center gap-2">
-                ✨ Assistente
+    <nav class="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-gray-50 dark:from-gray-900 via-gray-50 dark:via-gray-900 to-transparent">
+        <div class="max-w-md mx-auto grid grid-cols-4 gap-3">
+            <button id="btnVoltar" class="bg-white dark:bg-gray-800 border dark:border-gray-700 shadow-sm p-4 rounded-2xl active:scale-95 transition-transform">←</button>
+            <button onclick="abrirChat()" class="col-span-2 bg-indigo-600 text-white shadow-lg p-4 rounded-2xl font-bold flex items-center justify-center gap-2 active:scale-95 transition-transform">
+                <span>✨</span> Assistente AI
             </button>
-            <button id="nextBtn" class="bg-white dark:bg-gray-800 shadow-md py-3 rounded-2xl font-bold">→</button>
+            <button id="btnAvancar" class="bg-white dark:bg-gray-800 border dark:border-gray-700 shadow-sm p-4 rounded-2xl active:scale-95 transition-transform">→</button>
         </div>
     </nav>
 
-    <script>
-        let bibleData = null;
-        let currentBookIndex = 0;
-        let currentChapterIndex = 0;
+    <div id="chatInterface" class="fixed inset-0 z-50 flex flex-col bg-white dark:bg-gray-900 chat-drawer">
+        <div class="p-4 bg-indigo-600 text-white flex justify-between items-center">
+            <div>
+                <h3 class="font-bold">Assistente Teológico</h3>
+                <p class="text-[10px] opacity-80 uppercase tracking-widest font-semibold">Fiel à Doutrina Assembleiana</p>
+            </div>
+            <button onclick="fecharChat()" class="p-2 text-2xl">&times;</button>
+        </div>
+        
+        <div id="mensagensArea" class="flex-1 overflow-y-auto p-4 space-y-4 scroll-custom texto-biblico text-base">
+            <div class="bg-gray-100 dark:bg-gray-800 p-3 rounded-2xl max-w-[85%]">
+                Paz do Senhor! Em que posso auxiliar no seu estudo hoje?
+            </div>
+        </div>
 
-        // --- Lógica da Bíblia ---
-        async function init() {
+        <div class="p-4 border-t dark:border-gray-800 bg-gray-50 dark:bg-gray-900">
+            <div class="flex gap-2">
+                <input id="inputPergunta" type="text" placeholder="Sua pergunta..." class="flex-1 p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700 outline-none focus:ring-2 focus:ring-indigo-500">
+                <button id="btnEnviar" class="bg-indigo-600 text-white px-5 rounded-xl font-bold active:scale-95 transition-all">Enviar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // CONFIGURAÇÕES GERAIS
+        let dadosBiblia = null;
+        let indiceLivro = 0;
+        let indiceCapitulo = 0;
+
+        // --- CARREGAMENTO DA BÍBLIA ---
+        async function carregarBiblia() {
             try {
-                const response = await fetch('arc.json');
-                bibleData = await response.json();
-                populateBooks();
-                renderChapter();
+                // Tenta carregar local, se falhar (ex: rodando direto do PC), avisa o usuário
+                const resp = await fetch('arc.json');
+                if (!resp.ok) throw new Error();
+                dadosBiblia = await resp.json();
+                
+                popularSeletores();
+                renderizarTexto();
             } catch (err) {
-                document.getElementById('content').innerHTML = "Erro ao carregar o arquivo arc.json.";
+                document.getElementById('leituraDisplay').innerHTML = `
+                    <div class="text-center p-10">
+                        <p class="text-red-500 font-bold">Arquivo arc.json não encontrado!</p>
+                        <p class="text-sm mt-2 text-gray-500">Verifique se o arquivo está na mesma pasta do index.html no seu GitHub.</p>
+                    </div>`;
             }
         }
 
-        function populateBooks() {
-            const select = document.getElementById('bookSelect');
-            select.innerHTML = bibleData.map((b, i) => `<option value="${i}">${b.name}</option>`).join('');
-            updateChapterSelect();
+        function popularSeletores() {
+            const selLivro = document.getElementById('selectLivro');
+            selLivro.innerHTML = dadosBiblia.map((l, i) => `<option value="${i}">${l.name}</option>`).join('');
+            atualizarSeletorCapitulo();
         }
 
-        function updateChapterSelect() {
-            const select = document.getElementById('chapterSelect');
-            const chapters = bibleData[currentBookIndex].chapters;
-            select.innerHTML = chapters.map((_, i) => `<option value="${i}">Capítulo ${i+1}</option>`).join('');
-            select.value = currentChapterIndex;
+        function atualizarSeletorCapitulo() {
+            const selCap = document.getElementById('selectCapitulo');
+            const caps = dadosBiblia[indiceLivro].chapters;
+            selCap.innerHTML = caps.map((_, i) => `<option value="${i}">Capítulo ${i+1}</option>`).join('');
+            selCap.value = indiceCapitulo;
         }
 
-        function renderChapter() {
-            const book = bibleData[currentBookIndex];
-            const chapter = book.chapters[currentChapterIndex];
-            let html = `<h2 class="text-3xl font-bold mb-8 text-indigo-900 dark:text-indigo-300">${book.name} ${currentChapterIndex + 1}</h2>`;
-            html += chapter.map((v, i) => `
-                <div class="mb-5 flex gap-4">
-                    <span class="text-xs mt-2 font-black text-indigo-500 w-4">${i+1}</span>
-                    <p class="flex-1 leading-relaxed">${v}</p>
+        function renderizarTexto() {
+            const livro = dadosBiblia[indiceLivro];
+            const versiculos = livro.chapters[indiceCapitulo];
+            
+            let html = `<h2 class="text-3xl font-bold mb-8 text-indigo-800 dark:text-indigo-400">${livro.name} ${indiceCapitulo + 1}</h2>`;
+            html += versiculos.map((v, i) => `
+                <div class="flex gap-4 mb-5 items-start">
+                    <span class="text-[10px] font-bold bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 px-2 py-1 rounded mt-1">${i+1}</span>
+                    <p class="flex-1">${v}</p>
                 </div>
             `).join('');
-            document.getElementById('content').innerHTML = html;
+            
+            document.getElementById('leituraDisplay').innerHTML = html;
             window.scrollTo(0, 0);
         }
 
-        // --- Lógica de Segurança e API Gemini ---
-        function getApiKey() {
-            let key = localStorage.getItem('gemini_api_key');
-            if (!key) {
-                key = prompt("Insira a sua API KEY do Google AI Studio para ativar o assistente:");
-                if (key) localStorage.setItem('gemini_api_key', key);
-            }
-            return key;
-        }
-
-        function configApiKey() {
-            const novaChave = prompt("Configurar nova API KEY (deixe vazio para cancelar):");
-            if (novaChave) {
-                localStorage.setItem('gemini_api_key', novaChave);
-                alert("Chave atualizada!");
-            }
-        }
-
-        async function askGemini(question) {
-            const key = getApiKey();
-            if (!key) return "Chave de API necessária.";
-
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`;
-            const context = `Diretriz: Atue como um teólogo de linha Protestante Histórica e Pentecostal Clássica (Assembleias de Deus). Use o texto da ARC. Contexto: Lendo ${bibleData[currentBookIndex].name}, cap ${currentChapterIndex+1}.`;
-
-            try {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: `${context}\nPergunta: ${question}` }] }]
-                    })
-                });
-                const data = await response.json();
-                return data.candidates[0].content.parts[0].text;
-            } catch (e) {
-                return "Erro na ligação com a IA. Verifique a sua chave.";
-            }
-        }
-
-        // --- UI Events ---
-        function toggleChat() { document.getElementById('chatDrawer').classList.toggle('open'); }
-
-        document.getElementById('sendBtn').onclick = async () => {
-            const input = document.getElementById('chatInput');
-            const messages = document.getElementById('chatMessages');
-            if (!input.value.trim()) return;
-
-            const userMsg = input.value;
-            messages.innerHTML += `<div class="bg-indigo-50 dark:bg-indigo-900/20 p-3 rounded-2xl ml-8 text-right"><b>Você:</b> ${userMsg}</div>`;
-            input.value = "";
-            messages.scrollTop = messages.scrollHeight;
-
-            const loading = document.createElement('div');
-            loading.innerText = "Consultando as Escrituras...";
-            messages.appendChild(loading);
-
-            const response = await askGemini(userMsg);
-            loading.remove();
-            messages.innerHTML += `<div class="bg-gray-100 dark:bg-gray-800 p-3 rounded-2xl mr-8"><b>Assistente:</b> ${response}</div>`;
-            messages.scrollTop = messages.scrollHeight;
+        // --- NAVEGAÇÃO ---
+        document.getElementById('selectLivro').onchange = (e) => {
+            indiceLivro = parseInt(e.target.value);
+            indiceCapitulo = 0;
+            atualizarSeletorCapitulo();
+            renderizarTexto();
         };
 
-        // Eventos de Navegação
-        document.getElementById('bookSelect').onchange = (e) => { currentBookIndex = parseInt(e.target.value); currentChapterIndex = 0; updateChapterSelect(); renderChapter(); };
-        document.getElementById('chapterSelect').onchange = (e) => { currentChapterIndex = parseInt(e.target.value); renderChapter(); };
-        document.getElementById('themeToggle').onclick = () => document.documentElement.classList.toggle('dark');
-        document.getElementById('nextBtn').onclick = () => { /* Lógica de próximo capítulo similar à anterior */ };
-        document.getElementById('prevBtn').onclick = () => { /* Lógica de capítulo anterior similar à anterior */ };
+        document.getElementById('selectCapitulo').onchange = (e) => {
+            indiceCapitulo = parseInt(e.target.value);
+            renderizarTexto();
+        };
 
-        init();
-    </script>
-</body>
-</html>
+        document.getElementById('btnAvancar').onclick = () => {
+            if (indiceCapitulo < dadosBiblia[indiceLivro].chapters.length - 1) {
+                indiceCapitulo++;
+            } else if (indiceLivro < dadosBiblia.length - 1) {
+                indiceLivro++;
+                indiceCapitulo = 0;
+            }
+            sincronizarInterface();
+        };
+
+        document.getElementById('btnVoltar').onclick = () => {
+            if (indiceCapitulo > 0) {
+                indiceCapitulo--;
+            } else if (indiceLivro > 0) {
+                indiceLivro--;
+                indiceCapitulo = dadosBiblia[indiceLivro].chapters.length - 1;
+            }
+            sincronizarInterface();
+        };
+
+        function sincronizarInterface() {
+            document.getElementById('selectLivro').value = indiceLivro;
+            atualizarSeletorCapitulo();
+            renderizarTexto();
+        }
+
+        // --- LÓGICA DO ASSISTENTE GEMINI ---
+        function abrirChat() { document.getElementById('chatInterface').classList.add('open'); }
+        function fecharChat() { document.getElementById('chatInterface').classList.remove('open'); }
+
+        function obterChave() {
+            let chave = localStorage.getItem('gemini_key');
+            if (!chave) {
+                chave = prompt("Cole sua API KEY do Gemini (Google AI Studio) aqui:");
+                if (chave) localStorage.setItem('gemini_key', chave);
+            }
+            return chave;
+        }
+
+        function resetarChave() {
+            localStorage.removeItem('gemini_key');
