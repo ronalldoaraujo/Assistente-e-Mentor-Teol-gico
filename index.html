@@ -24,7 +24,7 @@
             <div class="flex justify-between items-center mb-4">
                 <h1 class="text-xl font-extrabold text-indigo-700 dark:text-indigo-400 tracking-tight">Bíblia ARC</h1>
                 <div class="flex items-center gap-3">
-                    <button onclick="abrirModalChave()" class="p-2 bg-gray-100 dark:bg-gray-800 rounded-full text-sm font-medium shadow-sm active:scale-95 transition-transform">🔑 API Key</button>
+                    <button onclick="abrirModalConfig()" class="p-2 bg-gray-100 dark:bg-gray-800 rounded-full text-sm font-medium shadow-sm active:scale-95 transition-transform">⚙️ Configurar IA</button>
                     <button id="btnTema" class="p-2 bg-gray-100 dark:bg-gray-800 rounded-full shadow-sm active:scale-95 transition-transform">🌓</button>
                 </div>
             </div>
@@ -57,42 +57,55 @@
     <div id="gavetaChat" class="fixed inset-0 z-40 flex flex-col bg-gray-50 dark:bg-gray-900 gaveta">
         <div class="p-4 bg-indigo-700 text-white flex justify-between items-center shadow-md pt-6">
             <div>
-                <h3 class="font-bold text-lg leading-tight">Mestre Teológico</h3>
-                <p class="text-[11px] opacity-80 font-medium uppercase tracking-wider">Ortodoxia Assembleiana</p>
+                <h3 class="font-bold text-lg leading-tight">Assistente Teológico</h3>
+                <p class="text-[11px] opacity-80 font-medium tracking-wider">Livre para consultas</p>
             </div>
             <button onclick="fecharChat()" class="bg-indigo-800/50 hover:bg-indigo-800 p-2 rounded-full w-10 h-10 flex items-center justify-center font-bold text-xl">&times;</button>
         </div>
         
         <div id="listaMensagens" class="flex-1 overflow-y-auto p-4 space-y-4 texto-biblia text-base scroll-suave">
             <div class="bg-white dark:bg-gray-800 p-4 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 dark:border-gray-700 max-w-[90%]">
-                A Paz do Senhor! Estou pronto para auxiliar no seu estudo da Palavra hoje. O que deseja saber?
+                A Paz do Senhor! Sou o seu assistente de estudos. Como posso te ajudar hoje?
             </div>
         </div>
 
         <div class="p-3 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 flex gap-2 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] pb-6">
-            <input id="campoPergunta" type="text" placeholder="Faça uma pergunta bíblica..." class="flex-1 p-3 rounded-xl bg-gray-100 dark:bg-gray-700 border border-transparent focus:border-indigo-500 outline-none text-sm font-sans">
+            <input id="campoPergunta" type="text" placeholder="Digite sua pergunta ou tema..." class="flex-1 p-3 rounded-xl bg-gray-100 dark:bg-gray-700 border border-transparent focus:border-indigo-500 outline-none text-sm font-sans">
             <button id="btnEnviarMsg" class="bg-indigo-600 text-white px-5 rounded-xl font-bold active:scale-95 transition-transform shadow-md">Enviar</button>
         </div>
     </div>
 
-    <div id="modalChave" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 modal">
-        <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 w-full max-w-sm shadow-2xl transform transition-all">
-            <div class="flex items-center gap-3 mb-2">
-                <span class="text-2xl">🔐</span>
-                <h3 class="font-bold text-xl">Chave da API</h3>
+    <div id="modalConfig" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 modal">
+        <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 w-full max-w-md shadow-2xl transform transition-all max-h-[90vh] overflow-y-auto scroll-suave">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-3">
+                    <span class="text-2xl">⚙️</span>
+                    <h3 class="font-bold text-xl">Configurações da IA</h3>
+                </div>
+                <button onclick="fecharModalConfig()" class="text-gray-500 font-bold text-xl">&times;</button>
             </div>
-            <p class="text-sm text-gray-600 dark:text-gray-400 mb-5 leading-relaxed">
-                Cole sua chave do <strong>Google AI Studio</strong>. Ela ficará salva de forma segura no seu navegador.
-            </p>
-            <input type="text" id="inputChaveApi" class="w-full p-4 border border-gray-300 dark:border-gray-600 rounded-xl mb-5 text-gray-900 dark:text-white dark:bg-gray-700 outline-none focus:ring-2 focus:ring-indigo-500 font-mono text-sm shadow-inner" placeholder="Ex: AIzaSyB...">
+            
+            <div class="mb-5">
+                <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Chave da API (Google AI Studio)</label>
+                <input type="text" id="inputChaveApi" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white dark:bg-gray-700 outline-none focus:ring-2 focus:ring-indigo-500 font-mono text-sm shadow-inner" placeholder="Ex: AIzaSyB...">
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Perfil de Instrução (Como a IA deve atuar)</label>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">Defina as regras, doutrinas ou o tom de resposta que o assistente deve seguir. Você pode alterar isso para cada tipo de estudo.</p>
+                <textarea id="inputPerfil" rows="6" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white dark:bg-gray-700 outline-none focus:ring-2 focus:ring-indigo-500 text-sm shadow-inner resize-none"></textarea>
+            </div>
+
             <div class="flex gap-3">
-                <button onclick="fecharModalChave()" class="flex-1 p-3 rounded-xl font-semibold bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 active:scale-95 transition-transform">Cancelar</button>
-                <button onclick="salvarChave()" class="flex-1 p-3 rounded-xl font-semibold bg-indigo-600 text-white shadow-md active:scale-95 transition-transform">Salvar Chave</button>
+                <button onclick="salvarConfig()" class="w-full p-3 rounded-xl font-bold bg-indigo-600 text-white shadow-md active:scale-95 transition-transform">Salvar Configurações</button>
             </div>
         </div>
     </div>
 
     <script>
+        // ----------------------------------------------------
+        // LÓGICA DA BÍBLIA
+        // ----------------------------------------------------
         let bibliaCompleta = [];
         let indexLivro = 0;
         let indexCapitulo = 0;
@@ -150,46 +163,60 @@
         }
 
         document.getElementById('selLivro').addEventListener('change', (e) => {
-            indexLivro = parseInt(e.target.value);
-            indexCapitulo = 0; preencherCapitulos(); exibirCapitulo();
+            indexLivro = parseInt(e.target.value); indexCapitulo = 0; preencherCapitulos(); exibirCapitulo();
         });
-
         document.getElementById('selCapitulo').addEventListener('change', (e) => {
             indexCapitulo = parseInt(e.target.value); exibirCapitulo();
         });
-
         document.getElementById('btnProximo').addEventListener('click', () => {
             if (indexCapitulo < bibliaCompleta[indexLivro].chapters.length - 1) { indexCapitulo++; } 
             else if (indexLivro < bibliaCompleta.length - 1) { indexLivro++; indexCapitulo = 0; }
             document.getElementById('selLivro').value = indexLivro; preencherCapitulos(); exibirCapitulo();
         });
-
         document.getElementById('btnAnterior').addEventListener('click', () => {
             if (indexCapitulo > 0) { indexCapitulo--; } 
             else if (indexLivro > 0) { indexLivro--; indexCapitulo = bibliaCompleta[indexLivro].chapters.length - 1; }
             document.getElementById('selLivro').value = indexLivro; preencherCapitulos(); exibirCapitulo();
         });
 
+        // ----------------------------------------------------
+        // LÓGICA DO ASSISTENTE & CONFIGURAÇÕES
+        // ----------------------------------------------------
         const gaveta = document.getElementById('gavetaChat');
         const listaMsg = document.getElementById('listaMensagens');
         const inputMsg = document.getElementById('campoPergunta');
-        const modalChave = document.getElementById('modalChave');
+        
+        const modalConfig = document.getElementById('modalConfig');
         const inputChaveApi = document.getElementById('inputChaveApi');
+        const inputPerfil = document.getElementById('inputPerfil');
+
+        // O perfil padrão que virá preenchido na primeira vez
+        const perfilPadrao = "Atue como um exímio teólogo. Sempre que o assunto for Bíblia Sagrada, regra de fé ou prática cristã, adote a ortodoxia Neo Testamentária, a ortodoxia do Protestantismo Histórico e a Ortodoxia Pentecostal Clássica das Assembleias de Deus. Seja claro, profundo e pastoral em suas respostas.";
 
         function abrirChat() { gaveta.classList.add('aberta'); }
         function fecharChat() { gaveta.classList.remove('aberta'); }
-        function abrirModalChave() { 
+        
+        function abrirModalConfig() { 
             inputChaveApi.value = localStorage.getItem('chave_secreta_gemini') || '';
-            modalChave.classList.add('aberto'); 
+            inputPerfil.value = localStorage.getItem('perfil_ia_gemini') || perfilPadrao;
+            modalConfig.classList.add('aberto'); 
         }
-        function fecharModalChave() { modalChave.classList.remove('aberto'); }
+        function fecharModalConfig() { modalConfig.classList.remove('aberto'); }
 
-        function salvarChave() {
+        function salvarConfig() {
             const chaveDigitada = inputChaveApi.value.trim();
-            if(chaveDigitada === '') return alert("A chave não pode estar vazia.");
+            const perfilDigitado = inputPerfil.value.trim();
+            
+            if(chaveDigitada === '') {
+                alert("A chave da API não pode estar vazia.");
+                return;
+            }
+            
             localStorage.setItem('chave_secreta_gemini', chaveDigitada);
-            fecharModalChave();
-            adicionarBalaoIA("Chave da API configurada com sucesso! O que deseja estudar agora?");
+            localStorage.setItem('perfil_ia_gemini', perfilDigitado || perfilPadrao);
+            
+            fecharModalConfig();
+            adicionarBalaoIA("Configurações atualizadas! Minha instrução de comportamento foi ajustada.");
         }
 
         function adicionarBalaoUsuario(texto) {
@@ -210,21 +237,22 @@
             if (!pergunta) return;
 
             const chaveApi = localStorage.getItem('chave_secreta_gemini');
-            if (!chaveApi) { abrirModalChave(); return; }
+            if (!chaveApi) { 
+                abrirModalConfig(); 
+                return; 
+            }
+
+            // Recupera a instrução de perfil salva pelo usuário
+            const instrucaoDeSistema = localStorage.getItem('perfil_ia_gemini') || perfilPadrao;
 
             adicionarBalaoUsuario(pergunta);
             inputMsg.value = '';
 
             const idLoader = 'load-' + Date.now();
-            listaMsg.innerHTML += `<div id="${idLoader}" class="flex justify-start mb-4"><div class="bg-gray-100 dark:bg-gray-800 text-gray-500 italic p-3 rounded-2xl rounded-tl-none text-sm animate-pulse">Meditando nas Escrituras...</div></div>`;
+            listaMsg.innerHTML += `<div id="${idLoader}" class="flex justify-start mb-4"><div class="bg-gray-100 dark:bg-gray-800 text-gray-500 italic p-3 rounded-2xl rounded-tl-none text-sm animate-pulse">Processando...</div></div>`;
             rolarChatParaBaixo();
 
-            const livroNome = bibliaCompleta[indexLivro].name;
-            const capNumero = indexCapitulo + 1;
-            
-            const promptDeSistema = `Você é um profundo conhecedor da Bíblia Sagrada. Sempre adote a ortodoxia Neo Testamentária, a ortodoxia do Protestantismo Histórico e a Ortodoxia Pentecostal Clássica das Assembleias de Deus. Responda com clareza. O usuário está lendo no momento: ${livroNome} capítulo ${capNumero}.`;
-
-            // VERSÃO CORRIGIDA E ATUALIZADA DO MODELO PARA 2026
+            // Chamada à API DESVINCULADA da leitura atual. A IA só sabe o que está no Perfil e na Pergunta.
             const urlEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${chaveApi}`;
             
             try {
@@ -232,7 +260,7 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        contents: [{ parts: [{ text: `${promptDeSistema}\n\nPergunta do usuário: ${pergunta}` }] }]
+                        contents: [{ parts: [{ text: `Instrução: ${instrucaoDeSistema}\n\nUsuário: ${pergunta}` }] }]
                     })
                 });
                 
@@ -248,7 +276,7 @@
 
             } catch (erro) {
                 document.getElementById(idLoader).remove();
-                adicionarBalaoIA("⚠️ Ocorreu um erro de rede. Verifique sua conexão de internet.");
+                adicionarBalaoIA("⚠️ Ocorreu um erro de rede. Verifique sua conexão.");
             }
         });
 
