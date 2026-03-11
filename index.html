@@ -7,7 +7,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Lora:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        /* Ajuste fundamental para celular: impede zoom indesejado ao digitar */
+        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
         .texto-biblia { font-family: 'Lora', serif; line-height: 1.8; }
         .gaveta { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); transform: translateY(100%); }
         .gaveta.aberta { transform: translateY(0); }
@@ -15,16 +16,19 @@
         .modal.aberto { opacity: 1; pointer-events: auto; }
         .scroll-suave::-webkit-scrollbar { width: 4px; }
         .scroll-suave::-webkit-scrollbar-thumb { background: #818cf8; border-radius: 4px; }
+        
+        /* Previne que o teclado do celular quebre o layout do chat */
+        .altura-dinamica { height: 100dvh; } 
     </style>
 </head>
-<body class="bg-gray-50 text-gray-900 transition-colors duration-300 dark:bg-gray-900 dark:text-gray-100 flex flex-col h-screen overflow-hidden">
+<body class="bg-gray-50 text-gray-900 transition-colors duration-300 dark:bg-gray-900 dark:text-gray-100">
 
-    <header class="flex-none bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border-b border-gray-200 dark:border-gray-800 z-30 p-4 shadow-sm">
+    <header class="fixed top-0 left-0 right-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 z-30 p-4 shadow-sm">
         <div class="max-w-md mx-auto">
-            <div class="flex justify-between items-center mb-4">
+            <div class="flex justify-between items-center mb-3">
                 <h1 class="text-xl font-extrabold text-indigo-700 dark:text-indigo-400 tracking-tight">Bíblia ARC</h1>
                 <div class="flex items-center gap-3">
-                    <button onclick="abrirModalConfig()" class="p-2 bg-gray-100 dark:bg-gray-800 rounded-full text-sm font-medium shadow-sm active:scale-95 transition-transform">⚙️ Configurar IA</button>
+                    <button onclick="abrirModalConfig()" class="p-2 bg-gray-100 dark:bg-gray-800 rounded-full text-sm font-medium shadow-sm active:scale-95 transition-transform">⚙️ Configurar</button>
                     <button id="btnTema" class="p-2 bg-gray-100 dark:bg-gray-800 rounded-full shadow-sm active:scale-95 transition-transform">🌓</button>
                 </div>
             </div>
@@ -35,30 +39,30 @@
         </div>
     </header>
 
-    <main class="flex-1 overflow-y-auto p-4 pb-24 scroll-suave">
-        <div id="areaLeitura" class="max-w-md mx-auto texto-biblia text-xl">
-            <div class="flex flex-col items-center justify-center mt-32 text-indigo-600">
+    <main class="pt-32 pb-24 px-4 max-w-md mx-auto min-h-screen">
+        <div id="areaLeitura" class="texto-biblia text-xl">
+            <div class="flex flex-col items-center justify-center mt-20 text-indigo-600">
                 <svg class="w-12 h-12 mb-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                 <p class="font-sans font-bold text-lg animate-pulse">Baixando as Escrituras...</p>
             </div>
         </div>
     </main>
 
-    <nav class="flex-none bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 p-3 z-30">
+    <nav class="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 p-3 z-30 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.05)]">
         <div class="max-w-md mx-auto grid grid-cols-4 gap-2">
-            <button id="btnAnterior" class="bg-gray-100 dark:bg-gray-800 p-3 rounded-xl font-bold active:scale-95 transition-transform flex items-center justify-center">←</button>
+            <button id="btnAnterior" class="bg-gray-100 dark:bg-gray-800 p-3 rounded-xl font-bold active:scale-95 transition-transform flex items-center justify-center text-lg">←</button>
             <button onclick="abrirChat()" class="col-span-2 bg-indigo-600 text-white shadow-lg p-3 rounded-xl font-bold flex items-center justify-center gap-2 active:scale-95 transition-transform">
                 <span class="text-xl">✨</span> Assistente IA
             </button>
-            <button id="btnProximo" class="bg-gray-100 dark:bg-gray-800 p-3 rounded-xl font-bold active:scale-95 transition-transform flex items-center justify-center">→</button>
+            <button id="btnProximo" class="bg-gray-100 dark:bg-gray-800 p-3 rounded-xl font-bold active:scale-95 transition-transform flex items-center justify-center text-lg">→</button>
         </div>
     </nav>
 
-    <div id="gavetaChat" class="fixed inset-0 z-40 flex flex-col bg-gray-50 dark:bg-gray-900 gaveta">
-        <div class="p-4 bg-indigo-700 text-white flex justify-between items-center shadow-md pt-6">
+    <div id="gavetaChat" class="fixed top-0 left-0 right-0 bottom-0 z-40 flex flex-col bg-gray-50 dark:bg-gray-900 gaveta altura-dinamica">
+        <div class="p-4 bg-indigo-700 text-white flex justify-between items-center shadow-md pt-5">
             <div>
                 <h3 class="font-bold text-lg leading-tight">Assistente Teológico</h3>
-                <p class="text-[11px] opacity-80 font-medium tracking-wider">Livre para consultas</p>
+                <p class="text-[11px] opacity-90 font-medium tracking-wider">Pronto para auxiliar</p>
             </div>
             <button onclick="fecharChat()" class="bg-indigo-800/50 hover:bg-indigo-800 p-2 rounded-full w-10 h-10 flex items-center justify-center font-bold text-xl">&times;</button>
         </div>
@@ -69,8 +73,8 @@
             </div>
         </div>
 
-        <div class="p-3 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 flex gap-2 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] pb-6">
-            <input id="campoPergunta" type="text" placeholder="Digite sua pergunta ou tema..." class="flex-1 p-3 rounded-xl bg-gray-100 dark:bg-gray-700 border border-transparent focus:border-indigo-500 outline-none text-sm font-sans">
+        <div class="p-3 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 flex gap-2 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] pb-5">
+            <input id="campoPergunta" type="text" placeholder="Digite sua pergunta..." class="flex-1 p-3 rounded-xl bg-gray-100 dark:bg-gray-700 border border-transparent focus:border-indigo-500 outline-none text-sm font-sans">
             <button id="btnEnviarMsg" class="bg-indigo-600 text-white px-5 rounded-xl font-bold active:scale-95 transition-transform shadow-md">Enviar</button>
         </div>
     </div>
@@ -80,32 +84,30 @@
             <div class="flex items-center justify-between mb-4">
                 <div class="flex items-center gap-3">
                     <span class="text-2xl">⚙️</span>
-                    <h3 class="font-bold text-xl">Configurações da IA</h3>
+                    <h3 class="font-bold text-xl">Configurações</h3>
                 </div>
-                <button onclick="fecharModalConfig()" class="text-gray-500 font-bold text-xl">&times;</button>
+                <button onclick="fecharModalConfig()" class="text-gray-500 font-bold text-2xl">&times;</button>
             </div>
             
             <div class="mb-5">
-                <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Chave da API (Google AI Studio)</label>
+                <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Chave da API (Gemini)</label>
                 <input type="text" id="inputChaveApi" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white dark:bg-gray-700 outline-none focus:ring-2 focus:ring-indigo-500 font-mono text-sm shadow-inner" placeholder="Ex: AIzaSyB...">
             </div>
 
             <div class="mb-6">
-                <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Perfil de Instrução (Como a IA deve atuar)</label>
-                <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">Defina as regras, doutrinas ou o tom de resposta que o assistente deve seguir. Você pode alterar isso para cada tipo de estudo.</p>
+                <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Perfil de Instrução (Regra de Fé)</label>
+                <p class="text-[11px] text-gray-500 dark:text-gray-400 mb-2 leading-tight">Defina a doutrina ou o tom de resposta que a Inteligência Artificial deve seguir em todas as conversas.</p>
                 <textarea id="inputPerfil" rows="6" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white dark:bg-gray-700 outline-none focus:ring-2 focus:ring-indigo-500 text-sm shadow-inner resize-none"></textarea>
             </div>
 
             <div class="flex gap-3">
-                <button onclick="salvarConfig()" class="w-full p-3 rounded-xl font-bold bg-indigo-600 text-white shadow-md active:scale-95 transition-transform">Salvar Configurações</button>
+                <button onclick="salvarConfig()" class="w-full p-3 rounded-xl font-bold bg-indigo-600 text-white shadow-md active:scale-95 transition-transform">Salvar Dados</button>
             </div>
         </div>
     </div>
 
     <script>
-        // ----------------------------------------------------
         // LÓGICA DA BÍBLIA
-        // ----------------------------------------------------
         let bibliaCompleta = [];
         let indexLivro = 0;
         let indexCapitulo = 0;
@@ -114,7 +116,7 @@
             const urlArc = 'https://raw.githubusercontent.com/maatheusgois/bible/main/versions/pt-br/arc.json';
             try {
                 const resposta = await fetch(urlArc);
-                if (!resposta.ok) throw new Error("Falha no download");
+                if (!resposta.ok) throw new Error("Falha");
                 bibliaCompleta = await resposta.json();
                 preencherLivros();
                 exibirCapitulo();
@@ -122,8 +124,8 @@
                 document.getElementById('areaLeitura').innerHTML = `
                     <div class="text-center mt-20 p-6 bg-red-50 dark:bg-red-900/20 rounded-2xl">
                         <span class="text-4xl mb-2 block">⚠️</span>
-                        <h2 class="text-red-600 dark:text-red-400 font-bold text-lg mb-2">Erro de Conexão</h2>
-                        <p class="text-sm text-gray-700 dark:text-gray-300">Não foi possível carregar a Bíblia da internet.</p>
+                        <h2 class="text-red-600 dark:text-red-400 font-bold text-lg mb-2">Sem Conexão</h2>
+                        <p class="text-sm text-gray-700 dark:text-gray-300">Conecte-se à internet para baixar as Escrituras.</p>
                     </div>`;
             }
         }
@@ -159,7 +161,7 @@
                 </div>`;
             });
             document.getElementById('areaLeitura').innerHTML = htmlLeitura;
-            document.querySelector('main').scrollTo({ top: 0, behavior: 'smooth' });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         document.getElementById('selLivro').addEventListener('change', (e) => {
@@ -179,9 +181,7 @@
             document.getElementById('selLivro').value = indexLivro; preencherCapitulos(); exibirCapitulo();
         });
 
-        // ----------------------------------------------------
-        // LÓGICA DO ASSISTENTE & CONFIGURAÇÕES
-        // ----------------------------------------------------
+        // LÓGICA DO ASSISTENTE
         const gaveta = document.getElementById('gavetaChat');
         const listaMsg = document.getElementById('listaMensagens');
         const inputMsg = document.getElementById('campoPergunta');
@@ -190,7 +190,6 @@
         const inputChaveApi = document.getElementById('inputChaveApi');
         const inputPerfil = document.getElementById('inputPerfil');
 
-        // O perfil padrão que virá preenchido na primeira vez
         const perfilPadrao = "Atue como um exímio teólogo. Sempre que o assunto for Bíblia Sagrada, regra de fé ou prática cristã, adote a ortodoxia Neo Testamentária, a ortodoxia do Protestantismo Histórico e a Ortodoxia Pentecostal Clássica das Assembleias de Deus. Seja claro, profundo e pastoral em suas respostas.";
 
         function abrirChat() { gaveta.classList.add('aberta'); }
@@ -208,7 +207,7 @@
             const perfilDigitado = inputPerfil.value.trim();
             
             if(chaveDigitada === '') {
-                alert("A chave da API não pode estar vazia.");
+                alert("A chave da API é obrigatória.");
                 return;
             }
             
@@ -216,7 +215,7 @@
             localStorage.setItem('perfil_ia_gemini', perfilDigitado || perfilPadrao);
             
             fecharModalConfig();
-            adicionarBalaoIA("Configurações atualizadas! Minha instrução de comportamento foi ajustada.");
+            adicionarBalaoIA("Configurações atualizadas e perfil de instrução salvo com sucesso.");
         }
 
         function adicionarBalaoUsuario(texto) {
@@ -242,7 +241,6 @@
                 return; 
             }
 
-            // Recupera a instrução de perfil salva pelo usuário
             const instrucaoDeSistema = localStorage.getItem('perfil_ia_gemini') || perfilPadrao;
 
             adicionarBalaoUsuario(pergunta);
@@ -252,7 +250,6 @@
             listaMsg.innerHTML += `<div id="${idLoader}" class="flex justify-start mb-4"><div class="bg-gray-100 dark:bg-gray-800 text-gray-500 italic p-3 rounded-2xl rounded-tl-none text-sm animate-pulse">Processando...</div></div>`;
             rolarChatParaBaixo();
 
-            // Chamada à API DESVINCULADA da leitura atual. A IA só sabe o que está no Perfil e na Pergunta.
             const urlEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${chaveApi}`;
             
             try {
@@ -276,7 +273,14 @@
 
             } catch (erro) {
                 document.getElementById(idLoader).remove();
-                adicionarBalaoIA("⚠️ Ocorreu um erro de rede. Verifique sua conexão.");
+                adicionarBalaoIA("⚠️ Erro de rede. Verifique sua conexão.");
+            }
+        });
+
+        // Enviar com a tecla "Enter" no teclado do celular
+        document.getElementById('campoPergunta').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                document.getElementById('btnEnviarMsg').click();
             }
         });
 
