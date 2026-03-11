@@ -7,18 +7,25 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Lora:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <style>
-        /* Ajuste fundamental para celular: impede zoom indesejado ao digitar */
         body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
         .texto-biblia { font-family: 'Lora', serif; line-height: 1.8; }
+        .altura-dinamica { height: 100dvh; }
+        .scroll-suave::-webkit-scrollbar { width: 4px; }
+        .scroll-suave::-webkit-scrollbar-thumb { background: #818cf8; border-radius: 4px; }
+        
+        /* Animações de Telas e Modais */
         .gaveta { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); transform: translateY(100%); }
         .gaveta.aberta { transform: translateY(0); }
         .modal { transition: opacity 0.2s; opacity: 0; pointer-events: none; }
         .modal.aberto { opacity: 1; pointer-events: auto; }
-        .scroll-suave::-webkit-scrollbar { width: 4px; }
-        .scroll-suave::-webkit-scrollbar-thumb { background: #818cf8; border-radius: 4px; }
+        .bottom-sheet { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); transform: translateY(100%); }
+        .bottom-sheet.aberto { transform: translateY(0); }
         
-        /* Previne que o teclado do celular quebre o layout do chat */
-        .altura-dinamica { height: 100dvh; } 
+        /* Marca Texto */
+        .versiculo-marcado { background-color: rgba(253, 224, 71, 0.4); border-radius: 8px; padding: 2px 4px; transition: background 0.3s; }
+        .dark .versiculo-marcado { background-color: rgba(161, 98, 7, 0.4); }
+        .piscar { animation: piscarAnim 2s ease-out; }
+        @keyframes piscarAnim { 0% { background-color: #fef08a; } 100% { background-color: transparent; } }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-900 transition-colors duration-300 dark:bg-gray-900 dark:text-gray-100">
@@ -27,8 +34,9 @@
         <div class="max-w-md mx-auto">
             <div class="flex justify-between items-center mb-3">
                 <h1 class="text-xl font-extrabold text-indigo-700 dark:text-indigo-400 tracking-tight">Bíblia ARC</h1>
-                <div class="flex items-center gap-3">
-                    <button onclick="abrirModalConfig()" class="p-2 bg-gray-100 dark:bg-gray-800 rounded-full text-sm font-medium shadow-sm active:scale-95 transition-transform">⚙️ Configurar</button>
+                <div class="flex items-center gap-2">
+                    <button onclick="abrirModalBusca()" class="p-2 bg-indigo-50 text-indigo-600 dark:bg-indigo-900/50 dark:text-indigo-300 rounded-full shadow-sm active:scale-95 transition-transform">🔍</button>
+                    <button onclick="abrirModalConfig()" class="p-2 bg-gray-100 dark:bg-gray-800 rounded-full shadow-sm active:scale-95 transition-transform text-sm font-medium">⚙️</button>
                     <button id="btnTema" class="p-2 bg-gray-100 dark:bg-gray-800 rounded-full shadow-sm active:scale-95 transition-transform">🌓</button>
                 </div>
             </div>
@@ -43,38 +51,66 @@
         <div id="areaLeitura" class="texto-biblia text-xl">
             <div class="flex flex-col items-center justify-center mt-20 text-indigo-600">
                 <svg class="w-12 h-12 mb-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                <p class="font-sans font-bold text-lg animate-pulse">Baixando as Escrituras...</p>
+                <p class="font-sans font-bold text-lg animate-pulse">Carregando as Escrituras...</p>
             </div>
         </div>
     </main>
 
     <nav class="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 p-3 z-30 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.05)]">
         <div class="max-w-md mx-auto grid grid-cols-4 gap-2">
-            <button id="btnAnterior" class="bg-gray-100 dark:bg-gray-800 p-3 rounded-xl font-bold active:scale-95 transition-transform flex items-center justify-center text-lg">←</button>
+            <button id="btnAnterior" class="bg-gray-100 dark:bg-gray-800 p-3 rounded-xl font-bold active:scale-95 transition-transform text-lg">←</button>
             <button onclick="abrirChat()" class="col-span-2 bg-indigo-600 text-white shadow-lg p-3 rounded-xl font-bold flex items-center justify-center gap-2 active:scale-95 transition-transform">
                 <span class="text-xl">✨</span> Assistente IA
             </button>
-            <button id="btnProximo" class="bg-gray-100 dark:bg-gray-800 p-3 rounded-xl font-bold active:scale-95 transition-transform flex items-center justify-center text-lg">→</button>
+            <button id="btnProximo" class="bg-gray-100 dark:bg-gray-800 p-3 rounded-xl font-bold active:scale-95 transition-transform text-lg">→</button>
         </div>
     </nav>
 
-    <div id="gavetaChat" class="fixed top-0 left-0 right-0 bottom-0 z-40 flex flex-col bg-gray-50 dark:bg-gray-900 gaveta altura-dinamica">
+    <div id="modalBusca" class="fixed inset-0 z-50 flex flex-col bg-gray-50 dark:bg-gray-900 gaveta altura-dinamica">
+        <div class="p-4 bg-white dark:bg-gray-800 border-b dark:border-gray-700 flex gap-2 items-center shadow-sm">
+            <button onclick="fecharModalBusca()" class="p-2 font-bold text-gray-500 text-xl">←</button>
+            <input id="inputBusca" type="text" placeholder="Buscar palavra ou tema..." class="flex-1 p-3 rounded-xl bg-gray-100 dark:bg-gray-700 border-none outline-none focus:ring-2 focus:ring-indigo-500 font-sans">
+            <button id="btnExecutarBusca" class="bg-indigo-600 text-white px-4 py-3 rounded-xl font-bold active:scale-95 transition-transform">Ir</button>
+        </div>
+        <div id="resultadosBusca" class="flex-1 overflow-y-auto p-4 space-y-3 scroll-suave">
+            <p class="text-center text-gray-500 mt-10 text-sm">Digite acima para pesquisar em toda a Bíblia.</p>
+        </div>
+    </div>
+
+    <div id="fundoMenuVersiculo" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 modal" onclick="fecharMenuVersiculo()"></div>
+    <div id="menuVersiculo" class="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-gray-800 rounded-t-3xl shadow-2xl bottom-sheet p-6 max-w-md mx-auto">
+        <div class="w-12 h-1.5 bg-gray-300 dark:bg-gray-600 rounded-full mx-auto mb-4"></div>
+        <h3 id="tituloVersiculoMenu" class="font-bold text-xl text-indigo-700 dark:text-indigo-400 mb-1">Referência</h3>
+        <p id="textoVersiculoMenu" class="text-sm text-gray-600 dark:text-gray-400 mb-6 line-clamp-2 italic">"Texto do versículo aqui..."</p>
+        
+        <div class="space-y-3">
+            <button onclick="acaoCopiarVersiculo()" class="w-full flex items-center gap-4 p-4 rounded-2xl bg-gray-50 dark:bg-gray-700 active:scale-95 transition-transform">
+                <span class="text-xl">📋</span> <span class="font-semibold text-gray-800 dark:text-gray-100">Copiar para Esboço</span>
+            </button>
+            <button onclick="acaoMarcarVersiculo()" id="btnAcaoMarcar" class="w-full flex items-center gap-4 p-4 rounded-2xl bg-yellow-50 dark:bg-yellow-900/30 active:scale-95 transition-transform">
+                <span class="text-xl">🖍️</span> <span class="font-semibold text-yellow-800 dark:text-yellow-500" id="textoBtnMarcar">Destacar Versículo</span>
+            </button>
+            <button onclick="acaoExplicarVersiculo()" class="w-full flex items-center gap-4 p-4 rounded-2xl bg-indigo-50 dark:bg-indigo-900/30 active:scale-95 transition-transform">
+                <span class="text-xl">✨</span> <span class="font-semibold text-indigo-800 dark:text-indigo-300">Pedir Explicação à IA</span>
+            </button>
+        </div>
+    </div>
+
+    <div id="gavetaChat" class="fixed inset-0 z-50 flex flex-col bg-gray-50 dark:bg-gray-900 gaveta altura-dinamica">
         <div class="p-4 bg-indigo-700 text-white flex justify-between items-center shadow-md pt-5">
             <div>
                 <h3 class="font-bold text-lg leading-tight">Assistente Teológico</h3>
                 <p class="text-[11px] opacity-90 font-medium tracking-wider">Pronto para auxiliar</p>
             </div>
-            <button onclick="fecharChat()" class="bg-indigo-800/50 hover:bg-indigo-800 p-2 rounded-full w-10 h-10 flex items-center justify-center font-bold text-xl">&times;</button>
+            <button onclick="fecharChat()" class="bg-indigo-800/50 hover:bg-indigo-800 w-10 h-10 rounded-full flex items-center justify-center font-bold text-xl">&times;</button>
         </div>
-        
         <div id="listaMensagens" class="flex-1 overflow-y-auto p-4 space-y-4 texto-biblia text-base scroll-suave">
             <div class="bg-white dark:bg-gray-800 p-4 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 dark:border-gray-700 max-w-[90%]">
-                A Paz do Senhor! Sou o seu assistente de estudos. Como posso te ajudar hoje?
+                A Paz do Senhor! Sou o seu assistente de estudos.
             </div>
         </div>
-
         <div class="p-3 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 flex gap-2 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] pb-5">
-            <input id="campoPergunta" type="text" placeholder="Digite sua pergunta..." class="flex-1 p-3 rounded-xl bg-gray-100 dark:bg-gray-700 border border-transparent focus:border-indigo-500 outline-none text-sm font-sans">
+            <input id="campoPergunta" type="text" placeholder="Digite sua pergunta..." class="flex-1 p-3 rounded-xl bg-gray-100 dark:bg-gray-700 border-none outline-none focus:ring-2 focus:ring-indigo-500 font-sans text-sm">
             <button id="btnEnviarMsg" class="bg-indigo-600 text-white px-5 rounded-xl font-bold active:scale-95 transition-transform shadow-md">Enviar</button>
         </div>
     </div>
@@ -83,56 +119,68 @@
         <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 w-full max-w-md shadow-2xl transform transition-all max-h-[90vh] overflow-y-auto scroll-suave">
             <div class="flex items-center justify-between mb-4">
                 <div class="flex items-center gap-3">
-                    <span class="text-2xl">⚙️</span>
-                    <h3 class="font-bold text-xl">Configurações</h3>
+                    <span class="text-2xl">⚙️</span><h3 class="font-bold text-xl">Configurações</h3>
                 </div>
                 <button onclick="fecharModalConfig()" class="text-gray-500 font-bold text-2xl">&times;</button>
             </div>
-            
             <div class="mb-5">
                 <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Chave da API (Gemini)</label>
-                <input type="text" id="inputChaveApi" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white dark:bg-gray-700 outline-none focus:ring-2 focus:ring-indigo-500 font-mono text-sm shadow-inner" placeholder="Ex: AIzaSyB...">
+                <input type="text" id="inputChaveApi" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500 font-mono text-sm shadow-inner" placeholder="AIzaSyB...">
             </div>
-
             <div class="mb-6">
-                <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Perfil de Instrução (Regra de Fé)</label>
-                <p class="text-[11px] text-gray-500 dark:text-gray-400 mb-2 leading-tight">Defina a doutrina ou o tom de resposta que a Inteligência Artificial deve seguir em todas as conversas.</p>
-                <textarea id="inputPerfil" rows="6" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white dark:bg-gray-700 outline-none focus:ring-2 focus:ring-indigo-500 text-sm shadow-inner resize-none"></textarea>
+                <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Perfil Doutrinário</label>
+                <textarea id="inputPerfil" rows="6" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500 text-sm shadow-inner resize-none"></textarea>
             </div>
-
-            <div class="flex gap-3">
-                <button onclick="salvarConfig()" class="w-full p-3 rounded-xl font-bold bg-indigo-600 text-white shadow-md active:scale-95 transition-transform">Salvar Dados</button>
-            </div>
+            <button onclick="salvarConfig()" class="w-full p-3 rounded-xl font-bold bg-indigo-600 text-white shadow-md active:scale-95 transition-transform">Salvar Dados</button>
         </div>
     </div>
 
     <script>
-        // LÓGICA DA BÍBLIA
+        // ==========================================
+        // 1. ESTADO E MEMÓRIA
+        // ==========================================
         let bibliaCompleta = [];
-        let indexLivro = 0;
-        let indexCapitulo = 0;
+        // Memória: Tenta pegar o que salvou antes, se não achar começa em 0 (Gênesis 1)
+        let indexLivro = parseInt(localStorage.getItem('arc_livro')) || 0;
+        let indexCapitulo = parseInt(localStorage.getItem('arc_capitulo')) || 0;
+        // Memória: Marcações de texto (Formato: "0-0-0" = Gênesis 1:1)
+        let marcacoes = JSON.parse(localStorage.getItem('arc_marcacoes')) || [];
+        
+        let versiculoEmFoco = null; // Guarda os dados do versículo clicado
 
+        function salvarProgresso() {
+            localStorage.setItem('arc_livro', indexLivro);
+            localStorage.setItem('arc_capitulo', indexCapitulo);
+        }
+
+        function salvarMarcacoes() {
+            localStorage.setItem('arc_marcacoes', JSON.stringify(marcacoes));
+        }
+
+        // ==========================================
+        // 2. LÓGICA DA BÍBLIA
+        // ==========================================
         async function iniciarBiblia() {
             const urlArc = 'https://raw.githubusercontent.com/maatheusgois/bible/main/versions/pt-br/arc.json';
             try {
                 const resposta = await fetch(urlArc);
                 if (!resposta.ok) throw new Error("Falha");
                 bibliaCompleta = await resposta.json();
+                
+                // Validação de segurança (se a pessoa salvou um livro que não existe mais)
+                if(indexLivro >= bibliaCompleta.length) indexLivro = 0;
+                
                 preencherLivros();
                 exibirCapitulo();
             } catch (erro) {
-                document.getElementById('areaLeitura').innerHTML = `
-                    <div class="text-center mt-20 p-6 bg-red-50 dark:bg-red-900/20 rounded-2xl">
-                        <span class="text-4xl mb-2 block">⚠️</span>
-                        <h2 class="text-red-600 dark:text-red-400 font-bold text-lg mb-2">Sem Conexão</h2>
-                        <p class="text-sm text-gray-700 dark:text-gray-300">Conecte-se à internet para baixar as Escrituras.</p>
-                    </div>`;
+                document.getElementById('areaLeitura').innerHTML = `<div class="text-center mt-20 text-red-500"><b>Erro:</b> Sem conexão.</div>`;
             }
         }
 
         function preencherLivros() {
             const selectLivro = document.getElementById('selLivro');
             selectLivro.innerHTML = bibliaCompleta.map((livro, i) => `<option value="${i}">${livro.name}</option>`).join('');
+            selectLivro.value = indexLivro;
             preencherCapitulos();
         }
 
@@ -140,10 +188,10 @@
             const selectCapitulo = document.getElementById('selCapitulo');
             const totalCapitulos = bibliaCompleta[indexLivro].chapters.length;
             let htmlOpcoes = '';
-            for(let i = 0; i < totalCapitulos; i++) {
-                htmlOpcoes += `<option value="${i}">Capítulo ${i + 1}</option>`;
-            }
+            for(let i = 0; i < totalCapitulos; i++) htmlOpcoes += `<option value="${i}">Capítulo ${i + 1}</option>`;
             selectCapitulo.innerHTML = htmlOpcoes;
+            
+            if(indexCapitulo >= totalCapitulos) indexCapitulo = 0;
             selectCapitulo.value = indexCapitulo;
         }
 
@@ -153,23 +201,27 @@
             const versiculos = livroAtual.chapters[indexCapitulo];
             
             let htmlLeitura = `<h2 class="text-3xl font-extrabold mb-8 text-indigo-900 dark:text-indigo-300 text-center">${livroAtual.name} ${indexCapitulo + 1}</h2>`;
+            
             versiculos.forEach((texto, i) => {
+                const idUnico = `${indexLivro}-${indexCapitulo}-${i}`;
+                const estaMarcado = marcacoes.includes(idUnico);
+                const classeMarcado = estaMarcado ? 'versiculo-marcado' : '';
+                
+                // EVENTO DE CLIQUE ADICIONADO AQUI (Tap-to-Action)
                 htmlLeitura += `
-                <div class="flex gap-4 mb-5 items-start">
-                    <span class="text-[11px] font-black bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 px-2 py-1 rounded shadow-sm mt-1.5">${i + 1}</span>
+                <div id="v-${i}" class="flex gap-4 mb-5 items-start cursor-pointer active:opacity-70 transition-opacity rounded-lg p-1 -ml-1 ${classeMarcado}" onclick="tocarVersiculo(${indexLivro}, ${indexCapitulo}, ${i}, '${texto.replace(/'/g, "\\'")}')">
+                    <span class="text-[11px] font-black bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 px-2 py-1 rounded shadow-sm mt-1.5 flex-none">${i + 1}</span>
                     <p class="flex-1 text-gray-800 dark:text-gray-200 leading-relaxed">${texto}</p>
                 </div>`;
             });
             document.getElementById('areaLeitura').innerHTML = htmlLeitura;
             window.scrollTo({ top: 0, behavior: 'smooth' });
+            salvarProgresso(); // Salva sempre que mudar a tela
         }
 
-        document.getElementById('selLivro').addEventListener('change', (e) => {
-            indexLivro = parseInt(e.target.value); indexCapitulo = 0; preencherCapitulos(); exibirCapitulo();
-        });
-        document.getElementById('selCapitulo').addEventListener('change', (e) => {
-            indexCapitulo = parseInt(e.target.value); exibirCapitulo();
-        });
+        // Navegação
+        document.getElementById('selLivro').addEventListener('change', (e) => { indexLivro = parseInt(e.target.value); indexCapitulo = 0; preencherCapitulos(); exibirCapitulo(); });
+        document.getElementById('selCapitulo').addEventListener('change', (e) => { indexCapitulo = parseInt(e.target.value); exibirCapitulo(); });
         document.getElementById('btnProximo').addEventListener('click', () => {
             if (indexCapitulo < bibliaCompleta[indexLivro].chapters.length - 1) { indexCapitulo++; } 
             else if (indexLivro < bibliaCompleta.length - 1) { indexLivro++; indexCapitulo = 0; }
@@ -181,19 +233,152 @@
             document.getElementById('selLivro').value = indexLivro; preencherCapitulos(); exibirCapitulo();
         });
 
-        // LÓGICA DO ASSISTENTE
-        const gaveta = document.getElementById('gavetaChat');
+        // ==========================================
+        // 3. BUSCA BÍBLICA (SEARCH ENGINE)
+        // ==========================================
+        const modalBusca = document.getElementById('modalBusca');
+        function abrirModalBusca() { modalBusca.classList.add('aberta'); document.getElementById('inputBusca').focus(); }
+        function fecharModalBusca() { modalBusca.classList.remove('aberta'); }
+
+        document.getElementById('btnExecutarBusca').addEventListener('click', () => {
+            const termo = document.getElementById('inputBusca').value.trim().toLowerCase();
+            const divResultados = document.getElementById('resultadosBusca');
+            
+            if(termo.length < 3) {
+                divResultados.innerHTML = `<p class="text-center text-red-500 mt-5">Digite pelo menos 3 letras.</p>`;
+                return;
+            }
+
+            divResultados.innerHTML = `<p class="text-center text-indigo-500 mt-5 animate-pulse">Pesquisando...</p>`;
+            
+            // Usamos setTimeout para não travar a UI enquanto pesquisa
+            setTimeout(() => {
+                let resultados = '';
+                let contador = 0;
+
+                for(let l = 0; l < bibliaCompleta.length; l++) {
+                    const livro = bibliaCompleta[l];
+                    for(let c = 0; c < livro.chapters.length; c++) {
+                        const cap = livro.chapters[c];
+                        for(let v = 0; v < cap.length; v++) {
+                            const texto = cap[v];
+                            if(texto.toLowerCase().includes(termo)) {
+                                contador++;
+                                if(contador <= 100) { // Limite para não explodir o celular
+                                    resultados += `
+                                    <div class="bg-white dark:bg-gray-800 p-3 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 active:scale-95 transition-transform" onclick="pularParaResultado(${l}, ${c}, ${v})">
+                                        <p class="font-bold text-sm text-indigo-600 dark:text-indigo-400 mb-1">${livro.name} ${c+1}:${v+1}</p>
+                                        <p class="text-sm text-gray-700 dark:text-gray-300 line-clamp-3">${texto.replace(new RegExp(termo, 'gi'), match => `<b class="bg-yellow-200 dark:bg-yellow-900/50 text-black dark:text-white px-1 rounded">${match}</b>`)}</p>
+                                    </div>`;
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                if(contador === 0) {
+                    divResultados.innerHTML = `<p class="text-center text-gray-500 mt-5">Nenhum versículo encontrado com "${termo}".</p>`;
+                } else {
+                    const limiteAviso = contador > 100 ? `<p class="text-xs text-center text-gray-400 mb-3">Mostrando os primeiros 100 de ${contador} resultados.</p>` : `<p class="text-xs text-center text-gray-400 mb-3">${contador} resultados encontrados.</p>`;
+                    divResultados.innerHTML = limiteAviso + resultados;
+                }
+            }, 100);
+        });
+
+        function pularParaResultado(l, c, v) {
+            indexLivro = l; indexCapitulo = c;
+            fecharModalBusca();
+            document.getElementById('selLivro').value = indexLivro;
+            preencherCapitulos();
+            exibirCapitulo();
+            
+            // Pequeno delay para a página renderizar, depois desce até o versículo e pisca
+            setTimeout(() => {
+                const elemento = document.getElementById(`v-${v}`);
+                if(elemento) {
+                    elemento.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    elemento.classList.add('piscar');
+                    setTimeout(() => elemento.classList.remove('piscar'), 2000);
+                }
+            }, 300);
+        }
+
+        // ==========================================
+        // 4. MENU DE VERSÍCULO (TAP-TO-ACTION)
+        // ==========================================
+        const menuVersiculo = document.getElementById('menuVersiculo');
+        const fundoMenuVersiculo = document.getElementById('fundoMenuVersiculo');
+
+        function tocarVersiculo(l, c, v, texto) {
+            const nomeLivro = bibliaCompleta[l].name;
+            const ref = `${nomeLivro} ${c+1}:${v+1}`;
+            const idUnico = `${l}-${c}-${v}`;
+            
+            versiculoEmFoco = { id: idUnico, ref: ref, texto: texto, indiceV: v };
+            
+            document.getElementById('tituloVersiculoMenu').innerText = ref;
+            document.getElementById('textoVersiculoMenu').innerText = `"${texto}"`;
+            
+            const btnMarcar = document.getElementById('textoBtnMarcar');
+            btnMarcar.innerText = marcacoes.includes(idUnico) ? "Remover Marcação" : "Destacar Versículo";
+
+            menuVersiculo.classList.add('aberto');
+            fundoMenuVersiculo.classList.add('aberto');
+        }
+
+        function fecharMenuVersiculo() {
+            menuVersiculo.classList.remove('aberto');
+            fundoMenuVersiculo.classList.remove('aberto');
+        }
+
+        function acaoCopiarVersiculo() {
+            const textoCopia = `${versiculoEmFoco.texto} (${versiculoEmFoco.ref} ARC)`;
+            navigator.clipboard.writeText(textoCopia).then(() => {
+                alert("Versículo copiado para a área de transferência!");
+                fecharMenuVersiculo();
+            });
+        }
+
+        function acaoMarcarVersiculo() {
+            const idx = marcacoes.indexOf(versiculoEmFoco.id);
+            const el = document.getElementById(`v-${versiculoEmFoco.indiceV}`);
+            
+            if(idx === -1) {
+                marcacoes.push(versiculoEmFoco.id);
+                if(el) el.classList.add('versiculo-marcado');
+            } else {
+                marcacoes.splice(idx, 1);
+                if(el) el.classList.remove('versiculo-marcado');
+            }
+            salvarMarcacoes();
+            fecharMenuVersiculo();
+        }
+
+        function acaoExplicarVersiculo() {
+            fecharMenuVersiculo();
+            abrirChat();
+            
+            // Preenche o chat com a pergunta e clica no botão de enviar automaticamente
+            const inputMsg = document.getElementById('campoPergunta');
+            inputMsg.value = `À luz da Palavra e da ortodoxia, explique o significado deste versículo: "${versiculoEmFoco.texto}" (${versiculoEmFoco.ref})`;
+            
+            setTimeout(() => { document.getElementById('btnEnviarMsg').click(); }, 300);
+        }
+
+        // ==========================================
+        // 5. ASSISTENTE IA & CONFIGURAÇÕES (Mantido)
+        // ==========================================
+        const gavetaChat = document.getElementById('gavetaChat');
         const listaMsg = document.getElementById('listaMensagens');
         const inputMsg = document.getElementById('campoPergunta');
-        
         const modalConfig = document.getElementById('modalConfig');
         const inputChaveApi = document.getElementById('inputChaveApi');
         const inputPerfil = document.getElementById('inputPerfil');
 
         const perfilPadrao = "Atue como um exímio teólogo. Sempre que o assunto for Bíblia Sagrada, regra de fé ou prática cristã, adote a ortodoxia Neo Testamentária, a ortodoxia do Protestantismo Histórico e a Ortodoxia Pentecostal Clássica das Assembleias de Deus. Seja claro, profundo e pastoral em suas respostas.";
 
-        function abrirChat() { gaveta.classList.add('aberta'); }
-        function fecharChat() { gaveta.classList.remove('aberta'); }
+        function abrirChat() { gavetaChat.classList.add('aberta'); setTimeout(()=> inputMsg.focus(), 300); }
+        function fecharChat() { gavetaChat.classList.remove('aberta'); }
         
         function abrirModalConfig() { 
             inputChaveApi.value = localStorage.getItem('chave_secreta_gemini') || '';
@@ -205,44 +390,24 @@
         function salvarConfig() {
             const chaveDigitada = inputChaveApi.value.trim();
             const perfilDigitado = inputPerfil.value.trim();
-            
-            if(chaveDigitada === '') {
-                alert("A chave da API é obrigatória.");
-                return;
-            }
-            
+            if(chaveDigitada === '') return alert("A chave da API é obrigatória.");
             localStorage.setItem('chave_secreta_gemini', chaveDigitada);
             localStorage.setItem('perfil_ia_gemini', perfilDigitado || perfilPadrao);
-            
             fecharModalConfig();
-            adicionarBalaoIA("Configurações atualizadas e perfil de instrução salvo com sucesso.");
+            adicionarBalaoIA("Configurações atualizadas!");
         }
 
-        function adicionarBalaoUsuario(texto) {
-            listaMsg.innerHTML += `<div class="flex justify-end mb-4"><div class="bg-indigo-100 dark:bg-indigo-900 text-indigo-900 dark:text-indigo-50 p-3 rounded-2xl rounded-tr-none max-w-[90%] shadow-sm font-sans text-sm">${texto}</div></div>`;
-            rolarChatParaBaixo();
-        }
-
-        function adicionarBalaoIA(texto) {
-            const textoFormatado = texto.replace(/\n/g, '<br>');
-            listaMsg.innerHTML += `<div class="flex justify-start mb-4"><div class="bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 p-4 rounded-2xl rounded-tl-none max-w-[95%] shadow-sm border border-gray-100 dark:border-gray-700">${textoFormatado}</div></div>`;
-            rolarChatParaBaixo();
-        }
-
+        function adicionarBalaoUsuario(t) { listaMsg.innerHTML += `<div class="flex justify-end mb-4"><div class="bg-indigo-100 dark:bg-indigo-900 text-indigo-900 dark:text-indigo-50 p-3 rounded-2xl rounded-tr-none max-w-[90%] shadow-sm font-sans text-sm">${t}</div></div>`; rolarChatParaBaixo(); }
+        function adicionarBalaoIA(t) { listaMsg.innerHTML += `<div class="flex justify-start mb-4"><div class="bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 p-4 rounded-2xl rounded-tl-none max-w-[95%] shadow-sm border border-gray-100 dark:border-gray-700">${t.replace(/\n/g, '<br>')}</div></div>`; rolarChatParaBaixo(); }
         function rolarChatParaBaixo() { setTimeout(() => { listaMsg.scrollTop = listaMsg.scrollHeight; }, 50); }
 
         document.getElementById('btnEnviarMsg').addEventListener('click', async () => {
             const pergunta = inputMsg.value.trim();
             if (!pergunta) return;
-
             const chaveApi = localStorage.getItem('chave_secreta_gemini');
-            if (!chaveApi) { 
-                abrirModalConfig(); 
-                return; 
-            }
+            if (!chaveApi) return abrirModalConfig(); 
 
             const instrucaoDeSistema = localStorage.getItem('perfil_ia_gemini') || perfilPadrao;
-
             adicionarBalaoUsuario(pergunta);
             inputMsg.value = '';
 
@@ -254,37 +419,24 @@
             
             try {
                 const resposta = await fetch(urlEndpoint, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: `Instrução: ${instrucaoDeSistema}\n\nUsuário: ${pergunta}` }] }]
-                    })
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: `Instrução: ${instrucaoDeSistema}\n\nUsuário: ${pergunta}` }] }] })
                 });
-                
                 const dadosJson = await resposta.json();
                 document.getElementById(idLoader).remove();
-
-                if (dadosJson.error) {
-                    adicionarBalaoIA(`⚠️ Erro na IA: ${dadosJson.error.message}`);
-                    return;
-                }
-
+                if (dadosJson.error) return adicionarBalaoIA(`⚠️ Erro na IA: ${dadosJson.error.message}`);
                 adicionarBalaoIA(dadosJson.candidates[0].content.parts[0].text);
-
             } catch (erro) {
                 document.getElementById(idLoader).remove();
-                adicionarBalaoIA("⚠️ Erro de rede. Verifique sua conexão.");
+                adicionarBalaoIA("⚠️ Erro de rede.");
             }
         });
 
-        // Enviar com a tecla "Enter" no teclado do celular
-        document.getElementById('campoPergunta').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') {
-                document.getElementById('btnEnviarMsg').click();
-            }
-        });
-
+        document.getElementById('campoPergunta').addEventListener('keypress', (e) => { if(e.key === 'Enter') document.getElementById('btnEnviarMsg').click(); });
+        document.getElementById('inputBusca').addEventListener('keypress', (e) => { if(e.key === 'Enter') document.getElementById('btnExecutarBusca').click(); });
         document.getElementById('btnTema').addEventListener('click', () => { document.documentElement.classList.toggle('dark'); });
+        
+        // Iniciar
         window.onload = iniciarBiblia;
     </script>
 </body>
