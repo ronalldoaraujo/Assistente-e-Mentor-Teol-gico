@@ -1,72 +1,126 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-br" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Bíblia Sagrada ARC</title>
+    <title>Bíblia ARC Digital</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Lora:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-        .bible-text { font-family: 'Lora', serif; line-height: 1.8; }
-        .sticky-header { backdrop-filter: blur(10px); background-color: rgba(255, 255, 255, 0.8); }
-        .dark .sticky-header { background-color: rgba(17, 24, 39, 0.8); }
+        body { font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .bible-text { font-family: 'Lora', serif; line-height: 1.9; }
+        
+        /* Glassmorphism effects */
+        .glass-header { backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); background-color: rgba(255, 255, 255, 0.85); }
+        .dark .glass-header { background-color: rgba(17, 24, 39, 0.8); }
+        .glass-footer { backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); background-color: rgba(255, 255, 255, 0.7); }
+        .dark .glass-footer { background-color: rgba(17, 24, 39, 0.6); }
+
+        /* Splash Screen */
+        #splashScreen { transition: opacity 0.8s ease-out, visibility 0.8s; }
+        #splashScreen.hidden { opacity: 0; visibility: hidden; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background-color: rgba(99, 102, 241, 0.3); border-radius: 10px; }
+        .dark ::-webkit-scrollbar-thumb { background-color: rgba(129, 140, 248, 0.2); }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-900 transition-colors duration-300 dark:bg-gray-900 dark:text-gray-100">
+<body class="bg-gray-100 text-gray-950 transition-colors duration-300 dark:bg-gray-950 dark:text-gray-100 antialiased overflow-x-hidden">
 
-    <header class="sticky top-0 z-50 border-b border-gray-200 dark:border-gray-800 sticky-header px-4 py-3">
-        <div class="max-w-md mx-auto flex justify-between items-center">
-            <h1 class="text-xl font-bold text-indigo-600 dark:text-indigo-400">ARC</h1>
-            <div class="flex gap-2">
-                <button id="themeToggle" class="p-2 rounded-full bg-gray-200 dark:bg-gray-800">🌓</button>
+    <div id="splashScreen" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-white dark:bg-gray-950">
+        <img id="splashImage" src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?q=80&w=600&auto=format&fit=crop" alt="Bíblia ARC" class="w-48 h-48 object-cover rounded-full shadow-2xl animate-pulse mb-8">
+        <h1 class="text-3xl font-bold text-indigo-700 dark:text-indigo-400">Bíblia Sagrada ARC</h1>
+        <p class="text-gray-500 mt-2">Almeida Revista e Corrigida</p>
+    </div>
+
+    <header class="sticky top-0 z-50 border-b border-gray-200 dark:border-gray-800 glass-header px-5 py-4 shadow-sm">
+        <div class="max-w-xl mx-auto flex justify-between items-center mb-4">
+            <h1 class="text-2xl font-extrabold tracking-tighter text-indigo-700 dark:text-indigo-400">ARC</h1>
+            <div class="flex items-center gap-3">
+                <div class="relative">
+                    <input type="text" id="searchInput" placeholder="Buscar versículo..." class="w-full pl-10 pr-4 py-2 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-full text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all shadow-inner">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
+                </div>
+                <button id="themeToggle" class="p-2.5 rounded-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow active:scale-95">🌓</button>
             </div>
         </div>
         
-        <div class="max-w-md mx-auto mt-3 grid grid-cols-2 gap-2">
-            <select id="bookSelect" class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"></select>
-            <select id="chapterSelect" class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"></select>
+        <div class="max-w-xl mx-auto grid grid-cols-[2fr,1fr] gap-3">
+            <select id="bookSelect" class="bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-3 text-sm font-medium focus:ring-2 focus:ring-indigo-500 outline-none shadow-sm"></select>
+            <select id="chapterSelect" class="bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-3 text-sm font-medium focus:ring-2 focus:ring-indigo-500 outline-none shadow-sm"></select>
         </div>
     </header>
 
-    <main class="max-w-md mx-auto p-6 pb-24 min-h-screen">
-        <div id="content" class="bible-text text-xl">
-            <div class="flex justify-center items-center h-64 text-gray-400 animate-pulse">
-                Carregando as Escrituras...
+    <main class="max-w-xl mx-auto p-6 pb-32 min-h-screen">
+        <div id="content" class="bible-text text-xl transition-opacity duration-300">
+            <div class="flex flex-col justify-center items-center h-96 text-gray-400 space-y-4">
+                <div class="w-10 h-10 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+                <p>Preparando as Escrituras...</p>
             </div>
         </div>
     </main>
 
-    <nav class="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-gray-50 dark:from-gray-900 to-transparent">
-        <div class="max-w-md mx-auto flex justify-between items-center gap-4">
-            <button id="prevBtn" class="flex-1 bg-white dark:bg-gray-800 shadow-lg border border-gray-200 dark:border-gray-700 py-3 rounded-2xl font-semibold active:scale-95 transition-transform disabled:opacity-50">← Anterior</button>
-            <button id="nextBtn" class="flex-1 bg-indigo-600 text-white shadow-lg py-3 rounded-2xl font-semibold active:scale-95 transition-transform disabled:opacity-50">Próximo →</button>
+    <nav class="fixed bottom-0 left-0 right-0 p-5 glass-footer z-40 border-t border-gray-200 dark:border-gray-800">
+        <div class="max-w-xl mx-auto flex justify-between items-center gap-5">
+            <button id="prevBtn" class="flex-1 bg-white dark:bg-gray-900 shadow-lg border border-gray-200 dark:border-gray-700 py-4 rounded-2xl font-semibold active:scale-95 transition-all disabled:opacity-50 text-indigo-700 dark:text-indigo-400">← Anterior</button>
+            <button id="nextBtn" class="flex-1 bg-indigo-600 text-white shadow-lg py-4 rounded-2xl font-semibold active:scale-95 transition-all disabled:opacity-50">Próximo →</button>
         </div>
     </nav>
+
+    <div id="searchModal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm p-4 flex flex-col items-center justify-start pt-20 hidden">
+        <div class="bg-white dark:bg-gray-900 w-full max-w-lg rounded-3xl shadow-2xl p-6 overflow-y-auto max-h-[80vh] border border-gray-200 dark:border-gray-800">
+            <div class="flex justify-between items-center mb-5">
+                <h3 class="text-xl font-bold text-gray-950 dark:text-white">Resultados da Busca</h3>
+                <button id="closeSearchModal" class="p-2 text-gray-500 hover:text-red-500">✕</button>
+            </div>
+            <div id="searchResults" class="space-y-4 bible-text text-base"></div>
+        </div>
+    </div>
 
     <script>
         let bibleData = null;
         let currentBookIndex = 0;
         let currentChapterIndex = 0;
 
+        const splashScreen = document.getElementById('splashScreen');
         const bookSelect = document.getElementById('bookSelect');
         const chapterSelect = document.getElementById('chapterSelect');
         const content = document.getElementById('content');
         const themeToggle = document.getElementById('themeToggle');
+        const searchInput = document.getElementById('searchInput');
+        const searchModal = document.getElementById('searchModal');
+        const searchResults = document.getElementById('searchResults');
+        const closeSearchModal = document.getElementById('closeSearchModal');
 
-        // Inicialização
+        // Inicialização com Splash Screen e Fetch local
         async function init() {
             try {
-                // Tenta carregar localmente. Se falhar, busca na CDN.
-                const response = await fetch('arc.json').catch(() => 
-                    fetch('https://raw.githubusercontent.com/maatheusgois/bible/main/versions/pt-br/arc.json')
-                );
+                // Tenta carregar o arquivo arc.json local na mesma pasta.
+                const response = await fetch('arc.json');
+                if (!response.ok) throw new Error('Falha ao carregar JSON local');
                 bibleData = await response.json();
                 
                 populateBooks();
                 renderChapter();
+                
+                // Remove Splash Screen após o carregamento
+                setTimeout(() => {
+                    splashScreen.classList.add('hidden');
+                    document.body.classList.remove('overflow-hidden'); // Restaura o scroll
+                }, 1500); // Tempo para a animação da splash
+
             } catch (err) {
-                content.innerHTML = `<p class="text-red-500">Erro ao carregar Bíblia. Verifique o arquivo arc.json.</p>`;
+                // Erro amigável
+                content.innerHTML = `
+                    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg">
+                        <p class="font-bold">Erro de Carregamento</p>
+                        <p>Certifique-se de que o arquivo <strong>arc.json</strong> está na mesma pasta que este arquivo index.html.</p>
+                        <p class="text-sm mt-2">Dica de Sênior: Se estiver testando localmente, use um servidor como o Live Server do VS Code.</p>
+                    </div>
+                `;
+                splashScreen.classList.add('hidden');
             }
         }
 
@@ -85,28 +139,88 @@
             chapterSelect.value = currentChapterIndex;
         }
 
+        // Renderização com animação suave
         function renderChapter() {
-            const book = bibleData[currentBookIndex];
-            const chapter = book.chapters[currentChapterIndex];
+            content.style.opacity = '0';
             
-            let html = `<h2 class="text-3xl font-bold mb-6 text-indigo-900 dark:text-indigo-300">${book.name} ${currentChapterIndex + 1}</h2>`;
-            
-            html += chapter.map((verse, i) => `
-                <div class="mb-4 flex gap-3">
-                    <span class="text-xs mt-2 font-bold text-indigo-500 uppercase">${i + 1}</span>
-                    <p class="flex-1">${verse}</p>
-                </div>
-            `).join('');
-            
-            content.innerHTML = html;
-            window.scrollTo(0, 0);
-            
-            // Gerenciar estado dos botões
-            document.getElementById('prevBtn').disabled = (currentBookIndex === 0 && currentChapterIndex === 0);
-            document.getElementById('nextBtn').disabled = (currentBookIndex === bibleData.length - 1 && currentChapterIndex === bibleData[currentBookIndex].chapters.length - 1);
+            setTimeout(() => {
+                const book = bibleData[currentBookIndex];
+                const chapter = book.chapters[currentChapterIndex];
+                
+                let html = `<h2 class="text-4xl font-extrabold tracking-tighter mb-8 text-indigo-950 dark:text-indigo-200 border-b-2 border-indigo-100 dark:border-indigo-900 pb-3">${book.name} ${currentChapterIndex + 1}</h2>`;
+                
+                html += chapter.map((verse, i) => `
+                    <div class="mb-5 flex gap-4 group">
+                        <span class="text-xs mt-2.5 font-black text-indigo-500/70 uppercase group-hover:text-indigo-600 transition-colors">${i + 1}</span>
+                        <p class="flex-1 text-gray-900 dark:text-gray-100 leading-relaxed">${verse}</p>
+                    </div>
+                `).join('');
+                
+                content.innerHTML = html;
+                content.style.opacity = '1';
+                window.scrollTo(0, 0);
+                updateNavButtons();
+            }, 150); // Tempo pequeno para a transição
         }
 
-        // Eventos
+        function updateNavButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const book = bibleData[currentBookIndex];
+
+            prevBtn.disabled = (currentBookIndex === 0 && currentChapterIndex === 0);
+            nextBtn.disabled = (currentBookIndex === bibleData.length - 1 && currentChapterIndex === book.chapters.length - 1);
+        }
+
+        // --- Sistema de Busca ---
+        function handleSearch(query) {
+            if (!query.trim()) return;
+            const searchTerm = query.toLowerCase().trim();
+            let resultsHtml = '';
+            let foundCount = 0;
+
+            searchResults.innerHTML = '<div class="text-gray-400 animate-pulse text-center p-6">Buscando...</div>';
+            searchModal.classList.remove('hidden');
+
+            // Limita a busca para performance mobile
+            for (let b = 0; b < bibleData.length && foundCount < 50; b++) {
+                const book = bibleData[b];
+                for (let c = 0; c < book.chapters.length && foundCount < 50; c++) {
+                    const chapter = book.chapters[c];
+                    for (let v = 0; v < chapter.length && foundCount < 50; v++) {
+                        const verse = chapter[v];
+                        if (verse.toLowerCase().includes(searchTerm)) {
+                            resultsHtml += `
+                                <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl cursor-pointer hover:bg-indigo-50 dark:hover:bg-indigo-950 transition-colors border border-gray-100 dark:border-gray-700" onclick="goToVerse(${b}, ${c}, ${v})">
+                                    <div class="font-semibold text-indigo-700 dark:text-indigo-400 text-sm mb-1">${book.name} ${c + 1}:${v + 1}</div>
+                                    <p class="text-gray-800 dark:text-gray-200">${verse.replace(new RegExp(searchTerm, 'gi'), match => `<mark class="bg-indigo-100 dark:bg-indigo-800 text-indigo-900 dark:text-indigo-100 p-0.5 rounded">${match}</mark>`)}</p>
+                                </div>
+                            `;
+                            foundCount++;
+                        }
+                    }
+                }
+            }
+
+            if (foundCount === 0) {
+                searchResults.innerHTML = '<p class="text-gray-500 text-center p-6">Nenhum versículo encontrado com esse termo.</p>';
+            } else {
+                searchResults.innerHTML = resultsHtml;
+            }
+        }
+
+        function goToVerse(bookIndex, chapterIndex, verseIndex) {
+            searchModal.classList.add('hidden');
+            searchInput.value = ''; // Limpa a busca
+            currentBookIndex = bookIndex;
+            currentChapterIndex = chapterIndex;
+            bookSelect.value = currentBookIndex;
+            updateChapterSelect();
+            renderChapter();
+            // Scroll até o versículo específico (opcional, pode ser complexo em mobile)
+        }
+
+        // --- Eventos ---
         bookSelect.onchange = (e) => {
             currentBookIndex = parseInt(e.target.value);
             currentChapterIndex = 0;
@@ -120,8 +234,7 @@
         };
 
         document.getElementById('nextBtn').onclick = () => {
-            const book = bibleData[currentBookIndex];
-            if (currentChapterIndex < book.chapters.length - 1) {
+            if (currentChapterIndex < bibleData[currentBookIndex].chapters.length - 1) {
                 currentChapterIndex++;
             } else if (currentBookIndex < bibleData.length - 1) {
                 currentBookIndex++;
@@ -144,7 +257,27 @@
             renderChapter();
         };
 
-        themeToggle.onclick = () => document.documentElement.classList.toggle('dark');
+        themeToggle.onclick = () => {
+            document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+        };
+
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleSearch(e.target.value);
+        });
+
+        closeSearchModal.onclick = () => searchModal.classList.add('hidden');
+        searchModal.onclick = (e) => { if (e.target === searchModal) searchModal.classList.add('hidden'); }; // Fecha ao clicar fora
+
+        // Carregar tema preferido
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+
+        // Bloqueia scroll durante splash screen
+        document.body.classList.add('overflow-hidden');
 
         init();
     </script>
