@@ -429,7 +429,6 @@
         
         function abrirModalConfig() { 
             inputChaveApi.value = localStorage.getItem('chave_secreta_gemini') || '';
-            // Traz o perfil vazio por padrão para o usuário, não expõe a Alma Interna no input
             inputPerfil.value = localStorage.getItem('perfil_ia_gemini') || ''; 
             modalConfig.classList.add('aberto'); 
         }
@@ -438,7 +437,7 @@
         function salvarConfig() {
             if(inputChaveApi.value.trim() === '') return alert("A chave da API é obrigatória.");
             localStorage.setItem('chave_secreta_gemini', inputChaveApi.value.trim());
-            localStorage.setItem('perfil_ia_gemini', inputPerfil.value.trim()); // Salva apenas o extra do usuário
+            localStorage.setItem('perfil_ia_gemini', inputPerfil.value.trim()); 
             fecharModalConfig();
         }
 
@@ -486,7 +485,6 @@
             const chaveApi = localStorage.getItem('chave_secreta_gemini');
             if (!chaveApi) { abrirModalConfig(); return; }
 
-            // Junta a ALMA fixada no código com as instruções extras (se houver) do usuário
             const instrucaoExtraDoUsuario = localStorage.getItem('perfil_ia_gemini') || '';
             const instrucaoFinalCombinada = instrucaoExtraDoUsuario 
                 ? `${ALMA_INTERNA}\n\nInstruções/Protocolos adicionais do usuário: ${instrucaoExtraDoUsuario}`
@@ -496,7 +494,8 @@
             inputMsg.value = '';
 
             const idLoader = 'load-' + Date.now();
-            listaMsg.innerHTML += `<div id="${idLoader}" class="flex justify-start mb-4 fade-in"><div class="bg-gray-100 dark:bg-gray-800 text-gray-500 italic p-3 rounded-2xl rounded-tl-none text-sm animate-pulse">Processando...</div></div>`;
+            // MICROCOPY ATUALIZADO AQUI
+            listaMsg.innerHTML += `<div id="${idLoader}" class="flex justify-start mb-4 fade-in"><div class="bg-gray-100 dark:bg-gray-800 text-gray-500 italic p-3 rounded-2xl rounded-tl-none text-sm animate-pulse">Meditando nas Escrituras...</div></div>`;
             rolarChatParaBaixo();
 
             let historicoRecenteFormatado = "";
@@ -517,8 +516,19 @@
                 const dadosJson = await resposta.json();
                 document.getElementById(idLoader).remove();
 
+                // TRATAMENTO DE ERROS HUMANIZADO E SEM NÚMEROS
                 if (dadosJson.error) {
-                    renderizarBalao('ia', `⚠️ Erro: ${dadosJson.error.message}`, true);
+                    let msgErro = dadosJson.error.message;
+                    
+                    if (msgErro.includes("Quota") || msgErro.includes("exceeded") || msgErro.includes("429")) {
+                        msgErro = "Irmão, estamos consultando a base de dados muito rápido. Por favor, aguarde alguns segundos antes de fazer a próxima pergunta.";
+                    } else if (msgErro.includes("API key not valid")) {
+                        msgErro = "Sua chave da API é inválida. Por favor, verifique as configurações.";
+                    } else {
+                        msgErro = `⚠️ Ocorreu um contratempo de conexão. Tente novamente em breve.`;
+                    }
+                    
+                    renderizarBalao('ia', msgErro, true);
                     return;
                 }
 
