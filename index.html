@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Bíblia ARC & Assistente Pro</title>
+    <title>Bíblia ARC & Assistente</title>
     
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#4f46e5">
@@ -67,7 +67,7 @@
         <div class="max-w-md mx-auto grid grid-cols-4 gap-2">
             <button id="btnAnterior" class="bg-gray-100 dark:bg-gray-800 p-3 rounded-xl font-bold active:scale-95 transition-transform flex items-center justify-center text-lg">←</button>
             <button onclick="abrirChat()" class="col-span-2 bg-indigo-600 text-white shadow-lg p-3 rounded-xl font-bold flex items-center justify-center gap-2 active:scale-95 transition-transform">
-                <span class="text-xl">✨</span> Mentor
+                <span class="text-xl">✨</span> Assistente IA
             </button>
             <button id="btnProximo" class="bg-gray-100 dark:bg-gray-800 p-3 rounded-xl font-bold active:scale-95 transition-transform flex items-center justify-center text-lg">→</button>
         </div>
@@ -116,7 +116,7 @@
     <div id="gavetaChat" class="fixed top-0 left-0 right-0 bottom-0 z-40 flex flex-col bg-gray-50 dark:bg-gray-900 gaveta altura-dinamica">
         <div class="p-4 bg-indigo-700 text-white flex justify-between items-center shadow-md pt-5">
             <div>
-                <h3 class="font-bold text-lg leading-tight">Assistente e Mentor Teológico</h3>
+                <h3 class="font-bold text-lg leading-tight">Assistente da Bíblia</h3>
                 <p class="text-[11px] opacity-90 font-medium tracking-wider">Histórico Salvo</p>
             </div>
             <div class="flex items-center gap-2">
@@ -135,7 +135,7 @@
     </div>
 
     <div id="modalConfig" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 modal">
-        <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 w-full max-w-md shadow-2xl transform transition-all">
+        <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 w-full max-w-md shadow-2xl transform transition-all max-h-[90vh] overflow-y-auto scroll-suave">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="font-bold text-xl flex items-center gap-2"><span class="text-2xl">⚙️</span> Configurações</h3>
                 <button onclick="fecharModalConfig()" class="text-gray-500 font-bold text-2xl">&times;</button>
@@ -144,7 +144,14 @@
                 <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Chave da API (Gemini)</label>
                 <input type="text" id="inputChaveApi" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white dark:bg-gray-700 outline-none focus:ring-2 focus:ring-indigo-500 font-mono text-sm shadow-inner" placeholder="Ex: AIzaSyB...">
             </div>
-            <button onclick="salvarConfig()" class="w-full p-3 rounded-xl font-bold bg-indigo-600 text-white shadow-md active:scale-95 transition-transform">Salvar Chave</button>
+            <div class="mb-6">
+                <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Instruções Adicionais (Opcional)</label>
+                <p class="text-[11px] text-gray-500 dark:text-gray-400 mb-2 leading-tight">
+                    O Assistente já segue a Ortodoxia Pentecostal Clássica e Histórica por padrão internamente. Use este espaço apenas se quiser adicionar regras extras ou mudar o tom da resposta.
+                </p>
+                <textarea id="inputPerfil" rows="4" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white dark:bg-gray-700 outline-none focus:ring-2 focus:ring-indigo-500 text-sm shadow-inner resize-none" placeholder="Ex: Responda em tópicos..."></textarea>
+            </div>
+            <button onclick="salvarConfig()" class="w-full p-3 rounded-xl font-bold bg-indigo-600 text-white shadow-md active:scale-95 transition-transform">Salvar Dados</button>
         </div>
     </div>
 
@@ -295,7 +302,7 @@
         function acaoExplicarVersiculo() {
             fecharModalVersiculo();
             abrirChat();
-            const promptContextual = `Por favor, aplique o seu protocolo hermenêutico e me explique este versículo em detalhes: "${versiculoAtivo.texto}" (${versiculoAtivo.livroNome} ${versiculoAtivo.cIdx + 1}:${versiculoAtivo.vIdx + 1})`;
+            const promptContextual = `Por favor, explique este versículo à luz da Palavra: "${versiculoAtivo.texto}" (${versiculoAtivo.livroNome} ${versiculoAtivo.cIdx + 1}:${versiculoAtivo.vIdx + 1})`;
             document.getElementById('campoPergunta').value = promptContextual;
             setTimeout(() => document.getElementById('btnEnviarMsg').click(), 300);
         }
@@ -406,43 +413,43 @@
 
 
         // ----------------------------------------------------
-        // 5. CHAT, MENTOR E CONFIGURAÇÕES DA IA
+        // 5. CHAT COM MEMÓRIA E ALMA DA IA (PROMPT INTERNO)
         // ----------------------------------------------------
         const gaveta = document.getElementById('gavetaChat');
         const listaMsg = document.getElementById('listaMensagens');
         const inputMsg = document.getElementById('campoPergunta');
         const modalConfig = document.getElementById('modalConfig');
         const inputChaveApi = document.getElementById('inputChaveApi');
+        const inputPerfil = document.getElementById('inputPerfil');
 
-        // =========================================================================
-        // A ALMA DO MENTOR: INSTRUÇÃO DE SISTEMA HARDCODED
-        // =========================================================================
-        const instrucaoSistemaTeologico = `Nome: Assistente e Mentor Teológico
-Descrição: Você é o Assistente e Mentor Teológico especialista pessoal para o estudo aprofundado da Bíblia Sagrada, reconhecendo-a como a única regra infalível de fé e prática para a vida e o caráter cristão. Sua abordagem de ensino é fundamentada exclusivamente nas Escrituras, transformando a leitura bíblica em sabedoria aplicável.
-Personalidade: Sua personalidade de ensino é fundamentada na homilética, a arte de pregar e ensinar a Palavra de Deus de forma clara, profunda e edificante. Você organiza metodicamente o conhecimento (lógica), conecta-se autenticamente com as necessidades do usuário (empatia) e gera uma transformação (influência/persuasão).
-Perfil: Seu propósito é auxiliar no entendimento, na interpretação e na aplicação das Escrituras Sagradas. Para isso, você analisa o texto e o contexto, realizando análises textuais detalhadas; elabora a síntese, elaborando a síntese de conhecimentos complexos; extrai o fundamento bíblico, identificando a premissa absoluta, autoevidente e inegável revelada diretamente no texto bíblico; extrai o princípio (a verdade eterna), identificando a regra espiritual imutável e transcultural que sustenta o texto; gera a iluminação, oferecendo uma perspectiva de profundidade bíblica, que revele conexões ricas dentro da ortodoxia, trazendo frescor ao texto antigo sem violar a doutrina estabelecida; e sugere a aplicação prática, traduzindo o princípio para o século XXI.
-Protocolo: Aplicar o Protocolo de Hermenêutica e Ensino Bíblico: Adote a ortodoxia Neo Testamentária, a ortodoxia do Protestantismo Histórico e a Ortodoxia Pentecostal Clássica das Assembleias de Deus.`;
-        // =========================================================================
+        // A "ALMA" DO ASSISTENTE: Fica escondida no código e não é exibida na caixa de texto do usuário.
+        const perfilBaseInterno = "Atue como um exímio teólogo. Sempre que o assunto for Bíblia Sagrada, regra de fé ou prática cristã, adote a ortodoxia Neo Testamentária, a ortodoxia do Protestantismo Histórico e a Ortodoxia Pentecostal Clássica das Assembleias de Deus.";
         
         let historicoChat = JSON.parse(localStorage.getItem('biblia_historico_chat')) || [];
 
         function abrirChat() { gaveta.classList.add('aberta'); }
         function fecharChat() { gaveta.classList.remove('aberta'); }
+        
         function abrirModalConfig() { 
             inputChaveApi.value = localStorage.getItem('chave_secreta_gemini') || '';
+            // A caixa de texto carrega VAZIA por padrão, ou traz apenas o que o usuário digitou por cima.
+            inputPerfil.value = localStorage.getItem('perfil_ia_gemini') || '';
             modalConfig.classList.add('aberto'); 
         }
+        
         function fecharModalConfig() { modalConfig.classList.remove('aberto'); }
 
         function salvarConfig() {
             if(inputChaveApi.value.trim() === '') return alert("A chave da API é obrigatória.");
             localStorage.setItem('chave_secreta_gemini', inputChaveApi.value.trim());
+            // Salva apenas as instruções adicionais (se houver)
+            localStorage.setItem('perfil_ia_gemini', inputPerfil.value.trim());
             fecharModalConfig();
         }
 
         function carregarHistoricoChat() {
             if(historicoChat.length === 0) {
-                listaMsg.innerHTML = `<div class="bg-white dark:bg-gray-800 p-4 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 dark:border-gray-700 max-w-[90%] fade-in">A Paz do Senhor! Sou o seu Assistente e Mentor Teológico. A nossa conversa e seus estudos serão salvos aqui. Como posso te auxiliar na Palavra hoje?</div>`;
+                listaMsg.innerHTML = `<div class="bg-white dark:bg-gray-800 p-4 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 dark:border-gray-700 max-w-[90%] fade-in">A Paz do Senhor! Sou o Assistente da Bíblia. A nossa conversa será salva aqui. Como posso te ajudar hoje?</div>`;
                 return;
             }
             listaMsg.innerHTML = '';
@@ -451,7 +458,7 @@ Protocolo: Aplicar o Protocolo de Hermenêutica e Ensino Bíblico: Adote a ortod
         }
 
         function limparChat() {
-            if(confirm("Deseja apagar todo o histórico de conversa com o Mentor?")) {
+            if(confirm("Deseja apagar todo o histórico de conversa com o Assistente?")) {
                 historicoChat = [];
                 localStorage.removeItem('biblia_historico_chat');
                 carregarHistoricoChat();
@@ -484,16 +491,22 @@ Protocolo: Aplicar o Protocolo de Hermenêutica e Ensino Bíblico: Adote a ortod
             const chaveApi = localStorage.getItem('chave_secreta_gemini');
             if (!chaveApi) { abrirModalConfig(); return; }
 
+            // Junta a ALMA interna obrigatória + qualquer instrução extra que o usuário tenha digitado
+            const instrucaoAdicional = localStorage.getItem('perfil_ia_gemini') || '';
+            const instrucaoFinal = instrucaoAdicional 
+                ? `${perfilBaseInterno}\n\nDiretrizes adicionais solicitadas pelo usuário: ${instrucaoAdicional}` 
+                : perfilBaseInterno;
+
             adicionarMensagem('user', pergunta);
             inputMsg.value = '';
 
             const idLoader = 'load-' + Date.now();
-            listaMsg.innerHTML += `<div id="${idLoader}" class="flex justify-start mb-4 fade-in"><div class="bg-gray-100 dark:bg-gray-800 text-gray-500 italic p-3 rounded-2xl rounded-tl-none text-sm animate-pulse">Consultando a Palavra...</div></div>`;
+            listaMsg.innerHTML += `<div id="${idLoader}" class="flex justify-start mb-4 fade-in"><div class="bg-gray-100 dark:bg-gray-800 text-gray-500 italic p-3 rounded-2xl rounded-tl-none text-sm animate-pulse">Processando...</div></div>`;
             rolarChatParaBaixo();
 
             let historicoRecenteFormatado = "";
             const ultimas = historicoChat.slice(-5, -1);
-            ultimas.forEach(m => { historicoRecenteFormatado += `${m.role === 'user' ? 'Estudante' : 'Mentor'}: ${m.texto}\n`; });
+            ultimas.forEach(m => { historicoRecenteFormatado += `${m.role === 'user' ? 'Usuário' : 'IA'}: ${m.texto}\n`; });
 
             const urlEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${chaveApi}`;
             
@@ -502,7 +515,7 @@ Protocolo: Aplicar o Protocolo de Hermenêutica e Ensino Bíblico: Adote a ortod
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        contents: [{ parts: [{ text: `Instruções de Sistema:\n${instrucaoSistemaTeologico}\n\nHistórico recente da conversa:\n${historicoRecenteFormatado}\n\nNova Pergunta do Estudante: ${pergunta}` }] }]
+                        contents: [{ parts: [{ text: `Instrução base: ${instrucaoFinal}\n\nHistórico recente da conversa:\n${historicoRecenteFormatado}\n\nNova Pergunta do Usuário: ${pergunta}` }] }]
                     })
                 });
                 
