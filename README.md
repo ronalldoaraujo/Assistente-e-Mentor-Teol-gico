@@ -1,1 +1,1 @@
-# Assistente-e-Mentor-Teol-gico
+# Bíblia ARC com Assistente IA
