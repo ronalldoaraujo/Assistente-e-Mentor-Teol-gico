@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Bíblia ARC & Assistente</title>
+    <title>Bíblia ARC Pro</title>
     
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#4f46e5">
@@ -16,7 +16,6 @@
         .texto-biblia { font-family: 'Lora', serif; line-height: 1.8; }
         .altura-dinamica { height: 100dvh; }
         
-        /* Animações e Transições */
         .gaveta { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); transform: translateY(100%); }
         .gaveta.aberta { transform: translateY(0); }
         .modal { transition: opacity 0.2s; opacity: 0; pointer-events: none; }
@@ -24,11 +23,9 @@
         .fade-in { animation: fadeIn 0.3s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Scrollbar */
         .scroll-suave::-webkit-scrollbar { width: 4px; }
         .scroll-suave::-webkit-scrollbar-thumb { background: #818cf8; border-radius: 4px; }
         
-        /* Estilos de Marcação e Busca */
         .versiculo-marcado { background-color: rgba(253, 224, 71, 0.4); border-radius: 0.5rem; padding: 0.25rem; transition: background-color 0.2s; }
         .dark .versiculo-marcado { background-color: rgba(161, 98, 7, 0.4); }
         .highlight-busca { font-weight: 700; color: #4f46e5; background-color: rgba(99, 102, 241, 0.2); padding: 0 2px; border-radius: 2px; }
@@ -67,7 +64,7 @@
         <div class="max-w-md mx-auto grid grid-cols-4 gap-2">
             <button id="btnAnterior" class="bg-gray-100 dark:bg-gray-800 p-3 rounded-xl font-bold active:scale-95 transition-transform flex items-center justify-center text-lg">←</button>
             <button onclick="abrirChat()" class="col-span-2 bg-indigo-600 text-white shadow-lg p-3 rounded-xl font-bold flex items-center justify-center gap-2 active:scale-95 transition-transform">
-                <span class="text-xl">✨</span> Assistente IA
+                <span class="text-xl">✨</span> Assistente da Bíblia
             </button>
             <button id="btnProximo" class="bg-gray-100 dark:bg-gray-800 p-3 rounded-xl font-bold active:scale-95 transition-transform flex items-center justify-center text-lg">→</button>
         </div>
@@ -129,7 +126,7 @@
             </div>
 
         <div class="p-3 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 flex gap-2 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] pb-5">
-            <input id="campoPergunta" type="text" placeholder="Digite sua pergunta..." class="flex-1 p-3 rounded-xl bg-gray-100 dark:bg-gray-700 border border-transparent focus:border-indigo-500 outline-none text-sm font-sans">
+            <input id="campoPergunta" type="text" placeholder="Faça uma pergunta..." class="flex-1 p-3 rounded-xl bg-gray-100 dark:bg-gray-700 border border-transparent focus:border-indigo-500 outline-none text-sm font-sans">
             <button id="btnEnviarMsg" class="bg-indigo-600 text-white px-5 rounded-xl font-bold active:scale-95 transition-transform shadow-md">Enviar</button>
         </div>
     </div>
@@ -145,11 +142,11 @@
                 <input type="text" id="inputChaveApi" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white dark:bg-gray-700 outline-none focus:ring-2 focus:ring-indigo-500 font-mono text-sm shadow-inner" placeholder="Ex: AIzaSyB...">
             </div>
             <div class="mb-6">
-                <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Instruções Adicionais (Opcional)</label>
-                <p class="text-[11px] text-gray-500 dark:text-gray-400 mb-2 leading-tight">
-                    O Assistente já segue a Ortodoxia Pentecostal Clássica e Histórica por padrão internamente. Use este espaço apenas se quiser adicionar regras extras ou mudar o tom da resposta.
+                <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Instruções Adicionais (Opcional)</label>
+                <p class="text-[11px] text-gray-500 dark:text-gray-400 mb-3 leading-tight">
+                    O Assistente da Bíblia já possui uma alma teológica configurada internamente baseada na Ortodoxia Pentecostal Clássica e no Protestantismo Histórico. Este núcleo é inviolável. Se desejar, adicione aqui comandos extras (ex: "Responda em tópicos curtos" ou protocolos pessoais).
                 </p>
-                <textarea id="inputPerfil" rows="4" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white dark:bg-gray-700 outline-none focus:ring-2 focus:ring-indigo-500 text-sm shadow-inner resize-none" placeholder="Ex: Responda em tópicos..."></textarea>
+                <textarea id="inputPerfil" rows="4" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white dark:bg-gray-700 outline-none focus:ring-2 focus:ring-indigo-500 text-sm shadow-inner resize-none" placeholder="Suas instruções extras aparecerão aqui..."></textarea>
             </div>
             <button onclick="salvarConfig()" class="w-full p-3 rounded-xl font-bold bg-indigo-600 text-white shadow-md active:scale-95 transition-transform">Salvar Dados</button>
         </div>
@@ -413,7 +410,7 @@
 
 
         // ----------------------------------------------------
-        // 5. CHAT COM MEMÓRIA E ALMA DA IA (PROMPT INTERNO)
+        // 5. CHAT COM MEMÓRIA E ALMA BLINDADA
         // ----------------------------------------------------
         const gaveta = document.getElementById('gavetaChat');
         const listaMsg = document.getElementById('listaMensagens');
@@ -422,8 +419,8 @@
         const inputChaveApi = document.getElementById('inputChaveApi');
         const inputPerfil = document.getElementById('inputPerfil');
 
-        // A "ALMA" DO ASSISTENTE: Fica escondida no código e não é exibida na caixa de texto do usuário.
-        const perfilBaseInterno = "Atue como um exímio teólogo. Sempre que o assunto for Bíblia Sagrada, regra de fé ou prática cristã, adote a ortodoxia Neo Testamentária, a ortodoxia do Protestantismo Histórico e a Ortodoxia Pentecostal Clássica das Assembleias de Deus.";
+        // A ALMA DO SISTEMA: Inviolável e blindada no código
+        const ALMA_INTERNA = "Atue como um exímio teólogo. Sempre que o assunto for Bíblia Sagrada, regra de fé, prática cristã e ou caráter cristão, adote a ortodoxia Neo Testamentária, a ortodoxia do Protestantismo Histórico e a Ortodoxia Pentecostal Clássica das Assembleias de Deus.";
         
         let historicoChat = JSON.parse(localStorage.getItem('biblia_historico_chat')) || [];
 
@@ -432,18 +429,16 @@
         
         function abrirModalConfig() { 
             inputChaveApi.value = localStorage.getItem('chave_secreta_gemini') || '';
-            // A caixa de texto carrega VAZIA por padrão, ou traz apenas o que o usuário digitou por cima.
-            inputPerfil.value = localStorage.getItem('perfil_ia_gemini') || '';
+            // Traz o perfil vazio por padrão para o usuário, não expõe a Alma Interna no input
+            inputPerfil.value = localStorage.getItem('perfil_ia_gemini') || ''; 
             modalConfig.classList.add('aberto'); 
         }
-        
         function fecharModalConfig() { modalConfig.classList.remove('aberto'); }
 
         function salvarConfig() {
             if(inputChaveApi.value.trim() === '') return alert("A chave da API é obrigatória.");
             localStorage.setItem('chave_secreta_gemini', inputChaveApi.value.trim());
-            // Salva apenas as instruções adicionais (se houver)
-            localStorage.setItem('perfil_ia_gemini', inputPerfil.value.trim());
+            localStorage.setItem('perfil_ia_gemini', inputPerfil.value.trim()); // Salva apenas o extra do usuário
             fecharModalConfig();
         }
 
@@ -491,11 +486,11 @@
             const chaveApi = localStorage.getItem('chave_secreta_gemini');
             if (!chaveApi) { abrirModalConfig(); return; }
 
-            // Junta a ALMA interna obrigatória + qualquer instrução extra que o usuário tenha digitado
-            const instrucaoAdicional = localStorage.getItem('perfil_ia_gemini') || '';
-            const instrucaoFinal = instrucaoAdicional 
-                ? `${perfilBaseInterno}\n\nDiretrizes adicionais solicitadas pelo usuário: ${instrucaoAdicional}` 
-                : perfilBaseInterno;
+            // Junta a ALMA fixada no código com as instruções extras (se houver) do usuário
+            const instrucaoExtraDoUsuario = localStorage.getItem('perfil_ia_gemini') || '';
+            const instrucaoFinalCombinada = instrucaoExtraDoUsuario 
+                ? `${ALMA_INTERNA}\n\nInstruções/Protocolos adicionais do usuário: ${instrucaoExtraDoUsuario}`
+                : ALMA_INTERNA;
 
             adicionarMensagem('user', pergunta);
             inputMsg.value = '';
@@ -515,7 +510,7 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        contents: [{ parts: [{ text: `Instrução base: ${instrucaoFinal}\n\nHistórico recente da conversa:\n${historicoRecenteFormatado}\n\nNova Pergunta do Usuário: ${pergunta}` }] }]
+                        contents: [{ parts: [{ text: `Instrução base: ${instrucaoFinalCombinada}\n\nHistórico recente da conversa:\n${historicoRecenteFormatado}\n\nNova Pergunta do Usuário: ${pergunta}` }] }]
                     })
                 });
                 
