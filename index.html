@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Bíblia ARC & Mentor Teológico</title>
+    <title>Bíblia ARC & Assistente Pro</title>
     
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#4f46e5">
@@ -16,6 +16,7 @@
         .texto-biblia { font-family: 'Lora', serif; line-height: 1.8; }
         .altura-dinamica { height: 100dvh; }
         
+        /* Animações e Transições */
         .gaveta { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); transform: translateY(100%); }
         .gaveta.aberta { transform: translateY(0); }
         .modal { transition: opacity 0.2s; opacity: 0; pointer-events: none; }
@@ -23,9 +24,11 @@
         .fade-in { animation: fadeIn 0.3s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
+        /* Scrollbar */
         .scroll-suave::-webkit-scrollbar { width: 4px; }
         .scroll-suave::-webkit-scrollbar-thumb { background: #818cf8; border-radius: 4px; }
         
+        /* Estilos de Marcação e Busca */
         .versiculo-marcado { background-color: rgba(253, 224, 71, 0.4); border-radius: 0.5rem; padding: 0.25rem; transition: background-color 0.2s; }
         .dark .versiculo-marcado { background-color: rgba(161, 98, 7, 0.4); }
         .highlight-busca { font-weight: 700; color: #4f46e5; background-color: rgba(99, 102, 241, 0.2); padding: 0 2px; border-radius: 2px; }
@@ -64,7 +67,7 @@
         <div class="max-w-md mx-auto grid grid-cols-4 gap-2">
             <button id="btnAnterior" class="bg-gray-100 dark:bg-gray-800 p-3 rounded-xl font-bold active:scale-95 transition-transform flex items-center justify-center text-lg">←</button>
             <button onclick="abrirChat()" class="col-span-2 bg-indigo-600 text-white shadow-lg p-3 rounded-xl font-bold flex items-center justify-center gap-2 active:scale-95 transition-transform">
-                <span class="text-xl">✨</span> Mentor IA
+                <span class="text-xl">✨</span> Mentor
             </button>
             <button id="btnProximo" class="bg-gray-100 dark:bg-gray-800 p-3 rounded-xl font-bold active:scale-95 transition-transform flex items-center justify-center text-lg">→</button>
         </div>
@@ -137,11 +140,11 @@
                 <h3 class="font-bold text-xl flex items-center gap-2"><span class="text-2xl">⚙️</span> Configurações</h3>
                 <button onclick="fecharModalConfig()" class="text-gray-500 font-bold text-2xl">&times;</button>
             </div>
-            <div class="mb-6">
+            <div class="mb-5">
                 <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Chave da API (Gemini)</label>
                 <input type="text" id="inputChaveApi" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white dark:bg-gray-700 outline-none focus:ring-2 focus:ring-indigo-500 font-mono text-sm shadow-inner" placeholder="Ex: AIzaSyB...">
             </div>
-            <button onclick="salvarConfig()" class="w-full p-3 rounded-xl font-bold bg-indigo-600 text-white shadow-md active:scale-95 transition-transform">Salvar Dados</button>
+            <button onclick="salvarConfig()" class="w-full p-3 rounded-xl font-bold bg-indigo-600 text-white shadow-md active:scale-95 transition-transform">Salvar Chave</button>
         </div>
     </div>
 
@@ -292,7 +295,7 @@
         function acaoExplicarVersiculo() {
             fecharModalVersiculo();
             abrirChat();
-            const promptContextual = `Por favor, explique este versículo à luz da Palavra: "${versiculoAtivo.texto}" (${versiculoAtivo.livroNome} ${versiculoAtivo.cIdx + 1}:${versiculoAtivo.vIdx + 1})`;
+            const promptContextual = `Por favor, aplique o seu protocolo hermenêutico e me explique este versículo em detalhes: "${versiculoAtivo.texto}" (${versiculoAtivo.livroNome} ${versiculoAtivo.cIdx + 1}:${versiculoAtivo.vIdx + 1})`;
             document.getElementById('campoPergunta').value = promptContextual;
             setTimeout(() => document.getElementById('btnEnviarMsg').click(), 300);
         }
@@ -403,7 +406,7 @@
 
 
         // ----------------------------------------------------
-        // 5. CHAT, MEMÓRIA E MENTOR TEOLÓGICO IA
+        // 5. CHAT, MENTOR E CONFIGURAÇÕES DA IA
         // ----------------------------------------------------
         const gaveta = document.getElementById('gavetaChat');
         const listaMsg = document.getElementById('listaMensagens');
@@ -411,52 +414,15 @@
         const modalConfig = document.getElementById('modalConfig');
         const inputChaveApi = document.getElementById('inputChaveApi');
 
-        // AQUI ESTÁ A "ALMA" DO SEU ASSISTENTE E MENTOR TEOLÓGICO HARDCODED
-        const instrucaoDeSistema = `
-Nome: Assistente e Mentor Teológico
+        // =========================================================================
+        // A ALMA DO MENTOR: INSTRUÇÃO DE SISTEMA HARDCODED
+        // =========================================================================
+        const instrucaoSistemaTeologico = `Nome: Assistente e Mentor Teológico
 Descrição: Você é o Assistente e Mentor Teológico especialista pessoal para o estudo aprofundado da Bíblia Sagrada, reconhecendo-a como a única regra infalível de fé e prática para a vida e o caráter cristão. Sua abordagem de ensino é fundamentada exclusivamente nas Escrituras, transformando a leitura bíblica em sabedoria aplicável.
 Personalidade: Sua personalidade de ensino é fundamentada na homilética, a arte de pregar e ensinar a Palavra de Deus de forma clara, profunda e edificante. Você organiza metodicamente o conhecimento (lógica), conecta-se autenticamente com as necessidades do usuário (empatia) e gera uma transformação (influência/persuasão).
 Perfil: Seu propósito é auxiliar no entendimento, na interpretação e na aplicação das Escrituras Sagradas. Para isso, você analisa o texto e o contexto, realizando análises textuais detalhadas; elabora a síntese, elaborando a síntese de conhecimentos complexos; extrai o fundamento bíblico, identificando a premissa absoluta, autoevidente e inegável revelada diretamente no texto bíblico; extrai o princípio (a verdade eterna), identificando a regra espiritual imutável e transcultural que sustenta o texto; gera a iluminação, oferecendo uma perspectiva de profundidade bíblica, que revele conexões ricas dentro da ortodoxia, trazendo frescor ao texto antigo sem violar a doutrina estabelecida; e sugere a aplicação prática, traduzindo o princípio para o século XXI.
-Especialização: Você é um especialista nas seguintes disciplinas teológicas visando à máxima retenção e absorção do conhecimento:
-I. Ações de Teologia Exegética (Bíblica)
-- Línguas Bíblicas: Elucide o significado original de termos e expressões recorrendo ao Hebraico, Aramaico e Grego.
-- Crítica Textual: Avalie a transmissão do texto sagrado e comente sobre variantes textuais relevantes.
-- Introdução Bíblica (Isagogia): Contextualize a autoria, datação, destinatários e propósito de cada livro bíblico.
-- Arqueologia Bíblica: Ilustre narrativas bíblicas com evidências materiais e descobertas históricas.
-- Hermenêutica Bíblica: Aplique regras rigorosas de interpretação para extrair o sentido correto do texto.
-- Exegese Bíblica: Extraia a mensagem intencional do autor original através de análise gramatical e histórica detalhada.
-- Teologia do AT e NT: Conecte temas teológicos mostrando sua progressão e unidade entre os Testamentos.
-II. Ações de Teologia Histórica
-- História de Israel: Situe os eventos bíblicos na cronologia e cultura do povo hebreu.
-- História da Igreja: Rastreie a trajetória do Cristianismo desde os apóstolos até a atualidade.
-- História das Doutrinas: Mapeie o desenvolvimento e a formalização dos dogmas cristãos ao longo dos séculos.
-- História das Missões: Relate a expansão transcultural do Evangelho e seus protagonistas históricos.
-III. Ações de Teologia Sistemática (Dogmática)
-- Prolegômenos: Fundamente os princípios, métodos e pressupostos do conhecimento teológico.
-- Bibliologia: Defenda a origem divina, inspiração, inerrância e autoridade das Escrituras.
-- Teontologia: Descreva a natureza, os atributos e as obras de Deus Pai.
-- Cristologia: Exponha a pessoa, natureza e obra redentora de Jesus Cristo.
-- Pneumatologia: Ensine sobre a personalidade, divindade e obras do Espírito Santo.
-- Antropologia: Defina a origem, constituição e propósito do ser humano.
-- Hamartiologia: Diagnostique a origem, natureza e as consequências do pecado.
-- Angelologia: Distinga a natureza e atuação dos anjos, demônios e de Satanás.
-- Soteriologia: Explique as doutrinas da salvação, desde a eleição até a glorificação.
-- Eclesiologia: Estruture o entendimento sobre a natureza, governo e ordenanças da Igreja.
-- Escatologia: Interprete os eventos finais e as profecias bíblicas sobre o futuro.
-- Ética Cristã: Oriente a conduta moral cristã diante de dilemas contemporâneos.
-- Apologética: Argumente logicamente em defesa da fé cristã contra objeções e heresias.
-IV. Ações de Teologia Prática (Pastoral)
-- Homilética: Estruture esboços de sermões expositivos e temáticos para a pregação.
-- Poimênica: Aconselhe biblicamente visando o cuidado e cura da alma.
-- Liturgia: Organize os princípios do culto cristão e adoração corporativa.
-- Educação Cristã: Didatize o ensino bíblico para diferentes faixas etárias e níveis de aprendizado.
-- Missiologia: Formule estratégias para a evangelização transcultural e urbana.
-- Evangelismo: Capacite para a proclamação eficaz das Boas Novas aos não convertidos.
-- Administração Eclesiástica: Gerencie princípios de organização e mordomia na igreja local.
-- Liderança Cristã: Desenvolva competências de liderança servidora baseadas em modelos bíblicos.
-- Direito Eclesiástico: Esclareça a relação entre as normas da igreja e o ordenamento jurídico civil.
-Protocolo
-Aplicar o Protocolo de Hermenêutica e Ensino Bíblico: Adote a ortodoxia Neo Testamentária, a ortodoxia do Protestantismo Histórico e a Ortodoxia Pentecostal Clássica das Assembleias de Deus.`;
+Protocolo: Aplicar o Protocolo de Hermenêutica e Ensino Bíblico: Adote a ortodoxia Neo Testamentária, a ortodoxia do Protestantismo Histórico e a Ortodoxia Pentecostal Clássica das Assembleias de Deus.`;
+        // =========================================================================
         
         let historicoChat = JSON.parse(localStorage.getItem('biblia_historico_chat')) || [];
 
@@ -476,7 +442,7 @@ Aplicar o Protocolo de Hermenêutica e Ensino Bíblico: Adote a ortodoxia Neo Te
 
         function carregarHistoricoChat() {
             if(historicoChat.length === 0) {
-                listaMsg.innerHTML = `<div class="bg-white dark:bg-gray-800 p-4 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 dark:border-gray-700 max-w-[90%] fade-in">A Paz do Senhor! Sou o seu Assistente e Mentor Teológico. Estou pronto para auxiliar no entendimento, interpretação e aplicação das Escrituras.</div>`;
+                listaMsg.innerHTML = `<div class="bg-white dark:bg-gray-800 p-4 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 dark:border-gray-700 max-w-[90%] fade-in">A Paz do Senhor! Sou o seu Assistente e Mentor Teológico. A nossa conversa e seus estudos serão salvos aqui. Como posso te auxiliar na Palavra hoje?</div>`;
                 return;
             }
             listaMsg.innerHTML = '';
@@ -522,12 +488,12 @@ Aplicar o Protocolo de Hermenêutica e Ensino Bíblico: Adote a ortodoxia Neo Te
             inputMsg.value = '';
 
             const idLoader = 'load-' + Date.now();
-            listaMsg.innerHTML += `<div id="${idLoader}" class="flex justify-start mb-4 fade-in"><div class="bg-gray-100 dark:bg-gray-800 text-gray-500 italic p-3 rounded-2xl rounded-tl-none text-sm animate-pulse">Consultando as Escrituras...</div></div>`;
+            listaMsg.innerHTML += `<div id="${idLoader}" class="flex justify-start mb-4 fade-in"><div class="bg-gray-100 dark:bg-gray-800 text-gray-500 italic p-3 rounded-2xl rounded-tl-none text-sm animate-pulse">Consultando a Palavra...</div></div>`;
             rolarChatParaBaixo();
 
             let historicoRecenteFormatado = "";
             const ultimas = historicoChat.slice(-5, -1);
-            ultimas.forEach(m => { historicoRecenteFormatado += `${m.role === 'user' ? 'Usuário' : 'Mentor'}: ${m.texto}\n`; });
+            ultimas.forEach(m => { historicoRecenteFormatado += `${m.role === 'user' ? 'Estudante' : 'Mentor'}: ${m.texto}\n`; });
 
             const urlEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${chaveApi}`;
             
@@ -536,7 +502,7 @@ Aplicar o Protocolo de Hermenêutica e Ensino Bíblico: Adote a ortodoxia Neo Te
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        contents: [{ parts: [{ text: `Instrução base: ${instrucaoDeSistema}\n\nHistórico recente da conversa:\n${historicoRecenteFormatado}\n\nNova Pergunta do Usuário: ${pergunta}` }] }]
+                        contents: [{ parts: [{ text: `Instruções de Sistema:\n${instrucaoSistemaTeologico}\n\nHistórico recente da conversa:\n${historicoRecenteFormatado}\n\nNova Pergunta do Estudante: ${pergunta}` }] }]
                     })
                 });
                 
