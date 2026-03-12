@@ -8,24 +8,24 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Lora:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
-        .texto-biblia { font-family: 'Lora', serif; line-height: 1.85; }
-        .gaveta { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); transform: translateY(100%); }
-        .gaveta.aberta { transform: translateY(0); }
-        .modal { transition: opacity 0.2s; opacity: 0; pointer-events: none; }
-        .modal.aberto { opacity: 1; pointer-events: auto; }
+        .texto-biblia { font-family: 'Lora', serif; line-height: 1.8; }
+        .altura-dinamica { height: 100dvh; }
         .scroll-suave::-webkit-scrollbar { width: 4px; }
         .scroll-suave::-webkit-scrollbar-thumb { background: #818cf8; border-radius: 4px; }
-        .altura-dinamica { height: 100dvh; }
         
-        /* Efeito de Clique no Versículo */
-        .versiculo-box { transition: background-color 0.2s, transform 0.1s; cursor: pointer; border-radius: 0.5rem; padding: 0.25rem 0.5rem; margin-left: -0.5rem; }
-        .versiculo-box:active { transform: scale(0.98); background-color: rgba(99, 102, 241, 0.1); }
-        .versiculo-marcado { background-color: #fef08a !important; color: #854d0e !important; }
-        .dark .versiculo-marcado { background-color: rgba(161, 98, 7, 0.4) !important; color: #fde047 !important; }
-
-        /* Animação do Bottom Sheet (Menu do Versículo) */
-        .bottom-sheet { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); transform: translateY(100%); }
-        .modal.aberto .bottom-sheet { transform: translateY(0); }
+        /* Animações UI Premium */
+        .gaveta { transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1); transform: translateY(100%); }
+        .gaveta.aberta { transform: translateY(0); }
+        .modal-fade { transition: opacity 0.2s ease-out, transform 0.2s ease-out; opacity: 0; pointer-events: none; transform: scale(0.98); }
+        .modal-fade.aberto { opacity: 1; pointer-events: auto; transform: scale(1); }
+        
+        /* Versículos e Marcações */
+        .versiculo-box { transition: background-color 0.2s; border-radius: 0.75rem; padding: 0.5rem; margin: -0.5rem; margin-bottom: 0.75rem; cursor: pointer; }
+        .versiculo-box:active { background-color: rgba(99, 102, 241, 0.1); }
+        .marcado { background-color: #fef08a !important; }
+        .dark .marcado { background-color: rgba(133, 77, 14, 0.5) !important; color: #fde047; }
+        .highlight-temp { animation: piscar 2s ease-out; }
+        @keyframes piscar { 0%, 100% { background-color: transparent; } 50% { background-color: rgba(99, 102, 241, 0.2); } }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-900 transition-colors duration-300 dark:bg-gray-900 dark:text-gray-100">
@@ -33,11 +33,11 @@
     <header class="fixed top-0 left-0 right-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 z-30 p-4 shadow-sm">
         <div class="max-w-md mx-auto">
             <div class="flex justify-between items-center mb-3">
-                <h1 class="text-xl font-extrabold text-indigo-700 dark:text-indigo-400 tracking-tight">Bíblia ARC</h1>
+                <h1 class="text-xl font-extrabold text-indigo-700 dark:text-indigo-400 tracking-tight flex items-center gap-2">ARC <span class="text-xs font-normal text-gray-400">Edição de Estudo</span></h1>
                 <div class="flex items-center gap-2">
-                    <button onclick="abrirModalBusca()" class="p-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-300 rounded-full text-lg shadow-sm active:scale-95 transition-transform" title="Buscar">🔍</button>
-                    <button onclick="abrirModalConfig()" class="p-2 bg-gray-100 dark:bg-gray-800 rounded-full text-lg shadow-sm active:scale-95 transition-transform" title="Configurações">⚙️</button>
-                    <button id="btnTema" class="p-2 bg-gray-100 dark:bg-gray-800 rounded-full text-lg shadow-sm active:scale-95 transition-transform">🌓</button>
+                    <button onclick="abrirBusca()" class="p-2 bg-gray-100 dark:bg-gray-800 rounded-full shadow-sm active:scale-95 transition-transform text-lg" title="Buscar">🔍</button>
+                    <button onclick="abrirModalConfig()" class="p-2 bg-gray-100 dark:bg-gray-800 rounded-full text-sm font-medium shadow-sm active:scale-95 transition-transform" title="Configurar">⚙️</button>
+                    <button id="btnTema" class="p-2 bg-gray-100 dark:bg-gray-800 rounded-full shadow-sm active:scale-95 transition-transform">🌓</button>
                 </div>
             </div>
             <div class="flex gap-2">
@@ -47,52 +47,50 @@
         </div>
     </header>
 
-    <main class="pt-32 pb-24 px-4 max-w-md mx-auto min-h-screen">
-        <div id="areaLeitura" class="texto-biblia text-xl pb-10">
+    <main class="pt-32 pb-24 px-5 max-w-md mx-auto min-h-screen">
+        <div id="areaLeitura" class="texto-biblia text-xl">
             <div class="flex flex-col items-center justify-center mt-20 text-indigo-600">
-                <svg class="w-12 h-12 mb-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                <p class="font-sans font-bold text-lg animate-pulse">Baixando Escrituras...</p>
+                <svg class="w-10 h-10 mb-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                <p class="font-sans font-bold text-base animate-pulse">Sincronizando as Escrituras...</p>
             </div>
         </div>
     </main>
 
     <nav class="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 p-3 z-20 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.05)]">
         <div class="max-w-md mx-auto grid grid-cols-4 gap-2">
-            <button id="btnAnterior" class="bg-gray-100 dark:bg-gray-800 p-3 rounded-xl font-bold active:scale-95 transition-transform text-lg">←</button>
+            <button id="btnAnterior" class="bg-gray-100 dark:bg-gray-800 p-3 rounded-xl font-bold active:scale-95 transition-transform flex items-center justify-center text-lg">←</button>
             <button onclick="abrirChat()" class="col-span-2 bg-indigo-600 text-white shadow-lg p-3 rounded-xl font-bold flex items-center justify-center gap-2 active:scale-95 transition-transform">
-                <span class="text-xl">✨</span> Assistente IA
+                <span class="text-xl">✨</span> Mestre IA
             </button>
-            <button id="btnProximo" class="bg-gray-100 dark:bg-gray-800 p-3 rounded-xl font-bold active:scale-95 transition-transform text-lg">→</button>
+            <button id="btnProximo" class="bg-gray-100 dark:bg-gray-800 p-3 rounded-xl font-bold active:scale-95 transition-transform flex items-center justify-center text-lg">→</button>
         </div>
     </nav>
 
-    <div id="modalAcaoVersiculo" class="fixed inset-0 bg-black/50 z-50 flex flex-col justify-end modal" onclick="fecharAcaoVersiculo(event)">
-        <div class="bg-white dark:bg-gray-800 rounded-t-3xl p-6 pb-10 bottom-sheet max-w-md mx-auto w-full" onclick="event.stopPropagation()">
-            <div class="w-12 h-1.5 bg-gray-300 dark:bg-gray-600 rounded-full mx-auto mb-5"></div>
-            <p id="textoVersiculoAcao" class="texto-biblia text-lg text-gray-800 dark:text-gray-200 mb-6 line-clamp-3 italic"></p>
-            <div class="grid grid-cols-1 gap-3 font-sans">
-                <button onclick="explicarVersiculoIA()" class="flex items-center justify-center gap-3 p-4 bg-indigo-600 text-white rounded-2xl font-bold active:scale-95 transition-transform shadow-md">
-                    <span class="text-xl">✨</span> Explicar com a IA
-                </button>
-                <button onclick="marcarVersiculo()" id="btnMarcar" class="flex items-center justify-center gap-3 p-4 bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-400 rounded-2xl font-bold active:scale-95 transition-transform">
-                    🖍️ Marcar/Desmarcar
-                </button>
-                <button onclick="copiarVersiculo()" class="flex items-center justify-center gap-3 p-4 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-2xl font-bold active:scale-95 transition-transform">
-                    📋 Copiar Texto
-                </button>
-            </div>
+    <div id="modalBusca" class="fixed inset-0 z-50 bg-white dark:bg-gray-900 modal-fade flex flex-col altura-dinamica">
+        <div class="p-4 border-b border-gray-200 dark:border-gray-800 flex gap-3 items-center bg-gray-50 dark:bg-gray-900 pt-5">
+            <button onclick="fecharBusca()" class="text-gray-500 text-2xl font-bold px-2 active:scale-90">&times;</button>
+            <input type="text" id="inputBusca" placeholder="Pesquisar versículo ou palavra..." class="flex-1 p-3 rounded-xl bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 outline-none focus:ring-2 focus:ring-indigo-500 font-sans text-sm">
         </div>
+        <div class="flex-1 overflow-y-auto p-4 scroll-suave" id="areaResultadosBusca">
+            </div>
     </div>
 
-    <div id="modalBusca" class="fixed inset-0 bg-white dark:bg-gray-900 z-50 flex flex-col modal transform transition-transform">
-        <div class="p-4 border-b border-gray-200 dark:border-gray-800 flex items-center gap-3 bg-gray-50 dark:bg-gray-900 pt-6">
-            <button onclick="fecharModalBusca()" class="p-2 text-xl font-bold text-gray-500">←</button>
-            <input type="text" id="inputBusca" placeholder="Ex: Pentecostes, Graça, Sangue..." class="flex-1 p-3 rounded-xl bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 outline-none focus:ring-2 focus:ring-indigo-500 font-sans shadow-inner">
-            <button onclick="executarBusca()" class="bg-indigo-600 text-white p-3 rounded-xl font-bold shadow-md">Buscar</button>
-        </div>
-        <div class="flex-1 overflow-y-auto p-4 scroll-suave bg-gray-50 dark:bg-gray-900">
-            <p id="statusBusca" class="text-center text-sm text-gray-500 mt-10 font-sans">Digite uma palavra e clique em buscar.</p>
-            <div id="listaResultados" class="space-y-4"></div>
+    <div id="sheetAcoes" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm transition-opacity opacity-0 pointer-events-none flex flex-col justify-end">
+        <div id="sheetConteudo" class="bg-white dark:bg-gray-800 rounded-t-3xl p-6 w-full max-w-md mx-auto transform translate-y-full transition-transform duration-300 shadow-2xl">
+            <div class="w-12 h-1.5 bg-gray-300 dark:bg-gray-600 rounded-full mx-auto mb-5"></div>
+            <p id="textoVersiculoSelecionado" class="texto-biblia text-lg mb-5 text-gray-800 dark:text-gray-200 border-l-4 border-indigo-500 pl-3 line-clamp-3"></p>
+            <div class="grid grid-cols-1 gap-3 font-sans">
+                <button onclick="acaoCopiar()" class="p-4 rounded-xl bg-gray-100 dark:bg-gray-700 flex items-center gap-3 font-bold active:scale-95 transition-transform text-gray-800 dark:text-gray-100">
+                    <span class="text-xl">📋</span> Copiar Texto
+                </button>
+                <button onclick="acaoMarcar()" class="p-4 rounded-xl bg-yellow-100 dark:bg-yellow-900/40 flex items-center gap-3 font-bold active:scale-95 transition-transform text-yellow-800 dark:text-yellow-500">
+                    <span class="text-xl">🖍️</span> <span id="lblMarcar">Destacar Versículo</span>
+                </button>
+                <button onclick="acaoExplicarIA()" class="p-4 rounded-xl bg-indigo-600 flex items-center gap-3 font-bold active:scale-95 transition-transform text-white shadow-md">
+                    <span class="text-xl">✨</span> Explicar com a Inteligência
+                </button>
+                <button onclick="fecharSheet()" class="mt-2 p-3 text-gray-500 font-bold active:scale-95">Cancelar</button>
+            </div>
         </div>
     </div>
 
@@ -100,10 +98,10 @@
         <div class="p-4 bg-indigo-700 text-white flex justify-between items-center shadow-md pt-5">
             <div>
                 <h3 class="font-bold text-lg leading-tight">Mestre Teológico</h3>
-                <p class="text-[11px] opacity-90 font-medium tracking-wider">Com memória de conversa</p>
+                <p class="text-[11px] opacity-90 font-medium tracking-wider">Histórico salvo automaticamente</p>
             </div>
             <div class="flex gap-2">
-                <button onclick="limparHistoricoChat()" class="bg-indigo-800/50 hover:bg-indigo-800 p-2 rounded-full w-10 h-10 flex items-center justify-center font-bold text-sm" title="Limpar Memória">🗑️</button>
+                <button onclick="limparChat()" class="bg-indigo-800/50 hover:bg-indigo-800 p-2 rounded-full w-10 h-10 flex items-center justify-center font-bold text-sm" title="Limpar Conversa">🗑️</button>
                 <button onclick="fecharChat()" class="bg-indigo-800/50 hover:bg-indigo-800 p-2 rounded-full w-10 h-10 flex items-center justify-center font-bold text-xl">&times;</button>
             </div>
         </div>
@@ -112,74 +110,73 @@
             </div>
 
         <div class="p-3 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 flex gap-2 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] pb-5">
-            <input id="campoPergunta" type="text" placeholder="Pergunte ao assistente..." class="flex-1 p-3 rounded-xl bg-gray-100 dark:bg-gray-700 border border-transparent focus:border-indigo-500 outline-none text-sm font-sans">
+            <input id="campoPergunta" type="text" placeholder="Pergunte algo ao mestre..." class="flex-1 p-3 rounded-xl bg-gray-100 dark:bg-gray-700 border border-transparent focus:border-indigo-500 outline-none text-sm font-sans">
             <button id="btnEnviarMsg" class="bg-indigo-600 text-white px-5 rounded-xl font-bold active:scale-95 transition-transform shadow-md">Enviar</button>
         </div>
     </div>
 
-    <div id="modalConfig" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 modal">
-        <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 w-full max-w-md shadow-2xl transform transition-all max-h-[90vh] overflow-y-auto scroll-suave">
+    <div id="modalConfig" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 modal-fade">
+        <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto scroll-suave">
             <div class="flex items-center justify-between mb-4">
-                <div class="flex items-center gap-3">
-                    <span class="text-2xl">⚙️</span>
-                    <h3 class="font-bold text-xl">Configurações</h3>
-                </div>
-                <button onclick="fecharModalConfig()" class="text-gray-500 font-bold text-2xl">&times;</button>
+                <h3 class="font-bold text-xl flex items-center gap-2"><span class="text-2xl">⚙️</span> Ajustes</h3>
+                <button onclick="fecharModalConfig()" class="text-gray-500 font-bold text-2xl active:scale-90">&times;</button>
             </div>
-            
             <div class="mb-5">
                 <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Chave da API (Gemini)</label>
-                <input type="password" id="inputChaveApi" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white dark:bg-gray-700 outline-none focus:ring-2 focus:ring-indigo-500 font-mono text-sm shadow-inner" placeholder="Cole a API Key...">
+                <input type="text" id="inputChaveApi" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white dark:bg-gray-700 outline-none focus:ring-2 focus:ring-indigo-500 font-mono text-sm shadow-inner">
             </div>
-
             <div class="mb-6">
-                <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Perfil Doutrinário da IA</label>
-                <p class="text-[11px] text-gray-500 dark:text-gray-400 mb-2 leading-tight">Defina a regra de fé para todas as respostas.</p>
-                <textarea id="inputPerfil" rows="5" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white dark:bg-gray-700 outline-none focus:ring-2 focus:ring-indigo-500 text-sm shadow-inner resize-none"></textarea>
+                <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Perfil de Instrução Doutrinária</label>
+                <textarea id="inputPerfil" rows="6" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white dark:bg-gray-700 outline-none focus:ring-2 focus:ring-indigo-500 text-sm shadow-inner resize-none"></textarea>
             </div>
-
-            <button onclick="salvarConfig()" class="w-full p-4 rounded-xl font-bold bg-indigo-600 text-white shadow-md active:scale-95 transition-transform">Salvar Dados</button>
+            <button onclick="salvarConfig()" class="w-full p-4 rounded-xl font-bold bg-indigo-600 text-white shadow-md active:scale-95 transition-transform">Salvar Configurações</button>
         </div>
     </div>
 
     <script>
-        // --- ESTADO GLOBAL E MEMÓRIA LOCAL ---
+        // ESTADO GLOBAL DA APLICAÇÃO
         let bibliaCompleta = [];
-        
-        // Memória de Leitura (Carrega de onde parou)
         let indexLivro = parseInt(localStorage.getItem('memoria_livro')) || 0;
         let indexCapitulo = parseInt(localStorage.getItem('memoria_capitulo')) || 0;
+        let versiculosMarcados = JSON.parse(localStorage.getItem('memoria_marcacoes') || '{}');
         
-        // Memória de Marcações e Histórico
-        let marcacoes = JSON.parse(localStorage.getItem('marcacoes_arc')) || {};
-        let historicoChat = JSON.parse(localStorage.getItem('historico_chat_arc')) || [];
-        
-        // Variáveis temporárias para a ação do versículo
-        let versaoAcaoAtual = { l: 0, c: 0, v: 0, texto: '', ref: '' };
+        let versiculoAtivoParaAcao = null; // Guarda qual versículo foi clicado {livro, cap, vers, texto}
 
-        const perfilPadrao = "Atue como um exímio teólogo. Sempre que o assunto for Bíblia Sagrada, regra de fé ou prática cristã, adote a ortodoxia Neo Testamentária, a ortodoxia do Protestantismo Histórico e a Ortodoxia Pentecostal Clássica das Assembleias de Deus. Responda de forma profunda e pastoral.";
+        const perfilPadrao = "Atue como um exímio teólogo. Sempre que o assunto for Bíblia Sagrada, regra de fé ou prática cristã, adote a ortodoxia Neo Testamentária, a ortodoxia do Protestantismo Histórico e a Ortodoxia Pentecostal Clássica das Assembleias de Deus. Seja claro, profundo e pastoral em suas respostas.";
 
-        // --- INICIALIZAÇÃO DA BÍBLIA ---
-        async function iniciarBiblia() {
+        // 1. INICIALIZAÇÃO E LEITURA (COM MEMÓRIA)
+        async function iniciarApp() {
+            carregarChatHistorico(); // Carrega a memória do chat no fundo
+            aplicarTemaSalvo();
+            
             const urlArc = 'https://raw.githubusercontent.com/maatheusgois/bible/main/versions/pt-br/arc.json';
             try {
                 const resposta = await fetch(urlArc);
-                if (!resposta.ok) throw new Error("Falha");
+                if (!resposta.ok) throw new Error("Falha no download");
                 bibliaCompleta = await resposta.json();
                 
-                // Correção caso a memória aponte para um livro/capítulo que não existe
+                // Valida se a memória não estourou os limites do json atual
                 if(indexLivro >= bibliaCompleta.length) indexLivro = 0;
                 if(indexCapitulo >= bibliaCompleta[indexLivro].chapters.length) indexCapitulo = 0;
 
                 preencherLivros();
                 exibirCapitulo();
-                renderizarHistoricoChat();
+                renderizarHistoricoBusca();
             } catch (erro) {
-                document.getElementById('areaLeitura').innerHTML = `<p class="text-center text-red-500 font-bold mt-20">Erro de conexão. Verifique sua internet.</p>`;
+                document.getElementById('areaLeitura').innerHTML = `
+                    <div class="text-center mt-20 p-6 bg-red-50 dark:bg-red-900/20 rounded-2xl">
+                        <span class="text-4xl mb-2 block">⚠️</span>
+                        <h2 class="text-red-600 font-bold text-lg mb-2">Erro de Conexão</h2>
+                        <p class="text-sm">Não foi possível carregar a Bíblia da internet.</p>
+                    </div>`;
             }
         }
 
-        // --- FUNÇÕES DE INTERFACE BÍBLIA ---
+        function salvarPosicaoLeitura() {
+            localStorage.setItem('memoria_livro', indexLivro);
+            localStorage.setItem('memoria_capitulo', indexCapitulo);
+        }
+
         function preencherLivros() {
             const selectLivro = document.getElementById('selLivro');
             selectLivro.innerHTML = bibliaCompleta.map((livro, i) => `<option value="${i}">${livro.name}</option>`).join('');
@@ -191,48 +188,45 @@
             const selectCapitulo = document.getElementById('selCapitulo');
             const totalCapitulos = bibliaCompleta[indexLivro].chapters.length;
             let htmlOpcoes = '';
-            for(let i = 0; i < totalCapitulos; i++) htmlOpcoes += `<option value="${i}">Capítulo ${i + 1}</option>`;
+            for(let i = 0; i < totalCapitulos; i++) { htmlOpcoes += `<option value="${i}">Capítulo ${i + 1}</option>`; }
             selectCapitulo.innerHTML = htmlOpcoes;
             selectCapitulo.value = indexCapitulo;
         }
 
-        function salvarMemoriaLeitura() {
-            localStorage.setItem('memoria_livro', indexLivro);
-            localStorage.setItem('memoria_capitulo', indexCapitulo);
-        }
-
-        function exibirCapitulo() {
+        function exibirCapitulo(marcarVersiculoIndex = -1) {
             if(bibliaCompleta.length === 0) return;
-            salvarMemoriaLeitura();
-
             const livroAtual = bibliaCompleta[indexLivro];
             const versiculos = livroAtual.chapters[indexCapitulo];
             
-            let htmlLeitura = `<h2 class="text-3xl font-extrabold mb-8 text-indigo-900 dark:text-indigo-300 text-center mt-4">${livroAtual.name} ${indexCapitulo + 1}</h2>`;
+            let htmlLeitura = `<h2 class="text-3xl font-extrabold mb-8 text-indigo-900 dark:text-indigo-300 text-center">${livroAtual.name} ${indexCapitulo + 1}</h2>`;
             
             versiculos.forEach((texto, i) => {
-                const chaveVersiculo = `${indexLivro}-${indexCapitulo}-${i}`;
-                const classMarcado = marcacoes[chaveVersiculo] ? 'versiculo-marcado' : '';
+                const chaveMarcacao = `${indexLivro}-${indexCapitulo}-${i}`;
+                const classMarcado = versiculosMarcados[chaveMarcacao] ? 'marcado' : '';
+                const classAnimacao = (i === marcarVersiculoIndex) ? 'highlight-temp' : '';
                 
-                // O Versículo agora é clicável (Tap-to-Action)
+                // Escape de aspas para injetar no onclick com segurança
+                const textoSafe = texto.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                
                 htmlLeitura += `
-                <div id="v-${chaveVersiculo}" class="flex gap-4 mb-2 items-start versiculo-box ${classMarcado}" onclick="abrirAcaoVersiculo(${indexLivro}, ${indexCapitulo}, ${i}, \`${texto.replace(/"/g, '&quot;')}\`, '${livroAtual.name}')">
-                    <span class="text-[11px] font-black text-indigo-500 dark:text-indigo-400 mt-1.5 w-4 shrink-0">${i + 1}</span>
-                    <p class="flex-1 text-gray-800 dark:text-gray-200 leading-relaxed pointer-events-none">${texto}</p>
+                <div id="v-${i}" class="versiculo-box flex gap-4 items-start ${classMarcado} ${classAnimacao}" onclick="abrirAcoesVersiculo(${indexLivro}, ${indexCapitulo}, ${i}, '${textoSafe}')">
+                    <span class="text-[11px] font-black bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 px-2 py-1 rounded shadow-sm mt-1.5 min-w-[1.8rem] text-center">${i + 1}</span>
+                    <p class="flex-1 text-gray-800 dark:text-gray-200 leading-relaxed">${texto}</p>
                 </div>`;
             });
-            
             document.getElementById('areaLeitura').innerHTML = htmlLeitura;
-            window.scrollTo({ top: 0, behavior: 'instant' });
+            
+            if(marcarVersiculoIndex !== -1) {
+                setTimeout(() => { document.getElementById(`v-${marcarVersiculoIndex}`).scrollIntoView({behavior: 'smooth', block: 'center'}); }, 100);
+            } else {
+                window.scrollTo({ top: 0, behavior: 'auto' });
+            }
+            salvarPosicaoLeitura();
         }
 
         // Navegação
-        document.getElementById('selLivro').addEventListener('change', (e) => {
-            indexLivro = parseInt(e.target.value); indexCapitulo = 0; preencherCapitulos(); exibirCapitulo();
-        });
-        document.getElementById('selCapitulo').addEventListener('change', (e) => {
-            indexCapitulo = parseInt(e.target.value); exibirCapitulo();
-        });
+        document.getElementById('selLivro').addEventListener('change', (e) => { indexLivro = parseInt(e.target.value); indexCapitulo = 0; preencherCapitulos(); exibirCapitulo(); });
+        document.getElementById('selCapitulo').addEventListener('change', (e) => { indexCapitulo = parseInt(e.target.value); exibirCapitulo(); });
         document.getElementById('btnProximo').addEventListener('click', () => {
             if (indexCapitulo < bibliaCompleta[indexLivro].chapters.length - 1) { indexCapitulo++; } 
             else if (indexLivro < bibliaCompleta.length - 1) { indexLivro++; indexCapitulo = 0; }
@@ -244,158 +238,209 @@
             document.getElementById('selLivro').value = indexLivro; preencherCapitulos(); exibirCapitulo();
         });
 
-        // --- SISTEMA DE BUSCA (LUPA) ---
+        // 2. INTERAÇÃO DO VERSÍCULO (TAP-TO-ACTION)
+        const sheetAcoes = document.getElementById('sheetAcoes');
+        const sheetConteudo = document.getElementById('sheetConteudo');
+
+        function abrirAcoesVersiculo(l, c, v, texto) {
+            versiculoAtivoParaAcao = { livro: l, cap: c, vers: v, texto: texto };
+            const chave = `${l}-${c}-${v}`;
+            
+            document.getElementById('textoVersiculoSelecionado').innerText = `${bibliaCompleta[l].name} ${c+1}:${v+1} - "${texto}"`;
+            document.getElementById('lblMarcar').innerText = versiculosMarcados[chave] ? "Remover Destaque" : "Destacar Versículo";
+            
+            sheetAcoes.classList.remove('opacity-0', 'pointer-events-none');
+            setTimeout(() => { sheetConteudo.classList.remove('translate-y-full'); }, 10);
+        }
+
+        function fecharSheet() {
+            sheetConteudo.classList.add('translate-y-full');
+            setTimeout(() => { sheetAcoes.classList.add('opacity-0', 'pointer-events-none'); }, 300);
+        }
+
+        function acaoCopiar() {
+            const v = versiculoAtivoParaAcao;
+            const textoFinal = `"${v.texto}" - ${bibliaCompleta[v.livro].name} ${v.cap+1}:${v.vers+1} (ARC)`;
+            navigator.clipboard.writeText(textoFinal);
+            fecharSheet();
+            alert("Versículo copiado para a área de transferência!");
+        }
+
+        function acaoMarcar() {
+            const v = versiculoAtivoParaAcao;
+            const chave = `${v.livro}-${v.cap}-${v.vers}`;
+            if(versiculosMarcados[chave]) { delete versiculosMarcados[chave]; } 
+            else { versiculosMarcados[chave] = true; }
+            
+            localStorage.setItem('memoria_marcacoes', JSON.stringify(versiculosMarcados));
+            exibirCapitulo(); // re-renderiza para mostrar a cor
+            fecharSheet();
+        }
+
+        function acaoExplicarIA() {
+            const v = versiculoAtivoParaAcao;
+            const textoPrompt = `Por favor, me explique detalhadamente este versículo: "${v.texto}" (${bibliaCompleta[v.livro].name} ${v.cap+1}:${v.vers+1})`;
+            fecharSheet();
+            abrirChat();
+            
+            // Coloca o texto na caixa e simula o clique de enviar
+            document.getElementById('campoPergunta').value = textoPrompt;
+            setTimeout(() => { document.getElementById('btnEnviarMsg').click(); }, 300);
+        }
+
+        // 3. MOTOR DE BUSCA COM HISTÓRICO
         const modalBusca = document.getElementById('modalBusca');
-        function abrirModalBusca() { modalBusca.classList.add('aberto'); setTimeout(() => document.getElementById('inputBusca').focus(), 100); }
-        function fecharModalBusca() { modalBusca.classList.remove('aberto'); }
+        const inputBusca = document.getElementById('inputBusca');
+        const areaResultadosBusca = document.getElementById('areaResultadosBusca');
+        let historicoDeBusca = JSON.parse(localStorage.getItem('memoria_buscas') || '[]');
 
-        // Remove acentos para a busca não falhar em "graca" vs "graça"
-        const normalizar = (str) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+        function abrirBusca() {
+            modalBusca.classList.add('aberto');
+            inputBusca.value = '';
+            renderizarHistoricoBusca();
+            inputBusca.focus();
+        }
 
-        function executarBusca() {
-            const input = document.getElementById('inputBusca').value;
-            const status = document.getElementById('statusBusca');
-            const lista = document.getElementById('listaResultados');
-            
-            if(input.trim().length < 3) {
-                status.innerText = "Digite pelo menos 3 letras para buscar.";
-                lista.innerHTML = ""; return;
+        function fecharBusca() { modalBusca.classList.remove('aberto'); }
+
+        function salvarHistoricoBusca(termo) {
+            if(!termo) return;
+            historicoDeBusca = historicoDeBusca.filter(t => t.toLowerCase() !== termo.toLowerCase()); // Remove duplicado
+            historicoDeBusca.unshift(termo); // Adiciona no topo
+            if(historicoDeBusca.length > 10) historicoDeBusca.pop(); // Limita a 10
+            localStorage.setItem('memoria_buscas', JSON.stringify(historicoDeBusca));
+        }
+
+        function renderizarHistoricoBusca() {
+            if(historicoDeBusca.length === 0) {
+                areaResultadosBusca.innerHTML = `<p class="text-center text-gray-500 mt-10 text-sm">Nenhuma busca recente.</p>`;
+                return;
             }
+            let html = `<h4 class="font-bold text-gray-500 text-xs uppercase tracking-wider mb-4">Buscas Recentes</h4><div class="flex flex-wrap gap-2">`;
+            historicoDeBusca.forEach(termo => {
+                html += `<button onclick="executarBuscaRapida('${termo}')" class="bg-gray-100 dark:bg-gray-800 text-indigo-700 dark:text-indigo-300 px-4 py-2 rounded-full text-sm font-semibold active:scale-95 border border-gray-200 dark:border-gray-700 shadow-sm">🔍 ${termo}</button>`;
+            });
+            html += `</div>`;
+            areaResultadosBusca.innerHTML = html;
+        }
 
-            status.innerText = "Buscando em toda a Bíblia...";
-            lista.innerHTML = "";
-            const termo = normalizar(input);
+        function executarBuscaRapida(termo) {
+            inputBusca.value = termo;
+            acionarBusca(termo);
+        }
+
+        function acionarBusca(termoBusca) {
+            if(termoBusca.length < 3) return;
+            salvarHistoricoBusca(termoBusca);
             
-            // Pausa milisegundos pra interface atualizar o "Buscando..."
+            areaResultadosBusca.innerHTML = `<div class="text-center mt-10"><div class="animate-spin text-2xl">⏳</div></div>`;
+            
+            // Pequeno delay para a UI respirar antes de processar 31k versículos
             setTimeout(() => {
-                let resultados = [];
-                bibliaCompleta.forEach((livro, l) => {
-                    livro.chapters.forEach((capitulo, c) => {
-                        capitulo.forEach((versiculo, v) => {
-                            if(normalizar(versiculo).includes(termo)) {
-                                resultados.push({ l, c, v, texto: versiculo, ref: `${livro.name} ${c+1}:${v+1}` });
+                const termoLower = termoBusca.toLowerCase();
+                const resultados = [];
+                
+                // Varredura de alta performance
+                for(let l = 0; l < bibliaCompleta.length; l++) {
+                    const livro = bibliaCompleta[l];
+                    for(let c = 0; c < livro.chapters.length; c++) {
+                        const capitulo = livro.chapters[c];
+                        for(let v = 0; v < capitulo.length; v++) {
+                            if(capitulo[v].toLowerCase().includes(termoLower)) {
+                                resultados.push({ livroIdx: l, capIdx: c, versIdx: v, texto: capitulo[v], nomeLivro: livro.name });
+                                if(resultados.length >= 100) break; // Limita para não travar o celular
                             }
-                        });
-                    });
-                });
+                        }
+                        if(resultados.length >= 100) break;
+                    }
+                    if(resultados.length >= 100) break;
+                }
 
                 if(resultados.length === 0) {
-                    status.innerText = `Nenhum resultado encontrado para "${input}".`;
-                } else {
-                    status.innerText = `${resultados.length} versículos encontrados.`;
-                    lista.innerHTML = resultados.map(r => `
-                        <div onclick="irParaResultado(${r.l}, ${r.c}, ${r.v})" class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 active:scale-95 transition-transform cursor-pointer">
-                            <h4 class="font-bold text-indigo-600 dark:text-indigo-400 text-sm mb-1">${r.ref}</h4>
-                            <p class="texto-biblia text-gray-800 dark:text-gray-200 text-sm line-clamp-2">${r.texto.replace(new RegExp(input, 'gi'), match => `<span class="bg-yellow-200 dark:bg-yellow-800 text-black dark:text-white px-1 rounded">${match}</span>`)}</p>
-                        </div>
-                    `).join('');
+                    areaResultadosBusca.innerHTML = `<p class="text-center text-gray-500 mt-10">Nenhum resultado encontrado para "${termoBusca}".</p>`;
+                    return;
                 }
+
+                let html = `<h4 class="font-bold text-gray-500 text-xs uppercase tracking-wider mb-4">${resultados.length}${resultados.length >= 100 ? '+' : ''} Resultados</h4><div class="space-y-3">`;
+                resultados.forEach(res => {
+                    // Destaca o termo no texto
+                    const regex = new RegExp(`(${termoBusca})`, 'gi');
+                    const textoDestacado = res.texto.replace(regex, '<span class="bg-yellow-200 dark:bg-yellow-900 text-black dark:text-white">$1</span>');
+                    
+                    html += `
+                    <div onclick="irParaVersiculo(${res.livroIdx}, ${res.capIdx}, ${res.versIdx})" class="p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 active:scale-[0.98] transition-transform cursor-pointer">
+                        <span class="text-xs font-bold text-indigo-600 dark:text-indigo-400 block mb-1">${res.nomeLivro} ${res.capIdx+1}:${res.versIdx+1}</span>
+                        <p class="text-gray-800 dark:text-gray-200 text-sm texto-biblia">${textoDestacado}</p>
+                    </div>`;
+                });
+                html += `</div>`;
+                areaResultadosBusca.innerHTML = html;
             }, 50);
         }
 
-        function irParaResultado(l, c, v) {
-            indexLivro = l; indexCapitulo = c;
-            document.getElementById('selLivro').value = l; preencherCapitulos();
-            exibirCapitulo(); fecharModalBusca();
-            
-            // Scroll suave até o versículo
-            setTimeout(() => {
-                const elemento = document.getElementById(`v-${l}-${c}-${v}`);
-                if(elemento) {
-                    elemento.scrollIntoView({behavior: "smooth", block: "center"});
-                    // Efeito piscar
-                    elemento.style.transition = "background-color 0.5s";
-                    elemento.style.backgroundColor = "rgba(99, 102, 241, 0.3)";
-                    setTimeout(() => { elemento.style.backgroundColor = ""; }, 1500);
-                }
-            }, 300);
+        // Listener para dar Enter na busca
+        inputBusca.addEventListener('keypress', function(e) {
+            if(e.key === 'Enter') acionarBusca(inputBusca.value.trim());
+        });
+
+        function irParaVersiculo(l, c, v) {
+            fecharBusca();
+            indexLivro = l;
+            indexCapitulo = c;
+            document.getElementById('selLivro').value = l;
+            preencherCapitulos();
+            exibirCapitulo(v); // Chama com o index do versículo para fazer a animação de scroll
         }
 
-        // Enter para buscar
-        document.getElementById('inputBusca').addEventListener('keypress', e => { if(e.key === 'Enter') executarBusca(); });
-
-        // --- MENU DO VERSÍCULO (TAP-TO-ACTION) ---
-        const modalAcao = document.getElementById('modalAcaoVersiculo');
-        
-        function abrirAcaoVersiculo(l, c, v, texto, nomeLivro) {
-            versaoAcaoAtual = { l, c, v, texto, ref: `${nomeLivro} ${c+1}:${v+1}` };
-            document.getElementById('textoVersiculoAcao').innerHTML = `<strong class="text-indigo-600 dark:text-indigo-400">${versaoAcaoAtual.ref}</strong> - "${texto}"`;
-            
-            const btnMarcar = document.getElementById('btnMarcar');
-            if(marcacoes[`${l}-${c}-${v}`]) {
-                btnMarcar.innerHTML = "🗑️ Remover Marcação";
-            } else {
-                btnMarcar.innerHTML = "🖍️ Destacar Versículo";
-            }
-            
-            modalAcao.classList.add('aberto');
-        }
-
-        function fecharAcaoVersiculo(e) { if(e) e.preventDefault(); modalAcao.classList.remove('aberto'); }
-
-        function copiarVersiculo() {
-            const textoPronto = `"${versaoAcaoAtual.texto}" (${versaoAcaoAtual.ref} ARC)`;
-            navigator.clipboard.writeText(textoPronto).then(() => {
-                alert("Versículo copiado!");
-                fecharAcaoVersiculo();
-            });
-        }
-
-        function marcarVersiculo() {
-            const chave = `${versaoAcaoAtual.l}-${versaoAcaoAtual.c}-${versaoAcaoAtual.v}`;
-            const elemento = document.getElementById(`v-${chave}`);
-            
-            if(marcacoes[chave]) {
-                delete marcacoes[chave];
-                if(elemento) elemento.classList.remove('versiculo-marcado');
-            } else {
-                marcacoes[chave] = true;
-                if(elemento) elemento.classList.add('versiculo-marcado');
-            }
-            
-            localStorage.setItem('marcacoes_arc', JSON.stringify(marcacoes));
-            fecharAcaoVersiculo();
-        }
-
-        function explicarVersiculoIA() {
-            fecharAcaoVersiculo();
-            abrirChat();
-            const pergunta = `Por favor, explique à luz da doutrina: ${versaoAcaoAtual.ref} - "${versaoAcaoAtual.texto}"`;
-            document.getElementById('campoPergunta').value = pergunta;
-            // Opcional: já enviar direto
-            // setTimeout(() => document.getElementById('btnEnviarMsg').click(), 300);
-        }
-
-        // --- ASSISTENTE COM MEMÓRIA (CHAT) ---
-        const gaveta = document.getElementById('gavetaChat');
+        // 4. CHAT COM MEMÓRIA & CONFIGURAÇÕES
+        let memoriaChat = [];
+        const gavetaChat = document.getElementById('gavetaChat');
         const listaMsg = document.getElementById('listaMensagens');
         const inputMsg = document.getElementById('campoPergunta');
+        
+        function abrirChat() { gavetaChat.classList.add('aberta'); rolarChatParaBaixo(); }
+        function fecharChat() { gavetaChat.classList.remove('aberta'); }
 
-        function abrirChat() { gaveta.classList.add('aberta'); }
-        function fecharChat() { gaveta.classList.remove('aberta'); }
-
-        function formatarTextoIA(texto) { return texto.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); }
-
-        function renderizarHistoricoChat() {
-            listaMsg.innerHTML = `<div class="bg-white dark:bg-gray-800 p-4 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 dark:border-gray-700 max-w-[90%] mb-4">A Paz do Senhor! O nosso histórico está salvo. O que vamos estudar agora?</div>`;
-            
-            historicoChat.forEach(msg => {
-                if(msg.role === 'user') {
-                    listaMsg.innerHTML += `<div class="flex justify-end mb-4"><div class="bg-indigo-100 dark:bg-indigo-900 text-indigo-900 dark:text-indigo-50 p-3 rounded-2xl rounded-tr-none max-w-[90%] shadow-sm font-sans text-sm">${msg.text}</div></div>`;
-                } else {
-                    listaMsg.innerHTML += `<div class="flex justify-start mb-4"><div class="bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 p-4 rounded-2xl rounded-tl-none max-w-[95%] shadow-sm border border-gray-100 dark:border-gray-700 font-sans text-sm">${formatarTextoIA(msg.text)}</div></div>`;
-                }
-            });
-            setTimeout(() => { listaMsg.scrollTop = listaMsg.scrollHeight; }, 50);
-        }
-
-        function limparHistoricoChat() {
-            if(confirm("Deseja apagar a memória da conversa? (A IA esquecerá o contexto anterior)")) {
-                historicoChat = [];
-                localStorage.setItem('historico_chat_arc', JSON.stringify([]));
-                renderizarHistoricoChat();
+        function carregarChatHistorico() {
+            const salvo = localStorage.getItem('memoria_conversa_ia');
+            if(salvo) {
+                memoriaChat = JSON.parse(salvo);
+                listaMsg.innerHTML = '';
+                memoriaChat.forEach(msg => {
+                    if(msg.role === 'ia') renderizarBalaoIA(msg.texto, false);
+                    else renderizarBalaoUsuario(msg.texto, false);
+                });
+            } else {
+                listaMsg.innerHTML = `<div class="bg-white dark:bg-gray-800 p-4 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 dark:border-gray-700 max-w-[90%]">A Paz do Senhor! Sou o seu assistente. O histórico das nossas conversas ficará salvo aqui.</div>`;
             }
         }
+
+        function salvarChatNoStorage() {
+            localStorage.setItem('memoria_conversa_ia', JSON.stringify(memoriaChat));
+        }
+
+        function limparChat() {
+            if(confirm("Tem certeza que deseja apagar todo o histórico da conversa?")) {
+                localStorage.removeItem('memoria_conversa_ia');
+                memoriaChat = [];
+                carregarChatHistorico();
+            }
+        }
+
+        function renderizarBalaoUsuario(texto, salvar = true) {
+            if(salvar) { memoriaChat.push({role: 'user', texto: texto}); salvarChatNoStorage(); }
+            listaMsg.innerHTML += `<div class="flex justify-end mb-4"><div class="bg-indigo-100 dark:bg-indigo-900 text-indigo-900 dark:text-indigo-50 p-3 rounded-2xl rounded-tr-none max-w-[90%] shadow-sm font-sans text-sm">${texto}</div></div>`;
+            rolarChatParaBaixo();
+        }
+
+        function renderizarBalaoIA(texto, salvar = true) {
+            if(salvar) { memoriaChat.push({role: 'ia', texto: texto}); salvarChatNoStorage(); }
+            const textoFormatado = texto.replace(/\n/g, '<br>');
+            listaMsg.innerHTML += `<div class="flex justify-start mb-4"><div class="bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 p-4 rounded-2xl rounded-tl-none max-w-[95%] shadow-sm border border-gray-100 dark:border-gray-700 leading-relaxed">${textoFormatado}</div></div>`;
+            rolarChatParaBaixo();
+        }
+
+        function rolarChatParaBaixo() { setTimeout(() => { listaMsg.scrollTop = listaMsg.scrollHeight; }, 50); }
 
         document.getElementById('btnEnviarMsg').addEventListener('click', async () => {
             const pergunta = inputMsg.value.trim();
@@ -404,31 +449,19 @@
             const chaveApi = localStorage.getItem('chave_secreta_gemini');
             if (!chaveApi) { abrirModalConfig(); return; }
 
-            const instrucaoDeSistema = localStorage.getItem('perfil_ia_gemini') || perfilPadrao;
+            const perfil = localStorage.getItem('perfil_ia_gemini') || perfilPadrao;
 
-            // Salva na memória e renderiza
-            historicoChat.push({role: 'user', text: pergunta});
-            localStorage.setItem('historico_chat_arc', JSON.stringify(historicoChat));
-            renderizarHistoricoChat();
-            
+            renderizarBalaoUsuario(pergunta);
             inputMsg.value = '';
-            const idLoader = 'load-' + Date.now();
-            listaMsg.innerHTML += `<div id="${idLoader}" class="flex justify-start mb-4"><div class="bg-gray-100 dark:bg-gray-800 text-gray-500 italic p-3 rounded-2xl rounded-tl-none text-sm animate-pulse">Meditando...</div></div>`;
-            listaMsg.scrollTop = listaMsg.scrollHeight;
 
-            // PREPARAÇÃO DA MEMÓRIA PARA ENVIAR À IA
-            // O modelo generateContent aceita um array de conversas.
-            let contentsApi = [];
-            
-            // Injeta o "System Prompt" como a primeira mensagem de contexto "forçada"
-            contentsApi.push({ role: "user", parts: [{ text: `INSTRUÇÃO DE COMPORTAMENTO: ${instrucaoDeSistema}\n\nResponda apenas 'Entendido'.` }] });
-            contentsApi.push({ role: "model", parts: [{ text: "Entendido." }] });
-            
-            // Injeta as últimas 6 mensagens para manter o custo baixo e o foco alto
-            const ultimasMensagens = historicoChat.slice(-6);
-            ultimasMensagens.forEach(msg => {
-                contentsApi.push({ role: msg.role, parts: [{ text: msg.text }] });
-            });
+            const idLoader = 'load-' + Date.now();
+            listaMsg.innerHTML += `<div id="${idLoader}" class="flex justify-start mb-4"><div class="bg-gray-100 dark:bg-gray-800 text-gray-500 italic p-3 rounded-2xl rounded-tl-none text-sm animate-pulse">Meditando nas Escrituras...</div></div>`;
+            rolarChatParaBaixo();
+
+            // Histórico de contexto para a IA (envia as últimas interações para ela ter memória)
+            let historicoParaEnvio = "";
+            const ultimasMsgs = memoriaChat.slice(-6); // Pega as ultimas 6 msgs para não estourar limite
+            ultimasMsgs.forEach(m => { historicoParaEnvio += `${m.role === 'ia' ? 'Assistente' : 'Usuário'}: ${m.texto}\n`; });
 
             const urlEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${chaveApi}`;
             
@@ -436,56 +469,64 @@
                 const resposta = await fetch(urlEndpoint, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: contentsApi })
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: `INSTRUÇÃO DE COMPORTAMENTO: ${perfil}\n\nHISTÓRICO DA CONVERSA:\n${historicoParaEnvio}\n\nResponda agora ao Usuário com base no histórico acima.` }] }]
+                    })
                 });
                 
                 const dadosJson = await resposta.json();
                 document.getElementById(idLoader).remove();
 
                 if (dadosJson.error) {
-                    historicoChat.push({role: 'model', text: `⚠️ Erro da IA: ${dadosJson.error.message}`});
-                } else {
-                    const textoResposta = dadosJson.candidates[0].content.parts[0].text;
-                    historicoChat.push({role: 'model', text: textoResposta});
+                    renderizarBalaoIA(`⚠️ Erro na IA: ${dadosJson.error.message}`, false);
+                    return;
                 }
-                
-                localStorage.setItem('historico_chat_arc', JSON.stringify(historicoChat));
-                renderizarHistoricoChat();
-
+                renderizarBalaoIA(dadosJson.candidates[0].content.parts[0].text);
             } catch (erro) {
                 document.getElementById(idLoader).remove();
-                alert("Erro de conexão ao acessar a Inteligência Artificial.");
-                historicoChat.pop(); // Remove a pergunta do histórico se falhou
+                renderizarBalaoIA("⚠️ Erro de rede. Verifique sua conexão.", false);
             }
         });
 
-        document.getElementById('campoPergunta').addEventListener('keypress', e => { if (e.key === 'Enter') document.getElementById('btnEnviarMsg').click(); });
+        document.getElementById('campoPergunta').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') document.getElementById('btnEnviarMsg').click();
+        });
 
-        // --- CONFIGURAÇÕES GERAIS ---
-        const modalConfig = document.getElementById('modalConfig');
+        // 5. CONFIGURAÇÕES E TEMA
+        function aplicarTemaSalvo() {
+            if(localStorage.getItem('tema_escuro') === 'sim') document.documentElement.classList.add('dark');
+        }
+        
+        document.getElementById('btnTema').addEventListener('click', () => { 
+            const html = document.documentElement;
+            html.classList.toggle('dark'); 
+            localStorage.setItem('tema_escuro', html.classList.contains('dark') ? 'sim' : 'nao');
+        });
+
         function abrirModalConfig() { 
             document.getElementById('inputChaveApi').value = localStorage.getItem('chave_secreta_gemini') || '';
             document.getElementById('inputPerfil').value = localStorage.getItem('perfil_ia_gemini') || perfilPadrao;
-            modalConfig.classList.add('aberto'); 
+            document.getElementById('modalConfig').classList.add('aberto'); 
         }
-        function fecharModalConfig() { modalConfig.classList.remove('aberto'); }
+        function fecharModalConfig() { document.getElementById('modalConfig').classList.remove('aberto'); }
 
         function salvarConfig() {
-            const k = document.getElementById('inputChaveApi').value.trim();
-            const p = document.getElementById('inputPerfil').value.trim();
-            if(k === '') return alert("Chave API obrigatória.");
-            localStorage.setItem('chave_secreta_gemini', k);
-            localStorage.setItem('perfil_ia_gemini', p || perfilPadrao);
+            const chave = document.getElementById('inputChaveApi').value.trim();
+            const perfil = document.getElementById('inputPerfil').value.trim();
+            if(chave === '') return alert("A chave da API é obrigatória.");
+            localStorage.setItem('chave_secreta_gemini', chave);
+            localStorage.setItem('perfil_ia_gemini', perfil || perfilPadrao);
             fecharModalConfig();
         }
 
-        // TEMA MODO ESCURO
-        document.getElementById('btnTema').addEventListener('click', () => { 
-            document.documentElement.classList.toggle('dark'); 
-        });
+        // FECHAR MODALS CLICANDO FORA
+        window.onclick = function(event) {
+            if (event.target === document.getElementById('sheetAcoes')) fecharSheet();
+            if (event.target === document.getElementById('modalConfig')) fecharModalConfig();
+        }
 
-        // BOOT
-        window.onload = iniciarBiblia;
+        // Boot
+        window.onload = iniciarApp;
     </script>
 </body>
 </html>
