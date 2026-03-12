@@ -1,0 +1,17 @@
+{
+  "name": "Bíblia ARC Pro",
+  "short_name": "Bíblia ARC",
+  "description": "Bíblia Sagrada ARC com Assistente Teológico IA",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f9fafb",
+  "theme_color": "#4f46e5",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3073/3073403.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
