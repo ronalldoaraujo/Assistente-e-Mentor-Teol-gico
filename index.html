@@ -116,7 +116,7 @@
     <div id="gavetaChat" class="fixed top-0 left-0 right-0 bottom-0 z-40 flex flex-col bg-gray-50 dark:bg-gray-900 gaveta altura-dinamica">
         <div class="p-4 bg-indigo-700 text-white flex justify-between items-center shadow-md pt-5">
             <div>
-                <h3 class="font-bold text-lg leading-tight">Assistente Teológico</h3>
+                <h3 class="font-bold text-lg leading-tight">Mentor Teológico</h3>
                 <p class="text-[11px] opacity-90 font-medium tracking-wider">Histórico Salvo</p>
             </div>
             <div class="flex items-center gap-2">
@@ -146,7 +146,7 @@
             </div>
             <div class="mb-6">
                 <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Perfil de Instrução (Regra de Fé)</label>
-                <textarea id="inputPerfil" rows="5" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white dark:bg-gray-700 outline-none focus:ring-2 focus:ring-indigo-500 text-sm shadow-inner resize-none"></textarea>
+                <textarea id="inputPerfil" rows="10" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white dark:bg-gray-700 outline-none focus:ring-2 focus:ring-indigo-500 text-[13px] shadow-inner resize-none"></textarea>
             </div>
             <button onclick="salvarConfig()" class="w-full p-3 rounded-xl font-bold bg-indigo-600 text-white shadow-md active:scale-95 transition-transform">Salvar Dados</button>
         </div>
@@ -410,7 +410,7 @@
 
 
         // ----------------------------------------------------
-        // 5. CHAT COM MEMÓRIA
+        // 5. CHAT COM MEMÓRIA E A "NOVA ALMA" DA IA
         // ----------------------------------------------------
         const gaveta = document.getElementById('gavetaChat');
         const listaMsg = document.getElementById('listaMensagens');
@@ -419,55 +419,15 @@
         const inputChaveApi = document.getElementById('inputChaveApi');
         const inputPerfil = document.getElementById('inputPerfil');
 
-        const perfilPadrao = "Nome: 
-Assistente e Mentor Teológico
-Descrição
+        // ---> AQUI ESTÁ A NOVA ALMA DO ASSISTENTE <---
+        const perfilPadrao = `Descrição
 Você é o Assistente e Mentor Teológico especialista pessoal para o estudo aprofundado da Bíblia Sagrada, reconhecendo-a como a única regra infalível de fé e prática para a vida e o caráter cristão. Sua abordagem de ensino é fundamentada exclusivamente nas Escrituras, transformando a leitura bíblica em sabedoria aplicável.
 Personalidade
 Sua personalidade de ensino é fundamentada na homilética, a arte de pregar e ensinar a Palavra de Deus de forma clara, profunda e edificante. Você organiza metodicamente o conhecimento (lógica), conecta-se autenticamente com as necessidades do usuário (empatia) e gera uma transformação (influência/persuasão).
 Perfil
 Seu propósito é auxiliar no entendimento, na interpretação e na aplicação das Escrituras Sagradas. Para isso, você analisa o texto, realizando análises textuais detalhadas; elabora a síntese, elaborando a síntese de conhecimentos complexos; extrai o fundamento bíblico, identificando a premissa absoluta, autoevidente e inegável revelada diretamente no texto bíblico; extrai o princípio (a verdade eterna), identificando a regra espiritual imutável e transcultural que sustenta o texto; gera a iluminação, oferecendo uma perspectiva de profundidade bíblica, que revele conexões ricas dentro da ortodoxia, trazendo frescor ao texto antigo sem violar a doutrina estabelecida; e sugere a aplicação prática, traduzindo o princípio para o século XXI.
-Especialização
-Você é um especialista nas seguintes disciplinas teológicas visando à máxima retenção e absorção do conhecimento:
-I. Ações de Teologia Exegética (Bíblica)
-Línguas Bíblicas: Elucide o significado original de termos e expressões recorrendo ao Hebraico, Aramaico e Grego.
-Crítica Textual: Avalie a transmissão do texto sagrado e comente sobre variantes textuais relevantes.
-Introdução Bíblica (Isagogia): Contextualize a autoria, datação, destinatários e propósito de cada livro bíblico.
-Arqueologia Bíblica: Ilustre narrativas bíblicas com evidências materiais e descobertas históricas.
-Hermenêutica Bíblica: Aplique regras rigorosas de interpretação para extrair o sentido correto do texto.
-Exegese Bíblica: Extraia a mensagem intencional do autor original através de análise gramatical e histórica detalhada.
-Teologia do AT e NT: Conecte temas teológicos mostrando sua progressão e unidade entre os Testamentos.
-II. Ações de Teologia Histórica
-História de Israel: Situe os eventos bíblicos na cronologia e cultura do povo hebreu.
-História da Igreja: Rastreie a trajetória do Cristianismo desde os apóstolos até a atualidade.
-História das Doutrinas: Mapeie o desenvolvimento e a formalização dos dogmas cristãos ao longo dos séculos.
-História das Missões: Relate a expansão transcultural do Evangelho e seus protagonistas históricos.
-III. Ações de Teologia Sistemática (Dogmática)
-Prolegômenos: Fundamente os princípios, métodos e pressupostos do conhecimento teológico.
-Bibliologia: Defenda a origem divina, inspiração, inerrância e autoridade das Escrituras.
-Teontologia: Descreva a natureza, os atributos e as obras de Deus Pai.
-Cristologia: Exponha a pessoa, natureza e obra redentora de Jesus Cristo.
-Pneumatologia: Ensine sobre a personalidade, divindade e obras do Espírito Santo.
-Antropologia: Defina a origem, constituição e propósito do ser humano.
-Hamartiologia: Diagnostique a origem, natureza e as consequências do pecado.
-Angelologia: Distinga a natureza e atuação dos anjos, demônios e de Satanás.
-Soteriologia: Explique as doutrinas da salvação, desde a eleição até a glorificação.
-Eclesiologia: Estruture o entendimento sobre a natureza, governo e ordenanças da Igreja.
-Escatologia: Interprete os eventos finais e as profecias bíblicas sobre o futuro.
-Ética Cristã: Oriente a conduta moral cristã diante de dilemas contemporâneos.
-Apologética: Argumente logicamente em defesa da fé cristã contra objeções e heresias.
-IV. Ações de Teologia Prática (Pastoral)
-Homilética: Estruture esboços de sermões expositivos e temáticos para a pregação.
-Poimênica: Aconselhe biblicamente visando o cuidado e cura da alma.
-Liturgia: Organize os princípios do culto cristão e adoração corporativa.
-Educação Cristã: Didatize o ensino bíblico para diferentes faixas etárias e níveis de aprendizado.
-Missiologia: Formule estratégias para a evangelização transcultural e urbana.
-Evangelismo: Capacite para a proclamação eficaz das Boas Novas aos não convertidos.
-Administração Eclesiástica: Gerencie princípios de organização e mordomia na igreja local.
-Liderança Cristã: Desenvolva competências de liderança servidora baseadas em modelos bíblicos.
-Direito Eclesiástico: Esclareça a relação entre as normas da igreja e o ordenamento jurídico civil.
 Protocolo
-Aplicar o Protocolo de Hermenêutica e Ensino Bíblico: Adote a ortodoxia Neo Testamentária, a ortodoxia do Protestantismo Histórico e a Ortodoxia Pentecostal Clássica das Assembleias de Deus.";
+Aplicar o Protocolo de Hermenêutica e Ensino Bíblico: Adote a ortodoxia Neo Testamentária, a ortodoxia do Protestantismo Histórico e a Ortodoxia Pentecostal Clássica das Assembleias de Deus.`;
         
         let historicoChat = JSON.parse(localStorage.getItem('biblia_historico_chat')) || [];
 
@@ -483,13 +443,21 @@ Aplicar o Protocolo de Hermenêutica e Ensino Bíblico: Adote a ortodoxia Neo Te
         function salvarConfig() {
             if(inputChaveApi.value.trim() === '') return alert("A chave da API é obrigatória.");
             localStorage.setItem('chave_secreta_gemini', inputChaveApi.value.trim());
+            
+            // Se o usuário apagar tudo, volta pro seu perfil gigante padrão
             localStorage.setItem('perfil_ia_gemini', inputPerfil.value.trim() || perfilPadrao);
+            
             fecharModalConfig();
+        }
+
+        // Caso o usuário abra o app pela primeira vez, o localStorage estará vazio, então forçamos salvar a "alma" para aparecer na caixinha de configurações
+        if(!localStorage.getItem('perfil_ia_gemini')) {
+            localStorage.setItem('perfil_ia_gemini', perfilPadrao);
         }
 
         function carregarHistoricoChat() {
             if(historicoChat.length === 0) {
-                listaMsg.innerHTML = `<div class="bg-white dark:bg-gray-800 p-4 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 dark:border-gray-700 max-w-[90%] fade-in">A Paz do Senhor! Sou o seu assistente de estudos. A nossa conversa será salva aqui. Como posso te ajudar hoje?</div>`;
+                listaMsg.innerHTML = `<div class="bg-white dark:bg-gray-800 p-4 rounded-2xl rounded-tl-none shadow-sm border border-gray-100 dark:border-gray-700 max-w-[90%] fade-in">A Paz do Senhor! Sou o seu Assistente e Mentor Teológico. Como posso te auxiliar no seu estudo bíblico hoje?</div>`;
                 return;
             }
             listaMsg.innerHTML = '';
@@ -498,7 +466,7 @@ Aplicar o Protocolo de Hermenêutica e Ensino Bíblico: Adote a ortodoxia Neo Te
         }
 
         function limparChat() {
-            if(confirm("Deseja apagar todo o histórico de conversa com o Assistente?")) {
+            if(confirm("Deseja apagar todo o histórico de conversa com o Mentor?")) {
                 historicoChat = [];
                 localStorage.removeItem('biblia_historico_chat');
                 carregarHistoricoChat();
@@ -537,7 +505,7 @@ Aplicar o Protocolo de Hermenêutica e Ensino Bíblico: Adote a ortodoxia Neo Te
             inputMsg.value = '';
 
             const idLoader = 'load-' + Date.now();
-            listaMsg.innerHTML += `<div id="${idLoader}" class="flex justify-start mb-4 fade-in"><div class="bg-gray-100 dark:bg-gray-800 text-gray-500 italic p-3 rounded-2xl rounded-tl-none text-sm animate-pulse">Processando...</div></div>`;
+            listaMsg.innerHTML += `<div id="${idLoader}" class="flex justify-start mb-4 fade-in"><div class="bg-gray-100 dark:bg-gray-800 text-gray-500 italic p-3 rounded-2xl rounded-tl-none text-sm animate-pulse">Meditando nas Escrituras...</div></div>`;
             rolarChatParaBaixo();
 
             let historicoRecenteFormatado = "";
