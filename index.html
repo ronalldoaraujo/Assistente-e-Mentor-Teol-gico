@@ -27,11 +27,9 @@
         .scroll-suave::-webkit-scrollbar-thumb { background: #818cf8; border-radius: 4px; }
         
         /* ESTILOS DE VERSÍCULOS */
-        /* Versículo salvo definitivamente pelo usuário */
         .versiculo-marcado { background-color: rgba(253, 224, 71, 0.4); border-radius: 0.5rem; transition: background-color 0.2s; }
         .dark .versiculo-marcado { background-color: rgba(161, 98, 7, 0.4); }
         
-        /* Versículo sendo selecionado agora na tela */
         .versiculo-selecionado { background-color: rgba(79, 70, 229, 0.15); border-left: 4px solid #4f46e5; border-radius: 0 0.5rem 0.5rem 0; }
         .dark .versiculo-selecionado { background-color: rgba(99, 102, 241, 0.25); border-left-color: #818cf8; }
 
@@ -150,9 +148,9 @@
             <div class="mb-6">
                 <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Instruções Adicionais (Opcional)</label>
                 <p class="text-[11px] text-gray-500 dark:text-gray-400 mb-3 leading-tight">
-                    O Assistente da Bíblia já possui uma alma teológica configurada internamente baseada na Ortodoxia Pentecostal Clássica e no Protestantismo Histórico. Este núcleo é inviolável. Adicione aqui apenas comandos extras de formatação (ex: "Responda em tópicos curtos").
+                    Atenção: A Alma do Assistente da Bíblia já está blindada com as raízes da Ortodoxia Neotestamentária, Protestantismo Histórico e Ortodoxia Pentecostal das Assembleias de Deus. Use o campo abaixo APENAS para instruções de formato (ex: "Responda em 3 tópicos curtos" ou "Use uma linguagem para jovens").
                 </p>
-                <textarea id="inputPerfil" rows="4" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white dark:bg-gray-700 outline-none focus:ring-2 focus:ring-indigo-500 text-sm shadow-inner resize-none" placeholder="Suas instruções extras aparecerão aqui..."></textarea>
+                <textarea id="inputPerfil" rows="4" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white dark:bg-gray-700 outline-none focus:ring-2 focus:ring-indigo-500 text-sm shadow-inner resize-none" placeholder="Instruções adicionais de formato..."></textarea>
             </div>
             <button onclick="salvarConfig()" class="w-full p-3 rounded-xl font-bold bg-indigo-600 text-white shadow-md active:scale-95 transition-transform">Salvar Dados</button>
         </div>
@@ -160,20 +158,18 @@
 
     <script>
         // ----------------------------------------------------
-        // 1. ESTADO GLOBAL
+        // 1. ESTADO GLOBAL E UTILITÁRIOS
         // ----------------------------------------------------
         let bibliaCompleta = [];
         let indexLivro = parseInt(localStorage.getItem('leitura_livro')) || 0;
         let indexCapitulo = parseInt(localStorage.getItem('leitura_capitulo')) || 0;
         let marcacoes = JSON.parse(localStorage.getItem('biblia_marcacoes')) || {};
-        
-        // Array para guardar múltiplos versículos selecionados {l, c, v, texto, ref}
         let versiculosSelecionados = [];
 
         function removerAcentos(str) { return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(); }
 
         // ----------------------------------------------------
-        // 2. INICIALIZAÇÃO E RENDERIZAÇÃO
+        // 2. INICIALIZAÇÃO DA BÍBLIA
         // ----------------------------------------------------
         async function iniciarBiblia() {
             const urlArc = 'https://raw.githubusercontent.com/maatheusgois/bible/main/versions/pt-br/arc.json';
@@ -218,9 +214,7 @@
         function exibirCapitulo() {
             if(bibliaCompleta.length === 0) return;
             
-            // Sempre que muda de capítulo, limpa a seleção para evitar misturar textos
             limparSelecao();
-            
             const livroAtual = bibliaCompleta[indexLivro];
             const versiculos = livroAtual.chapters[indexCapitulo];
             
@@ -255,31 +249,24 @@
             document.getElementById('selLivro').value = indexLivro; preencherCapitulos(); exibirCapitulo();
         });
 
-
         // ----------------------------------------------------
         // 3. SISTEMA DE SELEÇÃO MÚLTIPLA
         // ----------------------------------------------------
         function toggleSelecaoVersiculo(lIdx, cIdx, vIdx) {
             const idUnico = `${lIdx}-${cIdx}-${vIdx}`;
             const divElement = document.getElementById(`v-${idUnico}`);
-            
-            // Verifica se já está selecionado
             const indexNoArray = versiculosSelecionados.findIndex(v => v.idUnico === idUnico);
             
             if (indexNoArray > -1) {
-                // Já estava selecionado, então remove
                 versiculosSelecionados.splice(indexNoArray, 1);
                 divElement.classList.remove('versiculo-selecionado');
             } else {
-                // Adiciona à seleção
                 const livroNome = bibliaCompleta[lIdx].name;
                 const texto = bibliaCompleta[lIdx].chapters[cIdx][vIdx];
                 const referencia = `${livroNome} ${cIdx + 1}:${vIdx + 1}`;
-                
                 versiculosSelecionados.push({ lIdx, cIdx, vIdx, idUnico, texto, referencia });
                 divElement.classList.add('versiculo-selecionado');
             }
-            
             atualizarBarraSelecao();
         }
 
@@ -304,38 +291,25 @@
             atualizarBarraSelecao();
         }
 
-        function ordenarSelecao() {
-            // Garante que a cópia ou explicação siga a ordem correta da Bíblia
-            versiculosSelecionados.sort((a, b) => a.vIdx - b.vIdx);
-        }
+        function ordenarSelecao() { versiculosSelecionados.sort((a, b) => a.vIdx - b.vIdx); }
 
         function acaoMultiplaCopiar() {
             ordenarSelecao();
             let textoCopiado = "";
-            versiculosSelecionados.forEach(v => {
-                textoCopiado += `"${v.texto}" (${v.referencia})\n`;
-            });
-            
-            navigator.clipboard.writeText(textoCopiado.trim()).then(() => {
-                limparSelecao();
-                alert("Versículos copiados!");
-            });
+            versiculosSelecionados.forEach(v => { textoCopiado += `"${v.texto}" (${v.referencia})\n`; });
+            navigator.clipboard.writeText(textoCopiado.trim()).then(() => { limparSelecao(); alert("Versículos copiados!"); });
         }
 
         function acaoMultiplaMarcar() {
             versiculosSelecionados.forEach(v => {
                 const id = v.idUnico;
-                // Se já estiver marcado, desmarca. Se não, marca.
-                if (marcacoes[id]) { delete marcacoes[id]; } 
-                else { marcacoes[id] = true; }
-                
+                if (marcacoes[id]) { delete marcacoes[id]; } else { marcacoes[id] = true; }
                 const divElement = document.getElementById(`v-${id}`);
                 if(divElement) {
                     if(marcacoes[id]) divElement.classList.add('versiculo-marcado');
                     else divElement.classList.remove('versiculo-marcado');
                 }
             });
-            
             localStorage.setItem('biblia_marcacoes', JSON.stringify(marcacoes));
             limparSelecao();
         }
@@ -343,12 +317,8 @@
         function acaoMultiplaExplicar() {
             ordenarSelecao();
             let blocoTexto = "";
-            versiculosSelecionados.forEach(v => {
-                blocoTexto += `"${v.texto}" (${v.referencia})\n`;
-            });
-            
+            versiculosSelecionados.forEach(v => { blocoTexto += `"${v.texto}" (${v.referencia})\n`; });
             const promptContextual = `Por favor, explique esta passagem à luz da Palavra:\n\n${blocoTexto}`;
-            
             limparSelecao();
             abrirChat();
             document.getElementById('campoPergunta').value = promptContextual;
@@ -383,7 +353,7 @@
         function executarBusca() {
             const input = document.getElementById('inputBusca');
             const termoOriginal = input.value.trim();
-            if(!termoOriginal || termoOriginal.length < 2) return alert("Digite pelo menos 2 letras.");
+            if(!termoOriginal || termoOriginal.length < 2) return alert("Digite pelo menos 2 letras para buscar.");
 
             if(!historicoBusca.includes(termoOriginal)) {
                 historicoBusca.unshift(termoOriginal);
@@ -461,7 +431,7 @@
 
 
         // ----------------------------------------------------
-        // 5. CHAT COM MEMÓRIA E ALMA BLINDADA
+        // 5. CHAT COM MEMÓRIA, ALMA BLINDADA E API CORPORATIVA
         // ----------------------------------------------------
         const gaveta = document.getElementById('gavetaChat');
         const listaMsg = document.getElementById('listaMensagens');
@@ -470,8 +440,8 @@
         const inputChaveApi = document.getElementById('inputChaveApi');
         const inputPerfil = document.getElementById('inputPerfil');
 
-        // A ALMA DO SISTEMA: Blindada e inviolável
-        const ALMA_INTERNA = "Atue como um exímio teólogo. Sempre que o assunto for Bíblia Sagrada, regra de fé, prática cristã e ou caráter cristão, adote a ortodoxia Neo Testamentária, a ortodoxia do Protestantismo Histórico e a Ortodoxia Pentecostal Clássica das Assembleias de Deus.";
+        // A ALMA DO SISTEMA: Diretriz mestre fixada no núcleo
+        const ALMA_INTERNA = "Atue como um exímio Teólogo. Adote a ortodoxia Neo Testamentária, a ortodoxia do Protestantismo Histórico e a Ortodoxia Pentecostal Clássica das Assembleias de Deus.";
         
         let historicoChat = JSON.parse(localStorage.getItem('biblia_historico_chat')) || [];
 
@@ -536,9 +506,10 @@
             const chaveApi = localStorage.getItem('chave_secreta_gemini');
             if (!chaveApi) { abrirModalConfig(); return; }
 
+            // Configuração Ouro: Junta a alma inegociável + dicas opcionais do usuário
             const instrucaoExtraDoUsuario = localStorage.getItem('perfil_ia_gemini') || '';
             const instrucaoFinalCombinada = instrucaoExtraDoUsuario 
-                ? `${ALMA_INTERNA}\n\nInstruções/Protocolos adicionais do usuário: ${instrucaoExtraDoUsuario}`
+                ? `${ALMA_INTERNA}\n\nInstruções/Protocolos adicionais de formato: ${instrucaoExtraDoUsuario}`
                 : ALMA_INTERNA;
 
             adicionarMensagem('user', pergunta);
@@ -548,9 +519,32 @@
             listaMsg.innerHTML += `<div id="${idLoader}" class="flex justify-start mb-4 fade-in"><div class="bg-gray-100 dark:bg-gray-800 text-gray-500 italic p-3 rounded-2xl rounded-tl-none text-sm animate-pulse">Meditando nas Escrituras...</div></div>`;
             rolarChatParaBaixo();
 
-            let historicoRecenteFormatado = "";
-            const ultimas = historicoChat.slice(-5, -1);
-            ultimas.forEach(m => { historicoRecenteFormatado += `${m.role === 'user' ? 'Usuário' : 'IA'}: ${m.texto}\n`; });
+            // Configuração Ouro: Array de Conversa no padrão Google Gemini (user/model)
+            // Limitado às últimas 8 interações (4 perguntas, 4 respostas) para contexto
+            const ultimasMensagens = historicoChat.slice(-8, -1);
+            const historicoFormatado = ultimasMensagens.map(m => ({
+                role: m.role === 'user' ? 'user' : 'model',
+                parts: [{ text: m.texto }]
+            }));
+
+            // Adiciona a pergunta atual no formato esperado pelo array de conteúdos
+            historicoFormatado.push({
+                role: 'user',
+                parts: [{ text: pergunta }]
+            });
+
+            // Configuração Ouro: Parâmetros corporativos com System Instruction oficial
+            const payloadGemini = {
+                system_instruction: {
+                    parts: [{ text: instrucaoFinalCombinada }]
+                },
+                contents: historicoFormatado,
+                generationConfig: {
+                    temperature: 0.2, // Mantém a IA focada na ortodoxia bíblica, sem divagar
+                    topP: 0.95,
+                    maxOutputTokens: 2048
+                }
+            };
 
             const urlEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${chaveApi}`;
             
@@ -558,9 +552,7 @@
                 const resposta = await fetch(urlEndpoint, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: `Instrução base: ${instrucaoFinalCombinada}\n\nHistórico recente da conversa:\n${historicoRecenteFormatado}\n\nNova Pergunta do Usuário: ${pergunta}` }] }]
-                    })
+                    body: JSON.stringify(payloadGemini)
                 });
                 
                 const dadosJson = await resposta.json();
