@@ -110,8 +110,7 @@
             </div>
         </div>
         
-        <div id="listaMensagens" class="flex-1 overflow-y-auto p-4 space-y-6 scroll-suave bg-gray-50 dark:bg-gray-800/50">
-            </div>
+        <div id="listaMensagens" class="flex-1 overflow-y-auto p-4 space-y-6 scroll-suave bg-gray-50 dark:bg-gray-800/50"></div>
 
         <div class="p-4 bg-white dark:bg-[#0f172a] border-t border-gray-200 dark:border-gray-800 pb-safe shadow-[0_-5px_15px_rgba(0,0,0,0.05)]">
             <div class="max-w-3xl mx-auto flex gap-2 items-end bg-gray-100 dark:bg-gray-800 rounded-2xl p-2 border border-transparent focus-within:border-gray-300 dark:focus-within:border-gray-600 transition-colors">
@@ -183,9 +182,6 @@
     </div>
 
     <script>
-        // ----------------------------------------------------
-        // 1. ESTADO GLOBAL, UTILITÁRIOS E MARKDOWN
-        // ----------------------------------------------------
         let bibliaCompleta = [];
         let indexLivro = parseInt(localStorage.getItem('leitura_livro')) || 0;
         let indexCapitulo = parseInt(localStorage.getItem('leitura_capitulo')) || 0;
@@ -208,9 +204,6 @@
             return html;
         }
 
-        // ----------------------------------------------------
-        // 2. BÍBLIA: INICIALIZAÇÃO E NAVEGAÇÃO
-        // ----------------------------------------------------
         async function iniciarBiblia() {
             const urlArc = 'https://raw.githubusercontent.com/maatheusgois/bible/main/versions/pt-br/arc.json';
             try {
@@ -280,9 +273,7 @@
             document.getElementById('selLivro').value = indexLivro; preencherCapitulos(); exibirCapitulo();
         });
 
-        // ----------------------------------------------------
-        // 3. SISTEMA DE SELEÇÃO MÚLTIPLA
-        // ----------------------------------------------------
+        // SELEÇÃO MÚLTIPLA
         function toggleSelecaoVersiculo(lIdx, cIdx, vIdx) {
             const idUnico = `${lIdx}-${cIdx}-${vIdx}`;
             const divElement = document.getElementById(`v-${idUnico}`);
@@ -305,9 +296,9 @@
             if (versiculosSelecionados.length > 0) {
                 document.getElementById('contadorSelecao').innerText = `${versiculosSelecionados.length} selecionado${versiculosSelecionados.length > 1 ? 's' : ''}`;
                 document.getElementById('textoBtnMarcar').innerText = versiculosSelecionados.every(v => marcacoes[v.idUnico]) ? "Desmarcar" : "Marcar";
-                barra.classList.remove('translate-y-full'); 
+                barra.classList.remove('translate-y-full');
             } else {
-                barra.classList.add('translate-y-full'); 
+                barra.classList.add('translate-y-full');
             }
         }
 
@@ -337,21 +328,19 @@
         function acaoMultiplaExplicar() {
             ordenarSelecao();
             let blocoTexto = ""; versiculosSelecionados.forEach(v => { blocoTexto += `"${v.texto}" (${v.referencia})\n`; });
-            limparSelecao(); 
+            limparSelecao();
             
             if(estadoChat === 'hidden') mudarEstadoChat('half');
             
             const textarea = document.getElementById('campoPergunta');
-            textarea.value = `Por favor, me explique esta passagem:\n\n${blocoTexto}`;
+            textarea.value = `Por favor, explique esta passagem à luz da Palavra:\n\n${blocoTexto}`;
             textarea.style.height = 'auto'; textarea.style.height = textarea.scrollHeight + 'px';
             document.getElementById('btnEnviarMsg').style.opacity = '1';
             
             setTimeout(() => document.getElementById('btnEnviarMsg').click(), 300);
         }
 
-        // ----------------------------------------------------
-        // 4. MOTOR DE BUSCA
-        // ----------------------------------------------------
+        // BUSCA
         let historicoBusca = JSON.parse(localStorage.getItem('biblia_historico_busca')) || [];
         function abrirBusca() { document.getElementById('telaBusca').classList.remove('translate-y-full'); document.getElementById('inputBusca').focus(); }
         function fecharBusca() { document.getElementById('telaBusca').classList.add('translate-y-full'); }
@@ -415,7 +404,7 @@
         document.getElementById('inputBusca').addEventListener('keypress', e => { if (e.key === 'Enter') executarBusca(); });
 
         // ----------------------------------------------------
-        // 5. CHAT COM IA (ALMA UNIFICADA)
+        // 5. CHAT, IA E COMPORTAMENTO
         // ----------------------------------------------------
         let estadoChat = 'hidden'; 
         const gavetaChat = document.getElementById('gavetaChat');
@@ -427,12 +416,12 @@
             gavetaChat.classList.add(`sheet-${estadoChat}`);
             
             if(estadoChat === 'hidden') {
-                mainBiblia.style.paddingBottom = '90px'; 
+                mainBiblia.style.paddingBottom = '90px';
             } else if (estadoChat === 'half') {
                 mainBiblia.style.paddingBottom = 'calc(50dvh + 90px)'; 
                 document.getElementById('btnTamanhoChat').innerText = '⛶'; 
             } else if (estadoChat === 'full') {
-                mainBiblia.style.paddingBottom = 'calc(100dvh)';
+                mainBiblia.style.paddingBottom = 'calc(100dvh - 76px)';
                 document.getElementById('btnTamanhoChat').innerText = '🗗'; 
             }
             if(estadoChat !== 'hidden') setTimeout(rolarChatParaBaixo, 300);
@@ -448,6 +437,7 @@
             else if (estadoChat === 'full') mudarEstadoChat('half');
         }
 
+        // SWIPE
         let touchStartY = 0;
         const dragHandle = document.getElementById('dragHandle');
         dragHandle.addEventListener('touchstart', e => { touchStartY = e.changedTouches[0].screenY; }, {passive: true});
@@ -462,12 +452,14 @@
         });
         dragHandle.addEventListener('click', toggleTamanhoChat);
 
-        // --- ENGENHARIA DE PROMPT: A ALMA INSEPARÁVEL ---
-        const ALMA_INTERNA = "Você é o Assistente da Bíblia, um exímio Teólogo. Sua consciência, teologia e cosmovisão são profundamente moldadas por uma fusão inseparável de três pilares: a Ortodoxia Neotestamentária, a Ortodoxia do Protestantismo Histórico e a Ortodoxia Pentecostal Clássica das Assembleias de Deus. Responda com uma voz única, pastoral e harmoniosa. É fundamental: NÃO divida, NÃO liste e NÃO categorize suas respostas dizendo 'segundo a visão X' ou 'na vertente Y'. Apenas ensine a verdade bíblica com convicção e clareza, a partir dessa mente unificada, de forma invisível e natural.";
-        
+        // IA
         const listaMsg = document.getElementById('listaMensagens');
         const inputMsg = document.getElementById('campoPergunta');
         const modalConfig = document.getElementById('modalConfig');
+        
+        // A NOVA ALMA INTERNA COMPORTAMENTAL (Sem divisões de texto)
+        const ALMA_INTERNA = "Incorpore a mente de um exímio teólogo. Sua consciência é única e indivisível, formada organicamente pela fusão da ortodoxia Neotestamentária, Protestantismo Histórico e fé Pentecostal Clássica das Assembleias de Deus. Ensine a partir dessa voz integrada, sem fragmentar ou listar as tradições separadamente.";
+        
         let historicoChat = JSON.parse(localStorage.getItem('biblia_historico_chat')) || [];
 
         inputMsg.addEventListener('input', function() {
@@ -491,7 +483,7 @@
 
         function carregarHistoricoChat() {
             if(historicoChat.length === 0) {
-                listaMsg.innerHTML = `<div class="flex flex-col items-center justify-center h-full text-center fade-in opacity-50 px-6 py-10"><span class="text-5xl mb-4">✨</span><h2 class="text-xl font-bold mb-2">Paz do Senhor!</h2><p class="text-sm">Selecione versículos na tela ou faça sua pergunta.</p></div>`;
+                listaMsg.innerHTML = `<div class="flex flex-col items-center justify-center h-full text-center fade-in opacity-50 px-6 py-10"><span class="text-5xl mb-4">✨</span><h2 class="text-xl font-bold mb-2">Paz do Senhor!</h2><p class="text-sm">Selecione versículos ou faça uma pergunta teológica.</p></div>`;
                 return;
             }
             listaMsg.innerHTML = '';
@@ -507,7 +499,7 @@
             if(role === 'user') {
                 listaMsg.innerHTML += `<div class="flex justify-end mb-2 ${anim}"><div class="bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-4 py-3 rounded-3xl rounded-tr-sm max-w-[85%] font-sans text-[15px] whitespace-pre-wrap">${texto}</div></div>`;
             } else {
-                listaMsg.innerHTML += `<div class="flex gap-3 mb-6 mt-4 ${anim}"><div class="w-8 h-8 rounded-full bg-gray-900 dark:bg-gray-100 flex items-center justify-center text-white dark:text-gray-900 flex-shrink-0 mt-0.5 shadow-md">✨</div><div class="text-gray-800 dark:text-gray-200 font-sans text-[15px] leading-relaxed w-full overflow-hidden">${formatarMarkdown(texto)}</div></div>`;
+                listaMsg.innerHTML += `<div class="flex gap-3 mb-6 mt-4 ${anim}"><div class="w-8 h-8 rounded-full bg-gray-900 dark:bg-gray-100 flex items-center justify-center text-white dark:text-gray-900 flex-shrink-0 mt-0.5 shadow-md">✨</div><div class="text-gray-800 dark:text-gray-200 font-sans text-[15px] leading-relaxed w-full">${formatarMarkdown(texto)}</div></div>`;
             }
         }
 
@@ -521,13 +513,13 @@
             if (!chaveApi) return abrirModalConfig();
 
             const extra = localStorage.getItem('perfil_ia_gemini') || '';
-            const combinada = extra ? `${ALMA_INTERNA}\n\nProtocolos adicionais do usuário (Priorize o formato solicitado): ${extra}` : ALMA_INTERNA;
+            const combinada = extra ? `${ALMA_INTERNA}\n\nProtocolos extras do usuário: ${extra}` : ALMA_INTERNA;
 
             adicionarMensagem('user', pergunta);
             inputMsg.value = ''; inputMsg.style.height = 'auto'; document.getElementById('btnEnviarMsg').style.opacity = '0.5';
 
             const idLoader = 'load-' + Date.now();
-            listaMsg.innerHTML += `<div id="${idLoader}" class="flex gap-3 mb-6 mt-4 fade-in"><div class="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-500 flex-shrink-0 animate-pulse">✨</div><div class="text-gray-500 italic mt-1 animate-pulse">Meditando na Palavra...</div></div>`;
+            listaMsg.innerHTML += `<div id="${idLoader}" class="flex gap-3 mb-6 mt-4 fade-in"><div class="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-500 flex-shrink-0 animate-pulse">✨</div><div class="text-gray-500 italic mt-1 animate-pulse">Meditando...</div></div>`;
             rolarChatParaBaixo();
 
             let histRecente = "";
@@ -537,7 +529,7 @@
                 const resposta = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${chaveApi}`, {
                     method: 'POST', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        contents: [{ parts: [{ text: `Instrução do Sistema: ${combinada}\n\nHistórico:\n${histRecente}\n\nPergunta do Usuário: ${pergunta}` }] }],
+                        contents: [{ parts: [{ text: `Instrução base: ${combinada}\n\nHistórico:\n${histRecente}\n\nNova Pergunta: ${pergunta}` }] }],
                         generationConfig: { temperature: 0.3, maxOutputTokens: 8192, topP: 0.95 }
                     })
                 });
