@@ -36,9 +36,9 @@
         .highlight-busca { font-weight: 700; color: #2563eb; background-color: rgba(59, 130, 246, 0.15); padding: 0 2px; border-radius: 2px; }
         .dark .highlight-busca { color: #60a5fa; background-color: rgba(59, 130, 246, 0.25); }
 
-        /* BOTTOM SHEET (GAVETA INTELIGENTE) */
+        /* BOTTOM SHEET (GAVETA INTELIGENTE) - Agora nasce ACIMA da barra de navegação */
         .bottom-sheet {
-            position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
+            position: fixed; left: 0; right: 0; bottom: 76px; z-index: 50;
             background: white; display: flex; flex-direction: column;
             border-radius: 1.5rem 1.5rem 0 0;
             box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.15);
@@ -47,13 +47,9 @@
         .dark .bottom-sheet { background: #0f172a; box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5); border-top: 1px solid #1e293b; }
         
         /* Estados da Gaveta */
-        .sheet-hidden { transform: translateY(100%); opacity: 0; pointer-events: none; }
-        .sheet-half { transform: translateY(0); height: 55dvh; opacity: 1; pointer-events: auto; }
-        .sheet-full { transform: translateY(0); height: 92dvh; opacity: 1; pointer-events: auto; }
-        
-        /* Ocultar barra de navegação quando chat aberto */
-        .nav-inferior { transition: transform 0.3s ease; }
-        .nav-inferior.escondida { transform: translateY(150%); }
+        .sheet-hidden { transform: translateY(120%); opacity: 0; pointer-events: none; }
+        .sheet-half { transform: translateY(0); height: 50dvh; opacity: 1; pointer-events: auto; }
+        .sheet-full { transform: translateY(0); height: calc(100dvh - 76px); opacity: 1; pointer-events: auto; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-900 transition-colors duration-300 dark:bg-gray-900 dark:text-gray-100 pb-safe">
@@ -84,56 +80,17 @@
         </div>
     </main>
 
-    <nav id="navInferior" class="nav-inferior fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 p-3 z-30 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.05)]">
+    <nav id="navInferior" class="fixed bottom-0 left-0 right-0 h-[76px] bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 p-3 z-40 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.05)]">
         <div class="max-w-md mx-auto flex gap-2">
             <button id="btnAnterior" class="flex-none w-14 bg-gray-100 dark:bg-gray-800 p-3 rounded-xl font-bold active:scale-95 transition-transform flex items-center justify-center text-lg">←</button>
-            <button onclick="mudarEstadoChat('half')" class="flex-1 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 shadow-md p-3 rounded-xl font-bold flex items-center justify-center gap-2 active:scale-95 transition-transform whitespace-nowrap">
+            <button onclick="toggleChat()" class="flex-1 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 shadow-md p-3 rounded-xl font-bold flex items-center justify-center gap-2 active:scale-95 transition-transform whitespace-nowrap">
                 <span class="text-xl">✨</span> Assistente da Bíblia
             </button>
             <button id="btnProximo" class="flex-none w-14 bg-gray-100 dark:bg-gray-800 p-3 rounded-xl font-bold active:scale-95 transition-transform flex items-center justify-center text-lg">→</button>
         </div>
     </nav>
 
-    <div id="barraSelecao" class="fixed bottom-0 left-0 right-0 bg-gray-900 dark:bg-gray-800 text-white p-4 z-40 transition-transform duration-300 translate-y-full shadow-2xl pb-6 rounded-t-2xl">
-        <div class="max-w-md mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <button onclick="limparSelecao()" class="bg-gray-800 dark:bg-gray-700 hover:bg-gray-700 rounded-full w-8 h-8 flex items-center justify-center font-bold text-lg active:scale-95">&times;</button>
-                <span id="contadorSelecao" class="font-bold text-sm tracking-wide">0 selecionados</span>
-            </div>
-            <div class="flex gap-4">
-                <button onclick="acaoMultiplaCopiar()" class="flex flex-col items-center justify-center active:scale-95 transition-transform text-gray-300 hover:text-white">
-                    <span class="text-xl">📋</span><span class="text-[10px] font-bold mt-1">Copiar</span>
-                </button>
-                <button onclick="acaoMultiplaMarcar()" class="flex flex-col items-center justify-center active:scale-95 transition-transform text-gray-300 hover:text-white">
-                    <span class="text-xl">🖍️</span><span id="textoBtnMarcar" class="text-[10px] font-bold mt-1">Marcar</span>
-                </button>
-                <button onclick="acaoMultiplaExplicar()" class="flex flex-col items-center justify-center active:scale-95 transition-transform text-blue-400 font-bold">
-                    <span class="text-xl">✨</span><span class="text-[10px] font-bold mt-1">Explicar</span>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <div id="telaBusca" class="fixed inset-0 bg-white dark:bg-gray-900 z-50 flex flex-col transition-transform duration-300 translate-y-full altura-dinamica">
-        <div class="p-4 border-b border-gray-200 dark:border-gray-800 flex items-center gap-3">
-            <button onclick="fecharBusca()" class="p-2 text-2xl text-gray-500 hover:text-gray-800 dark:hover:text-white">←</button>
-            <input type="text" id="inputBusca" placeholder="Buscar na Bíblia..." class="flex-1 p-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-none outline-none focus:ring-2 focus:ring-blue-500 text-base font-sans">
-            <button onclick="executarBusca()" class="bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 p-3 rounded-xl font-bold shadow-md active:scale-95">Ir</button>
-        </div>
-        <div class="flex-1 overflow-y-auto p-4 scroll-suave" id="areaResultadosBusca">
-            <div id="containerHistoricoBusca" class="mb-6">
-                <div class="flex justify-between items-center mb-3">
-                    <h4 class="text-sm font-bold text-gray-500 uppercase tracking-wide">Buscas Recentes</h4>
-                    <button onclick="limparHistoricoBusca()" class="text-xs text-blue-600 dark:text-blue-400 font-bold active:scale-95">Limpar</button>
-                </div>
-                <div id="listaHistoricoBusca" class="flex flex-wrap gap-2"></div>
-            </div>
-            <div id="listaResultadosBusca" class="space-y-4"></div>
-        </div>
-    </div>
-
     <div id="gavetaChat" class="bottom-sheet sheet-hidden">
-        
         <div id="dragHandle" class="w-full pt-3 pb-1 flex justify-center cursor-pointer touch-none" title="Arraste para cima/baixo">
             <div class="w-12 h-1.5 bg-gray-300 dark:bg-gray-600 rounded-full"></div>
         </div>
@@ -156,7 +113,7 @@
         <div id="listaMensagens" class="flex-1 overflow-y-auto p-4 space-y-6 scroll-suave bg-gray-50 dark:bg-gray-800/50">
             </div>
 
-        <div class="p-4 bg-white dark:bg-[#0f172a] border-t border-gray-200 dark:border-gray-800 pb-safe">
+        <div class="p-4 bg-white dark:bg-[#0f172a] border-t border-gray-200 dark:border-gray-800 pb-safe shadow-[0_-5px_15px_rgba(0,0,0,0.05)]">
             <div class="max-w-3xl mx-auto flex gap-2 items-end bg-gray-100 dark:bg-gray-800 rounded-2xl p-2 border border-transparent focus-within:border-gray-300 dark:focus-within:border-gray-600 transition-colors">
                 <textarea id="campoPergunta" rows="1" placeholder="Pergunte ou comente um versículo..." class="flex-1 max-h-32 min-h-[44px] p-3 bg-transparent border-none outline-none text-sm font-sans resize-none text-gray-900 dark:text-gray-100 overflow-y-auto scroll-suave"></textarea>
                 <button id="btnEnviarMsg" class="w-11 h-11 mb-0.5 flex-shrink-0 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-xl flex items-center justify-center font-bold active:scale-90 transition-transform shadow-sm opacity-50">
@@ -166,7 +123,45 @@
         </div>
     </div>
 
-    <div id="modalConfig" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 modal">
+    <div id="barraSelecao" class="fixed bottom-0 left-0 right-0 bg-blue-600 dark:bg-blue-800 text-white p-4 z-[60] transition-transform duration-300 translate-y-full shadow-[0_-15px_40px_rgba(0,0,0,0.3)] pb-6 rounded-t-2xl min-h-[90px]">
+        <div class="max-w-md mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <button onclick="limparSelecao()" class="bg-blue-700 hover:bg-blue-900 rounded-full w-8 h-8 flex items-center justify-center font-bold text-lg active:scale-95 transition-colors">&times;</button>
+                <span id="contadorSelecao" class="font-bold text-sm tracking-wide">0 selecionados</span>
+            </div>
+            <div class="flex gap-5">
+                <button onclick="acaoMultiplaCopiar()" class="flex flex-col items-center justify-center active:scale-95 transition-transform text-blue-100 hover:text-white">
+                    <span class="text-xl">📋</span><span class="text-[10px] font-bold mt-1">Copiar</span>
+                </button>
+                <button onclick="acaoMultiplaMarcar()" class="flex flex-col items-center justify-center active:scale-95 transition-transform text-blue-100 hover:text-white">
+                    <span class="text-xl">🖍️</span><span id="textoBtnMarcar" class="text-[10px] font-bold mt-1">Marcar</span>
+                </button>
+                <button onclick="acaoMultiplaExplicar()" class="flex flex-col items-center justify-center active:scale-95 transition-transform font-bold bg-white text-blue-700 px-3 py-1.5 rounded-xl shadow-sm">
+                    <span class="text-lg">✨</span><span class="text-[10px] mt-0.5 uppercase tracking-wider">Explicar</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="telaBusca" class="fixed inset-0 bg-white dark:bg-gray-900 z-[70] flex flex-col transition-transform duration-300 translate-y-full altura-dinamica">
+        <div class="p-4 border-b border-gray-200 dark:border-gray-800 flex items-center gap-3">
+            <button onclick="fecharBusca()" class="p-2 text-2xl text-gray-500 hover:text-gray-800 dark:hover:text-white">←</button>
+            <input type="text" id="inputBusca" placeholder="Buscar na Bíblia..." class="flex-1 p-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-none outline-none focus:ring-2 focus:ring-blue-500 text-base font-sans">
+            <button onclick="executarBusca()" class="bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 p-3 rounded-xl font-bold shadow-md active:scale-95">Ir</button>
+        </div>
+        <div class="flex-1 overflow-y-auto p-4 scroll-suave" id="areaResultadosBusca">
+            <div id="containerHistoricoBusca" class="mb-6">
+                <div class="flex justify-between items-center mb-3">
+                    <h4 class="text-sm font-bold text-gray-500 uppercase tracking-wide">Buscas Recentes</h4>
+                    <button onclick="limparHistoricoBusca()" class="text-xs text-blue-600 dark:text-blue-400 font-bold active:scale-95">Limpar</button>
+                </div>
+                <div id="listaHistoricoBusca" class="flex flex-wrap gap-2"></div>
+            </div>
+            <div id="listaResultadosBusca" class="space-y-4"></div>
+        </div>
+    </div>
+
+    <div id="modalConfig" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[80] flex items-center justify-center p-4 modal">
         <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 w-full max-w-md shadow-2xl transform transition-all max-h-[90vh] overflow-y-auto scroll-suave">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="font-bold text-xl flex items-center gap-2"><span class="text-2xl">⚙️</span> Configurações</h3>
@@ -178,8 +173,10 @@
             </div>
             <div class="mb-6">
                 <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Instruções Adicionais (Opcional)</label>
-                <p class="text-[11px] text-gray-500 dark:text-gray-400 mb-3 leading-tight">A alma do Assistente da Bíblia já está ativada. Adicione comandos extras de formatação (ex: "Responda em tópicos").</p>
-                <textarea id="inputPerfil" rows="4" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white dark:bg-gray-700 outline-none focus:ring-2 focus:ring-blue-500 text-sm shadow-inner resize-none" placeholder="Suas instruções extras..."></textarea>
+                <p class="text-[11px] text-gray-500 dark:text-gray-400 mb-3 leading-tight">
+                    A alma do Assistente da Bíblia (Doutrina, Regra de Fé e Ortodoxia) já está ativada e protegida internamente. Adicione aqui apenas comandos extras de formatação.
+                </p>
+                <textarea id="inputPerfil" rows="4" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white dark:bg-gray-700 outline-none focus:ring-2 focus:ring-blue-500 text-sm shadow-inner resize-none" placeholder="Ex: Responda em tópicos curtos..."></textarea>
             </div>
             <button onclick="salvarConfig()" class="w-full p-3 rounded-xl font-bold bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 shadow-md active:scale-95 transition-transform">Salvar Dados</button>
         </div>
@@ -212,7 +209,7 @@
         }
 
         // ----------------------------------------------------
-        // 2. BÍBLIA: INICIALIZAÇÃO, NAVEGAÇÃO E SELEÇÃO
+        // 2. BÍBLIA: INICIALIZAÇÃO, NAVEGAÇÃO
         // ----------------------------------------------------
         async function iniciarBiblia() {
             const urlArc = 'https://raw.githubusercontent.com/maatheusgois/bible/main/versions/pt-br/arc.json';
@@ -225,8 +222,11 @@
                 if(indexCapitulo >= bibliaCompleta[indexLivro].chapters.length) indexCapitulo = 0;
 
                 preencherLivros(); exibirCapitulo(); carregarHistoricoBusca(); carregarHistoricoChat();
+                
+                // Ajuste inicial do padding (espaço final para a Bíblia não sumir debaixo da barra)
+                mudarEstadoChat('hidden'); 
             } catch (erro) {
-                document.getElementById('areaLeitura').innerHTML = `<div class="text-center mt-20 text-red-500 font-bold">Erro de conexão.</div>`;
+                document.getElementById('areaLeitura').innerHTML = `<div class="text-center mt-20 text-red-500 font-bold">Erro ao conectar. Verifique a internet.</div>`;
             }
         }
 
@@ -257,6 +257,7 @@
             versiculos.forEach((texto, i) => {
                 const idUnico = `${indexLivro}-${indexCapitulo}-${i}`;
                 const classMarcado = marcacoes[idUnico] ? 'versiculo-marcado' : '';
+                
                 html += `
                 <div id="v-${idUnico}" onclick="toggleSelecaoVersiculo(${indexLivro}, ${indexCapitulo}, ${i})" class="flex gap-4 mb-5 items-start cursor-pointer p-2 rounded-xl transition-all -mx-2 hover:bg-gray-100 dark:hover:bg-gray-800 ${classMarcado}">
                     <span class="text-[11px] font-black bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 px-2 py-1 rounded shadow-sm mt-1.5 flex-shrink-0 pointer-events-none">${i + 1}</span>
@@ -281,7 +282,9 @@
             document.getElementById('selLivro').value = indexLivro; preencherCapitulos(); exibirCapitulo();
         });
 
-        // SELEÇÃO MÚLTIPLA
+        // ----------------------------------------------------
+        // 3. SISTEMA DE SELEÇÃO MÚLTIPLA SUPREMA
+        // ----------------------------------------------------
         function toggleSelecaoVersiculo(lIdx, cIdx, vIdx) {
             const idUnico = `${lIdx}-${cIdx}-${vIdx}`;
             const divElement = document.getElementById(`v-${idUnico}`);
@@ -303,10 +306,11 @@
             const barra = document.getElementById('barraSelecao');
             if (versiculosSelecionados.length > 0) {
                 document.getElementById('contadorSelecao').innerText = `${versiculosSelecionados.length} selecionado${versiculosSelecionados.length > 1 ? 's' : ''}`;
-                document.getElementById('textoBtnMarcar').innerText = versiculosSelecionados.every(v => marcacoes[v.idUnico]) ? "Desmarcar" : "Marcar";
-                barra.classList.remove('translate-y-full');
+                const todosMarcados = versiculosSelecionados.every(v => marcacoes[v.idUnico]);
+                document.getElementById('textoBtnMarcar').innerText = todosMarcados ? "Desmarcar" : "Marcar";
+                barra.classList.remove('translate-y-full'); // Desliza para cima sobre a nav
             } else {
-                barra.classList.add('translate-y-full');
+                barra.classList.add('translate-y-full'); // Esconde para baixo
             }
         }
 
@@ -315,8 +319,10 @@
             versiculosSelecionados = []; atualizarBarraSelecao();
         }
 
+        function ordenarSelecao() { versiculosSelecionados.sort((a, b) => a.vIdx - b.vIdx); }
+
         function acaoMultiplaCopiar() {
-            versiculosSelecionados.sort((a, b) => a.vIdx - b.vIdx);
+            ordenarSelecao();
             let texto = ""; versiculosSelecionados.forEach(v => { texto += `"${v.texto}" (${v.referencia})\n`; });
             navigator.clipboard.writeText(texto.trim()).then(() => { limparSelecao(); alert("Copiado!"); });
         }
@@ -332,20 +338,25 @@
         }
 
         function acaoMultiplaExplicar() {
-            versiculosSelecionados.sort((a, b) => a.vIdx - b.vIdx);
+            ordenarSelecao();
             let blocoTexto = ""; versiculosSelecionados.forEach(v => { blocoTexto += `"${v.texto}" (${v.referencia})\n`; });
-            limparSelecao();
+            const promptContextual = `Por favor, explique esta passagem à luz da Palavra:\n\n${blocoTexto}`;
+            limparSelecao(); // Esconde a barra de seleção azul
             
-            mudarEstadoChat('half'); // Abre o chat na metade
+            // Abre o chat se estiver fechado
+            if(estadoChat === 'hidden') mudarEstadoChat('half');
             
             const textarea = document.getElementById('campoPergunta');
-            textarea.value = `Por favor, explique esta passagem à luz da Palavra:\n\n${blocoTexto}`;
+            textarea.value = promptContextual;
             textarea.style.height = 'auto'; textarea.style.height = textarea.scrollHeight + 'px';
             document.getElementById('btnEnviarMsg').style.opacity = '1';
+            
+            // Envia automaticamente para a IA
+            setTimeout(() => document.getElementById('btnEnviarMsg').click(), 300);
         }
 
         // ----------------------------------------------------
-        // 4. BUSCA BÍBLICA
+        // 4. MOTOR DE BUSCA
         // ----------------------------------------------------
         let historicoBusca = JSON.parse(localStorage.getItem('biblia_historico_busca')) || [];
         function abrirBusca() { document.getElementById('telaBusca').classList.remove('translate-y-full'); document.getElementById('inputBusca').focus(); }
@@ -383,7 +394,6 @@
                         }
                     }
                 }
-
                 if (resultados.length === 0) return areaRes.innerHTML = `<div class="text-center p-8 text-gray-500">Nada encontrado para "${termo}".</div>`;
 
                 let htmlRes = `<p class="text-sm font-bold text-gray-500 mb-4">${resultados.length} resultados</p>`;
@@ -411,29 +421,35 @@
         document.getElementById('inputBusca').addEventListener('keypress', e => { if (e.key === 'Enter') executarBusca(); });
 
         // ----------------------------------------------------
-        // 5. CHAT COM BOTTOM SHEET E GESTOS (SWIPE)
+        // 5. CHAT COM BOTTOM SHEET, GESTOS E IA BLINDADA
         // ----------------------------------------------------
-        let estadoChat = 'hidden'; // hidden, half, full
+        let estadoChat = 'hidden'; 
         const gavetaChat = document.getElementById('gavetaChat');
-        const navInferior = document.getElementById('navInferior');
         const mainBiblia = document.getElementById('mainBiblia');
         
         function mudarEstadoChat(novoEstado) {
             estadoChat = novoEstado;
-            gavetaChat.className = `bottom-sheet sheet-${estadoChat}`;
             
+            // Troca as classes CSS que animam a gaveta
+            gavetaChat.classList.remove('sheet-hidden', 'sheet-half', 'sheet-full');
+            gavetaChat.classList.add(`sheet-${estadoChat}`);
+            
+            // O Segredo Sênior: Aumentar o espaço invisível no fim da Bíblia para poder rolar até o fim
             if(estadoChat === 'hidden') {
-                navInferior.classList.remove('escondida');
-                mainBiblia.style.paddingBottom = '6rem'; // Padrão
+                mainBiblia.style.paddingBottom = '90px'; // Apenas espaço para a navInferior
             } else if (estadoChat === 'half') {
-                navInferior.classList.add('escondida');
-                mainBiblia.style.paddingBottom = '55dvh'; // Permite rolar a bíblia até o fim sem o chat cobrir
-                document.getElementById('btnTamanhoChat').innerText = '⛶'; // Ícone expandir
+                mainBiblia.style.paddingBottom = 'calc(50dvh + 90px)'; 
+                document.getElementById('btnTamanhoChat').innerText = '⛶'; 
             } else if (estadoChat === 'full') {
-                navInferior.classList.add('escondida');
-                document.getElementById('btnTamanhoChat').innerText = '🗗'; // Ícone minimizar
+                mainBiblia.style.paddingBottom = 'calc(80dvh + 90px)';
+                document.getElementById('btnTamanhoChat').innerText = '🗗'; 
             }
             if(estadoChat !== 'hidden') setTimeout(rolarChatParaBaixo, 300);
+        }
+
+        function toggleChat() {
+            if (estadoChat === 'hidden') mudarEstadoChat('half');
+            else mudarEstadoChat('hidden');
         }
 
         function toggleTamanhoChat() {
@@ -441,23 +457,22 @@
             else if (estadoChat === 'full') mudarEstadoChat('half');
         }
 
-        // LÓGICA DE GESTO (SWIPE UP/DOWN NO HANDLE)
+        // SWIPE (Arrastar para cima/baixo na pílula)
         let touchStartY = 0;
         const dragHandle = document.getElementById('dragHandle');
         dragHandle.addEventListener('touchstart', e => { touchStartY = e.changedTouches[0].screenY; }, {passive: true});
         dragHandle.addEventListener('touchend', e => {
             const touchEndY = e.changedTouches[0].screenY;
             const diff = touchEndY - touchStartY;
-            if (diff < -40) { // Deslizou pra Cima
-                if (estadoChat === 'half') mudarEstadoChat('full');
-            } else if (diff > 40) { // Deslizou pra Baixo
+            if (diff < -40) { if (estadoChat === 'half') mudarEstadoChat('full'); } 
+            else if (diff > 40) { 
                 if (estadoChat === 'full') mudarEstadoChat('half');
                 else if (estadoChat === 'half') mudarEstadoChat('hidden');
             }
         });
-        dragHandle.addEventListener('click', toggleTamanhoChat); // Clicar na pílula também funciona
+        dragHandle.addEventListener('click', toggleTamanhoChat);
 
-        // IA Lógica
+        // LÓGICA DA INTELIGÊNCIA ARTIFICIAL
         const listaMsg = document.getElementById('listaMensagens');
         const inputMsg = document.getElementById('campoPergunta');
         const modalConfig = document.getElementById('modalConfig');
@@ -485,7 +500,7 @@
 
         function carregarHistoricoChat() {
             if(historicoChat.length === 0) {
-                listaMsg.innerHTML = `<div class="flex flex-col items-center justify-center h-full text-center fade-in opacity-50 px-6 py-10"><span class="text-5xl mb-4">✨</span><h2 class="text-xl font-bold mb-2">Paz do Senhor!</h2><p class="text-sm">Selecione versículos na tela ou faça sua pergunta teológica.</p></div>`;
+                listaMsg.innerHTML = `<div class="flex flex-col items-center justify-center h-full text-center fade-in opacity-50 px-6 py-10"><span class="text-5xl mb-4">✨</span><h2 class="text-xl font-bold mb-2">Paz do Senhor!</h2><p class="text-sm">Selecione versículos ou faça uma pergunta teológica.</p></div>`;
                 return;
             }
             listaMsg.innerHTML = '';
@@ -493,11 +508,11 @@
             rolarChatParaBaixo();
         }
 
-        function limparChat() { if(confirm("Iniciar novo estudo e limpar conversa?")) { historicoChat = []; localStorage.removeItem('biblia_historico_chat'); carregarHistoricoChat(); } }
+        function limparChat() { if(confirm("Limpar todo o estudo atual?")) { historicoChat = []; localStorage.removeItem('biblia_historico_chat'); carregarHistoricoChat(); } }
 
         function renderizarBalao(role, texto, animar = true) {
             const anim = animar ? 'fade-in' : '';
-            if (listaMsg.querySelector('h2')) listaMsg.innerHTML = ''; // Remove welcome message
+            if (listaMsg.querySelector('h2')) listaMsg.innerHTML = '';
             if(role === 'user') {
                 listaMsg.innerHTML += `<div class="flex justify-end mb-2 ${anim}"><div class="bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-4 py-3 rounded-3xl rounded-tr-sm max-w-[85%] font-sans text-[15px] whitespace-pre-wrap">${texto}</div></div>`;
             } else {
