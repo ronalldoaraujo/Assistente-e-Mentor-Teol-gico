@@ -12,48 +12,48 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; touch-action: manipulation; overscroll-behavior-y: none; }
+        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; touch-action: manipulation; transition: padding-bottom 0.3s ease; }
         .texto-biblia { font-family: 'Lora', serif; line-height: 1.8; }
         .altura-dinamica { height: 100dvh; }
         
-        /* FÍSICA DO BOTTOM SHEET (GAVETA DINÂMICA) */
-        .chat-sheet {
-            position: fixed; bottom: 0; left: 0; right: 0;
-            height: 100dvh; 
-            z-index: 40; /* Acima do menu, mas sem fundo escuro bloqueando a leitura */
-            transition: transform 0.3s cubic-bezier(0.3, 1, 0.3, 1);
-            transform: translateY(100%); /* Começa fechado */
-            box-shadow: 0 -10px 40px rgba(0,0,0,0.15);
-            display: flex; flex-direction: column;
-            border-top-left-radius: 1.5rem; border-top-right-radius: 1.5rem;
-        }
-        .dark .chat-sheet { box-shadow: 0 -10px 40px rgba(0,0,0,0.5); }
-        .chat-sheet.half { transform: translateY(50dvh); }
-        .chat-sheet.full { transform: translateY(0); border-radius: 0; }
-        
-        .drag-handle { width: 40px; height: 5px; border-radius: 10px; margin: 0 auto; cursor: grab; }
-        .chat-sheet.full .drag-handle { display: none; /* Esconde o puxador em tela cheia */ }
-        
-        /* Modais padrão */
-        .gaveta { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); transform: translateY(100%); }
-        .gaveta.aberta { transform: translateY(0); }
         .modal { transition: opacity 0.2s; opacity: 0; pointer-events: none; }
         .modal.aberto { opacity: 1; pointer-events: auto; }
         .fade-in { animation: fadeIn 0.3s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Scrollbar */
+        /* Scrollbar Otimizada */
         .scroll-suave::-webkit-scrollbar { width: 4px; }
         .scroll-suave::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; }
         .dark .scroll-suave::-webkit-scrollbar-thumb { background: #475569; }
         
-        /* Versículos */
+        /* VERSÍCULOS */
         .versiculo-marcado { background-color: rgba(250, 204, 21, 0.4); border-radius: 0.5rem; transition: background-color 0.2s; }
         .dark .versiculo-marcado { background-color: rgba(161, 98, 7, 0.4); }
+        
         .versiculo-selecionado { background-color: rgba(59, 130, 246, 0.1); border-left: 4px solid #2563eb; border-radius: 0 0.5rem 0.5rem 0; }
         .dark .versiculo-selecionado { background-color: rgba(59, 130, 246, 0.2); border-left-color: #60a5fa; }
+
         .highlight-busca { font-weight: 700; color: #2563eb; background-color: rgba(59, 130, 246, 0.15); padding: 0 2px; border-radius: 2px; }
         .dark .highlight-busca { color: #60a5fa; background-color: rgba(59, 130, 246, 0.25); }
+
+        /* BOTTOM SHEET (GAVETA INTELIGENTE) */
+        .bottom-sheet {
+            position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
+            background: white; display: flex; flex-direction: column;
+            border-radius: 1.5rem 1.5rem 0 0;
+            box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s cubic-bezier(0.3, 0.9, 0.3, 1), height 0.3s cubic-bezier(0.3, 0.9, 0.3, 1);
+        }
+        .dark .bottom-sheet { background: #0f172a; box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5); border-top: 1px solid #1e293b; }
+        
+        /* Estados da Gaveta */
+        .sheet-hidden { transform: translateY(100%); opacity: 0; pointer-events: none; }
+        .sheet-half { transform: translateY(0); height: 55dvh; opacity: 1; pointer-events: auto; }
+        .sheet-full { transform: translateY(0); height: 92dvh; opacity: 1; pointer-events: auto; }
+        
+        /* Ocultar barra de navegação quando chat aberto */
+        .nav-inferior { transition: transform 0.3s ease; }
+        .nav-inferior.escondida { transform: translateY(150%); }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-900 transition-colors duration-300 dark:bg-gray-900 dark:text-gray-100 pb-safe">
@@ -63,9 +63,9 @@
             <div class="flex justify-between items-center mb-3">
                 <h1 class="text-xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">Bíblia ARC</h1>
                 <div class="flex items-center gap-2">
-                    <button onclick="abrirBusca()" class="p-2 bg-gray-100 dark:bg-gray-800 rounded-full text-lg shadow-sm active:scale-95 transition-transform">🔍</button>
-                    <button onclick="abrirModalConfig()" class="p-2 bg-gray-100 dark:bg-gray-800 rounded-full text-lg shadow-sm active:scale-95 transition-transform">⚙️</button>
-                    <button id="btnTema" class="p-2 bg-gray-100 dark:bg-gray-800 rounded-full text-lg shadow-sm active:scale-95 transition-transform">🌓</button>
+                    <button onclick="abrirBusca()" class="p-2 bg-gray-100 dark:bg-gray-800 rounded-full text-lg shadow-sm active:scale-95 transition-transform" title="Buscar Palavra">🔍</button>
+                    <button onclick="abrirModalConfig()" class="p-2 bg-gray-100 dark:bg-gray-800 rounded-full text-lg shadow-sm active:scale-95 transition-transform" title="Configurar IA">⚙️</button>
+                    <button id="btnTema" class="p-2 bg-gray-100 dark:bg-gray-800 rounded-full text-lg shadow-sm active:scale-95 transition-transform" title="Mudar Tema">🌓</button>
                 </div>
             </div>
             <div class="flex gap-2">
@@ -75,7 +75,7 @@
         </div>
     </header>
 
-    <main class="pt-32 pb-32 px-4 max-w-md mx-auto min-h-screen" id="areaPrincipal">
+    <main id="mainBiblia" class="pt-32 pb-24 px-4 max-w-md mx-auto min-h-screen">
         <div id="areaLeitura" class="texto-biblia text-xl">
             <div class="flex flex-col items-center justify-center mt-20 text-blue-600 dark:text-blue-400">
                 <svg class="w-12 h-12 mb-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
@@ -84,17 +84,17 @@
         </div>
     </main>
 
-    <nav class="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 p-3 z-30 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.05)]">
+    <nav id="navInferior" class="nav-inferior fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 p-3 z-30 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.05)]">
         <div class="max-w-md mx-auto flex gap-2">
             <button id="btnAnterior" class="flex-none w-14 bg-gray-100 dark:bg-gray-800 p-3 rounded-xl font-bold active:scale-95 transition-transform flex items-center justify-center text-lg">←</button>
-            <button onclick="abrirChatMetade()" class="flex-1 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 shadow-md p-3 rounded-xl font-bold flex items-center justify-center gap-2 active:scale-95 transition-transform whitespace-nowrap">
+            <button onclick="mudarEstadoChat('half')" class="flex-1 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 shadow-md p-3 rounded-xl font-bold flex items-center justify-center gap-2 active:scale-95 transition-transform whitespace-nowrap">
                 <span class="text-xl">✨</span> Assistente da Bíblia
             </button>
             <button id="btnProximo" class="flex-none w-14 bg-gray-100 dark:bg-gray-800 p-3 rounded-xl font-bold active:scale-95 transition-transform flex items-center justify-center text-lg">→</button>
         </div>
     </nav>
 
-    <div id="barraSelecao" class="fixed bottom-0 left-0 right-0 bg-gray-900 dark:bg-gray-800 text-white p-4 z-50 gaveta shadow-2xl pb-6 rounded-t-2xl">
+    <div id="barraSelecao" class="fixed bottom-0 left-0 right-0 bg-gray-900 dark:bg-gray-800 text-white p-4 z-40 transition-transform duration-300 translate-y-full shadow-2xl pb-6 rounded-t-2xl">
         <div class="max-w-md mx-auto flex justify-between items-center">
             <div class="flex items-center gap-3">
                 <button onclick="limparSelecao()" class="bg-gray-800 dark:bg-gray-700 hover:bg-gray-700 rounded-full w-8 h-8 flex items-center justify-center font-bold text-lg active:scale-95">&times;</button>
@@ -114,7 +114,7 @@
         </div>
     </div>
 
-    <div id="telaBusca" class="fixed inset-0 bg-white dark:bg-gray-900 z-[60] flex flex-col gaveta altura-dinamica">
+    <div id="telaBusca" class="fixed inset-0 bg-white dark:bg-gray-900 z-50 flex flex-col transition-transform duration-300 translate-y-full altura-dinamica">
         <div class="p-4 border-b border-gray-200 dark:border-gray-800 flex items-center gap-3">
             <button onclick="fecharBusca()" class="p-2 text-2xl text-gray-500 hover:text-gray-800 dark:hover:text-white">←</button>
             <input type="text" id="inputBusca" placeholder="Buscar na Bíblia..." class="flex-1 p-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-none outline-none focus:ring-2 focus:ring-blue-500 text-base font-sans">
@@ -132,41 +132,41 @@
         </div>
     </div>
 
-    <div id="gavetaChat" class="chat-sheet bg-white dark:bg-gray-900">
+    <div id="gavetaChat" class="bottom-sheet sheet-hidden">
         
-        <div id="dragZone" class="w-full pt-3 pb-2 flex justify-center bg-white dark:bg-gray-900 rounded-t-3xl cursor-grab active:cursor-grabbing">
-            <div class="drag-handle bg-gray-300 dark:bg-gray-700"></div>
+        <div id="dragHandle" class="w-full pt-3 pb-1 flex justify-center cursor-pointer touch-none" title="Arraste para cima/baixo">
+            <div class="w-12 h-1.5 bg-gray-300 dark:bg-gray-600 rounded-full"></div>
         </div>
 
-        <div class="px-4 pb-3 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 flex justify-between items-center">
+        <div class="px-4 pb-3 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center">
             <div class="flex items-center gap-2">
                 <span class="text-2xl">✨</span>
                 <div>
                     <h3 class="font-bold text-lg text-gray-900 dark:text-gray-100 leading-tight">Assistente da Bíblia</h3>
-                    <p class="text-[10px] text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wider">Arraste para ajustar</p>
+                    <p class="text-[11px] text-gray-500 dark:text-gray-400 font-medium">Ortodoxia & Teologia</p>
                 </div>
             </div>
             <div class="flex items-center gap-1">
-                <button onclick="alternarTamanhoChat()" id="btnTamanhoChat" class="p-2 text-gray-500 hover:text-gray-800 dark:hover:text-white rounded-full font-bold text-xl transition-colors" title="Expandir">⇈</button>
-                <button onclick="limparChat()" class="p-2 text-gray-400 hover:text-red-500 rounded-full font-bold text-lg transition-colors" title="Novo Estudo">🗑️</button>
-                <button onclick="fecharChat()" class="p-2 text-gray-500 hover:text-gray-800 dark:hover:text-white rounded-full font-bold text-2xl transition-colors">&times;</button>
+                <button onclick="limparChat()" class="p-2 text-gray-400 hover:text-red-500 rounded-full font-bold text-lg transition-colors" title="Limpar Conversa">🗑️</button>
+                <button onclick="toggleTamanhoChat()" id="btnTamanhoChat" class="p-2 text-gray-400 hover:text-blue-500 rounded-full font-bold text-lg transition-colors" title="Tela Cheia">⛶</button>
+                <button onclick="mudarEstadoChat('hidden')" class="p-2 text-gray-500 hover:text-gray-800 dark:hover:text-white rounded-full font-bold text-2xl">&times;</button>
             </div>
         </div>
         
         <div id="listaMensagens" class="flex-1 overflow-y-auto p-4 space-y-6 scroll-suave bg-gray-50 dark:bg-gray-800/50">
             </div>
 
-        <div class="p-4 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 pb-safe">
+        <div class="p-4 bg-white dark:bg-[#0f172a] border-t border-gray-200 dark:border-gray-800 pb-safe">
             <div class="max-w-3xl mx-auto flex gap-2 items-end bg-gray-100 dark:bg-gray-800 rounded-2xl p-2 border border-transparent focus-within:border-gray-300 dark:focus-within:border-gray-600 transition-colors">
-                <textarea id="campoPergunta" rows="1" placeholder="Pergunte ao assistente..." class="flex-1 max-h-32 min-h-[44px] p-3 bg-transparent border-none outline-none text-sm font-sans resize-none text-gray-900 dark:text-gray-100 overflow-y-auto scroll-suave"></textarea>
-                <button id="btnEnviarMsg" class="w-11 h-11 mb-0.5 flex-shrink-0 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-xl flex items-center justify-center font-bold active:scale-90 transition-transform shadow-sm disabled:opacity-50">
+                <textarea id="campoPergunta" rows="1" placeholder="Pergunte ou comente um versículo..." class="flex-1 max-h-32 min-h-[44px] p-3 bg-transparent border-none outline-none text-sm font-sans resize-none text-gray-900 dark:text-gray-100 overflow-y-auto scroll-suave"></textarea>
+                <button id="btnEnviarMsg" class="w-11 h-11 mb-0.5 flex-shrink-0 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-xl flex items-center justify-center font-bold active:scale-90 transition-transform shadow-sm opacity-50">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5"><path d="M3.478 2.404a.75.75 0 0 0-.926.941l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.404Z" /></svg>
                 </button>
             </div>
         </div>
     </div>
 
-    <div id="modalConfig" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] flex items-center justify-center p-4 modal">
+    <div id="modalConfig" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 modal">
         <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 w-full max-w-md shadow-2xl transform transition-all max-h-[90vh] overflow-y-auto scroll-suave">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="font-bold text-xl flex items-center gap-2"><span class="text-2xl">⚙️</span> Configurações</h3>
@@ -178,15 +178,17 @@
             </div>
             <div class="mb-6">
                 <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Instruções Adicionais (Opcional)</label>
-                <p class="text-[11px] text-gray-500 dark:text-gray-400 mb-3 leading-tight">A alma do Assistente da Bíblia já está ativada. Adicione aqui comandos extras de formatação.</p>
-                <textarea id="inputPerfil" rows="4" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white dark:bg-gray-700 outline-none focus:ring-2 focus:ring-blue-500 text-sm shadow-inner resize-none" placeholder="Suas instruções extras aparecerão aqui..."></textarea>
+                <p class="text-[11px] text-gray-500 dark:text-gray-400 mb-3 leading-tight">A alma do Assistente da Bíblia já está ativada. Adicione comandos extras de formatação (ex: "Responda em tópicos").</p>
+                <textarea id="inputPerfil" rows="4" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white dark:bg-gray-700 outline-none focus:ring-2 focus:ring-blue-500 text-sm shadow-inner resize-none" placeholder="Suas instruções extras..."></textarea>
             </div>
             <button onclick="salvarConfig()" class="w-full p-3 rounded-xl font-bold bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 shadow-md active:scale-95 transition-transform">Salvar Dados</button>
         </div>
     </div>
 
     <script>
-        // 1. ESTADO GLOBAL E MOTOR
+        // ----------------------------------------------------
+        // 1. ESTADO GLOBAL, UTILITÁRIOS E MARKDOWN
+        // ----------------------------------------------------
         let bibliaCompleta = [];
         let indexLivro = parseInt(localStorage.getItem('leitura_livro')) || 0;
         let indexCapitulo = parseInt(localStorage.getItem('leitura_capitulo')) || 0;
@@ -209,17 +211,23 @@
             return html;
         }
 
-        // 2. BÍBLIA
+        // ----------------------------------------------------
+        // 2. BÍBLIA: INICIALIZAÇÃO, NAVEGAÇÃO E SELEÇÃO
+        // ----------------------------------------------------
         async function iniciarBiblia() {
             const urlArc = 'https://raw.githubusercontent.com/maatheusgois/bible/main/versions/pt-br/arc.json';
             try {
                 const resposta = await fetch(urlArc);
                 if (!resposta.ok) throw new Error("Falha");
                 bibliaCompleta = await resposta.json();
+                
                 if(indexLivro >= bibliaCompleta.length) indexLivro = 0;
                 if(indexCapitulo >= bibliaCompleta[indexLivro].chapters.length) indexCapitulo = 0;
+
                 preencherLivros(); exibirCapitulo(); carregarHistoricoBusca(); carregarHistoricoChat();
-            } catch (erro) { document.getElementById('areaLeitura').innerHTML = `<div class="text-center mt-20 text-red-500 font-bold">Erro ao conectar.</div>`; }
+            } catch (erro) {
+                document.getElementById('areaLeitura').innerHTML = `<div class="text-center mt-20 text-red-500 font-bold">Erro de conexão.</div>`;
+            }
         }
 
         function salvarEstadoLeitura() { localStorage.setItem('leitura_livro', indexLivro); localStorage.setItem('leitura_capitulo', indexCapitulo); }
@@ -232,8 +240,9 @@
 
         function preencherCapitulos() {
             const select = document.getElementById('selCapitulo');
+            const total = bibliaCompleta[indexLivro].chapters.length;
             let options = '';
-            for(let i = 0; i < bibliaCompleta[indexLivro].chapters.length; i++) options += `<option value="${i}">Capítulo ${i + 1}</option>`;
+            for(let i = 0; i < total; i++) options += `<option value="${i}">Capítulo ${i + 1}</option>`;
             select.innerHTML = options; select.value = indexCapitulo;
         }
 
@@ -242,6 +251,7 @@
             limparSelecao();
             const livroAtual = bibliaCompleta[indexLivro];
             const versiculos = livroAtual.chapters[indexCapitulo];
+            
             let html = `<h2 class="text-3xl font-extrabold mb-8 text-gray-900 dark:text-gray-100 text-center fade-in">${livroAtual.name} ${indexCapitulo + 1}</h2>`;
             
             versiculos.forEach((texto, i) => {
@@ -261,17 +271,17 @@
         document.getElementById('selLivro').addEventListener('change', (e) => { indexLivro = parseInt(e.target.value); indexCapitulo = 0; preencherCapitulos(); exibirCapitulo(); });
         document.getElementById('selCapitulo').addEventListener('change', (e) => { indexCapitulo = parseInt(e.target.value); exibirCapitulo(); });
         document.getElementById('btnProximo').addEventListener('click', () => {
-            if (indexCapitulo < bibliaCompleta[indexLivro].chapters.length - 1) indexCapitulo++;
+            if (indexCapitulo < bibliaCompleta[indexLivro].chapters.length - 1) { indexCapitulo++; } 
             else if (indexLivro < bibliaCompleta.length - 1) { indexLivro++; indexCapitulo = 0; }
             document.getElementById('selLivro').value = indexLivro; preencherCapitulos(); exibirCapitulo();
         });
         document.getElementById('btnAnterior').addEventListener('click', () => {
-            if (indexCapitulo > 0) indexCapitulo--;
+            if (indexCapitulo > 0) { indexCapitulo--; } 
             else if (indexLivro > 0) { indexLivro--; indexCapitulo = bibliaCompleta[indexLivro].chapters.length - 1; }
             document.getElementById('selLivro').value = indexLivro; preencherCapitulos(); exibirCapitulo();
         });
 
-        // 3. SELEÇÃO MÚLTIPLA
+        // SELEÇÃO MÚLTIPLA
         function toggleSelecaoVersiculo(lIdx, cIdx, vIdx) {
             const idUnico = `${lIdx}-${cIdx}-${vIdx}`;
             const divElement = document.getElementById(`v-${idUnico}`);
@@ -283,8 +293,7 @@
             } else {
                 const livroNome = bibliaCompleta[lIdx].name;
                 const texto = bibliaCompleta[lIdx].chapters[cIdx][vIdx];
-                const referencia = `${livroNome} ${cIdx + 1}:${vIdx + 1}`;
-                versiculosSelecionados.push({ lIdx, cIdx, vIdx, idUnico, texto, referencia });
+                versiculosSelecionados.push({ lIdx, cIdx, vIdx, idUnico, texto, referencia: `${livroNome} ${cIdx + 1}:${vIdx + 1}` });
                 divElement.classList.add('versiculo-selecionado');
             }
             atualizarBarraSelecao();
@@ -292,107 +301,98 @@
 
         function atualizarBarraSelecao() {
             const barra = document.getElementById('barraSelecao');
-            const contador = document.getElementById('contadorSelecao');
             if (versiculosSelecionados.length > 0) {
-                contador.innerText = `${versiculosSelecionados.length} selecionado${versiculosSelecionados.length > 1 ? 's' : ''}`;
-                const todosMarcados = versiculosSelecionados.every(v => marcacoes[v.idUnico]);
-                document.getElementById('textoBtnMarcar').innerText = todosMarcados ? "Desmarcar" : "Marcar";
-                barra.classList.add('aberta');
-            } else { barra.classList.remove('aberta'); }
+                document.getElementById('contadorSelecao').innerText = `${versiculosSelecionados.length} selecionado${versiculosSelecionados.length > 1 ? 's' : ''}`;
+                document.getElementById('textoBtnMarcar').innerText = versiculosSelecionados.every(v => marcacoes[v.idUnico]) ? "Desmarcar" : "Marcar";
+                barra.classList.remove('translate-y-full');
+            } else {
+                barra.classList.add('translate-y-full');
+            }
         }
 
         function limparSelecao() {
             versiculosSelecionados.forEach(v => { const el = document.getElementById(`v-${v.idUnico}`); if(el) el.classList.remove('versiculo-selecionado'); });
             versiculosSelecionados = []; atualizarBarraSelecao();
         }
-        function ordenarSelecao() { versiculosSelecionados.sort((a, b) => a.vIdx - b.vIdx); }
 
         function acaoMultiplaCopiar() {
-            ordenarSelecao();
-            let textoCopiado = "";
-            versiculosSelecionados.forEach(v => { textoCopiado += `"${v.texto}" (${v.referencia})\n`; });
-            navigator.clipboard.writeText(textoCopiado.trim()).then(() => { limparSelecao(); alert("Copiados!"); });
+            versiculosSelecionados.sort((a, b) => a.vIdx - b.vIdx);
+            let texto = ""; versiculosSelecionados.forEach(v => { texto += `"${v.texto}" (${v.referencia})\n`; });
+            navigator.clipboard.writeText(texto.trim()).then(() => { limparSelecao(); alert("Copiado!"); });
         }
 
         function acaoMultiplaMarcar() {
             const todosMarcados = versiculosSelecionados.every(v => marcacoes[v.idUnico]);
             versiculosSelecionados.forEach(v => {
-                const id = v.idUnico;
-                if (todosMarcados) { delete marcacoes[id]; } else { marcacoes[id] = true; }
-                const divElement = document.getElementById(`v-${id}`);
-                if(divElement) {
-                    if(marcacoes[id]) divElement.classList.add('versiculo-marcado');
-                    else divElement.classList.remove('versiculo-marcado');
-                }
+                if (todosMarcados) delete marcacoes[v.idUnico]; else marcacoes[v.idUnico] = true;
+                const el = document.getElementById(`v-${v.idUnico}`);
+                if(el) { if(marcacoes[v.idUnico]) el.classList.add('versiculo-marcado'); else el.classList.remove('versiculo-marcado'); }
             });
             localStorage.setItem('biblia_marcacoes', JSON.stringify(marcacoes)); limparSelecao();
         }
 
         function acaoMultiplaExplicar() {
-            ordenarSelecao();
-            let blocoTexto = "";
-            versiculosSelecionados.forEach(v => { blocoTexto += `"${v.texto}" (${v.referencia})\n`; });
+            versiculosSelecionados.sort((a, b) => a.vIdx - b.vIdx);
+            let blocoTexto = ""; versiculosSelecionados.forEach(v => { blocoTexto += `"${v.texto}" (${v.referencia})\n`; });
             limparSelecao();
-            abrirChatMetade();
+            
+            mudarEstadoChat('half'); // Abre o chat na metade
+            
             const textarea = document.getElementById('campoPergunta');
             textarea.value = `Por favor, explique esta passagem à luz da Palavra:\n\n${blocoTexto}`;
             textarea.style.height = 'auto'; textarea.style.height = textarea.scrollHeight + 'px';
             document.getElementById('btnEnviarMsg').style.opacity = '1';
         }
 
-        // 4. BUSCA
+        // ----------------------------------------------------
+        // 4. BUSCA BÍBLICA
+        // ----------------------------------------------------
         let historicoBusca = JSON.parse(localStorage.getItem('biblia_historico_busca')) || [];
-        function abrirBusca() { document.getElementById('telaBusca').classList.add('aberta'); document.getElementById('inputBusca').focus(); }
-        function fecharBusca() { document.getElementById('telaBusca').classList.remove('aberta'); }
-        
+        function abrirBusca() { document.getElementById('telaBusca').classList.remove('translate-y-full'); document.getElementById('inputBusca').focus(); }
+        function fecharBusca() { document.getElementById('telaBusca').classList.add('translate-y-full'); }
+        function limparHistoricoBusca() { historicoBusca = []; localStorage.setItem('biblia_historico_busca', JSON.stringify(historicoBusca)); carregarHistoricoBusca(); }
+
         function carregarHistoricoBusca() {
             const container = document.getElementById('listaHistoricoBusca');
-            if(historicoBusca.length === 0) { container.innerHTML = '<span class="text-xs text-gray-400">Nenhuma busca recente.</span>'; return; }
-            container.innerHTML = historicoBusca.map(termo => `<button onclick="document.getElementById('inputBusca').value='${termo}'; executarBusca();" class="px-3 py-1.5 bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-lg text-sm font-semibold active:scale-95 transition-transform">${termo}</button>`).join('');
+            if(historicoBusca.length === 0) return container.innerHTML = '<span class="text-xs text-gray-400">Nenhuma busca recente.</span>';
+            container.innerHTML = historicoBusca.map(t => `<button onclick="document.getElementById('inputBusca').value='${t}'; executarBusca();" class="px-3 py-1.5 bg-gray-200 dark:bg-gray-800 text-sm font-semibold rounded-lg active:scale-95">${t}</button>`).join('');
         }
-        function limparHistoricoBusca() { historicoBusca = []; localStorage.setItem('biblia_historico_busca', JSON.stringify(historicoBusca)); carregarHistoricoBusca(); }
 
         function executarBusca() {
             const input = document.getElementById('inputBusca');
-            const termoOriginal = input.value.trim();
-            if(!termoOriginal || termoOriginal.length < 2) return alert("Digite pelo menos 2 letras.");
+            const termo = input.value.trim();
+            if(termo.length < 2) return alert("Digite pelo menos 2 letras.");
 
-            if(!historicoBusca.includes(termoOriginal)) {
-                historicoBusca.unshift(termoOriginal);
-                if(historicoBusca.length > 8) historicoBusca.pop();
-                localStorage.setItem('biblia_historico_busca', JSON.stringify(historicoBusca));
-                carregarHistoricoBusca();
+            if(!historicoBusca.includes(termo)) {
+                historicoBusca.unshift(termo); if(historicoBusca.length > 8) historicoBusca.pop();
+                localStorage.setItem('biblia_historico_busca', JSON.stringify(historicoBusca)); carregarHistoricoBusca();
             }
 
-            const areaResultados = document.getElementById('listaResultadosBusca');
-            areaResultados.innerHTML = `<div class="text-center p-4 text-blue-500 font-bold animate-pulse">Buscando em toda a Bíblia...</div>`;
+            const areaRes = document.getElementById('listaResultadosBusca');
+            areaRes.innerHTML = `<div class="text-center p-4 text-blue-500 font-bold animate-pulse">Buscando...</div>`;
             
             setTimeout(() => {
-                const termoLimpo = removerAcentos(termoOriginal);
+                const termoLimpo = removerAcentos(termo);
                 let resultados = [];
                 for (let l = 0; l < bibliaCompleta.length; l++) {
                     for (let c = 0; c < bibliaCompleta[l].chapters.length; c++) {
                         for (let v = 0; v < bibliaCompleta[l].chapters[c].length; v++) {
-                            const texto = bibliaCompleta[l].chapters[c][v];
-                            if (removerAcentos(texto).includes(termoLimpo)) resultados.push({ lIdx: l, cIdx: c, vIdx: v, livro: bibliaCompleta[l].name, texto: texto });
+                            if (removerAcentos(bibliaCompleta[l].chapters[c][v]).includes(termoLimpo)) {
+                                resultados.push({ l, c, v, livro: bibliaCompleta[l].name, texto: bibliaCompleta[l].chapters[c][v] });
+                            }
                         }
                     }
                 }
 
-                if (resultados.length === 0) { areaResultados.innerHTML = `<div class="text-center p-8 text-gray-500">Sem resultados para "<strong>${termoOriginal}</strong>".</div>`; return; }
+                if (resultados.length === 0) return areaRes.innerHTML = `<div class="text-center p-8 text-gray-500">Nada encontrado para "${termo}".</div>`;
 
-                let htmlRes = `<p class="text-sm font-bold text-gray-500 mb-4">${resultados.length} encontrados</p>`;
-                const regexDestacar = new RegExp(`(${termoOriginal})`, 'gi');
-
+                let htmlRes = `<p class="text-sm font-bold text-gray-500 mb-4">${resultados.length} resultados</p>`;
+                const regex = new RegExp(`(${termo})`, 'gi');
                 resultados.forEach(res => {
-                    const textoDestacado = res.texto.replace(regexDestacar, '<span class="highlight-busca">$1</span>');
-                    htmlRes += `
-                    <div onclick="irParaResultado(${res.lIdx}, ${res.cIdx}, ${res.vIdx})" class="p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 cursor-pointer active:scale-95 transition-transform fade-in">
-                        <span class="text-xs font-black text-blue-600 dark:text-blue-400 uppercase tracking-wider block mb-1">${res.livro} ${res.cIdx + 1}:${res.vIdx + 1}</span>
-                        <p class="texto-biblia text-gray-800 dark:text-gray-200">${textoDestacado}</p>
-                    </div>`;
+                    const txt = res.texto.replace(regex, '<span class="highlight-busca">$1</span>');
+                    htmlRes += `<div onclick="irParaResultado(${res.l}, ${res.c}, ${res.v})" class="p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 cursor-pointer active:scale-95 fade-in mb-3"><span class="text-xs font-black text-blue-600 dark:text-blue-400 block mb-1 uppercase">${res.livro} ${res.c + 1}:${res.v + 1}</span><p class="texto-biblia">${txt}</p></div>`;
                 });
-                areaResultados.innerHTML = htmlRes;
+                areaRes.innerHTML = htmlRes;
             }, 50);
         }
 
@@ -400,133 +400,92 @@
             fecharBusca(); indexLivro = l; indexCapitulo = c;
             document.getElementById('selLivro').value = l; preencherCapitulos(); exibirCapitulo();
             setTimeout(() => {
-                const elemento = document.getElementById(`v-${l}-${c}-${v}`);
-                if(elemento) {
-                    window.scrollTo({ top: (elemento.getBoundingClientRect().top - document.body.getBoundingClientRect().top) - 100, behavior: 'smooth' });
-                    elemento.style.transition = 'background-color 0.5s';
-                    elemento.style.backgroundColor = 'rgba(59, 130, 246, 0.2)';
-                    setTimeout(() => elemento.style.backgroundColor = '', 1500);
+                const el = document.getElementById(`v-${l}-${c}-${v}`);
+                if(el) {
+                    window.scrollTo({ top: (el.getBoundingClientRect().top - document.body.getBoundingClientRect().top) - 100, behavior: 'smooth' });
+                    el.style.transition = 'background-color 0.5s'; el.style.backgroundColor = 'rgba(59, 130, 246, 0.2)';
+                    setTimeout(() => el.style.backgroundColor = '', 1500);
                 }
             }, 300);
         }
-        document.getElementById('inputBusca').addEventListener('keypress', function (e) { if (e.key === 'Enter') executarBusca(); });
+        document.getElementById('inputBusca').addEventListener('keypress', e => { if (e.key === 'Enter') executarBusca(); });
 
         // ----------------------------------------------------
-        // 5. CHAT (BOTTOM SHEET FÍSICO) E IA
+        // 5. CHAT COM BOTTOM SHEET E GESTOS (SWIPE)
         // ----------------------------------------------------
-        const gaveta = document.getElementById('gavetaChat');
+        let estadoChat = 'hidden'; // hidden, half, full
+        const gavetaChat = document.getElementById('gavetaChat');
+        const navInferior = document.getElementById('navInferior');
+        const mainBiblia = document.getElementById('mainBiblia');
+        
+        function mudarEstadoChat(novoEstado) {
+            estadoChat = novoEstado;
+            gavetaChat.className = `bottom-sheet sheet-${estadoChat}`;
+            
+            if(estadoChat === 'hidden') {
+                navInferior.classList.remove('escondida');
+                mainBiblia.style.paddingBottom = '6rem'; // Padrão
+            } else if (estadoChat === 'half') {
+                navInferior.classList.add('escondida');
+                mainBiblia.style.paddingBottom = '55dvh'; // Permite rolar a bíblia até o fim sem o chat cobrir
+                document.getElementById('btnTamanhoChat').innerText = '⛶'; // Ícone expandir
+            } else if (estadoChat === 'full') {
+                navInferior.classList.add('escondida');
+                document.getElementById('btnTamanhoChat').innerText = '🗗'; // Ícone minimizar
+            }
+            if(estadoChat !== 'hidden') setTimeout(rolarChatParaBaixo, 300);
+        }
+
+        function toggleTamanhoChat() {
+            if(estadoChat === 'half') mudarEstadoChat('full');
+            else if (estadoChat === 'full') mudarEstadoChat('half');
+        }
+
+        // LÓGICA DE GESTO (SWIPE UP/DOWN NO HANDLE)
+        let touchStartY = 0;
+        const dragHandle = document.getElementById('dragHandle');
+        dragHandle.addEventListener('touchstart', e => { touchStartY = e.changedTouches[0].screenY; }, {passive: true});
+        dragHandle.addEventListener('touchend', e => {
+            const touchEndY = e.changedTouches[0].screenY;
+            const diff = touchEndY - touchStartY;
+            if (diff < -40) { // Deslizou pra Cima
+                if (estadoChat === 'half') mudarEstadoChat('full');
+            } else if (diff > 40) { // Deslizou pra Baixo
+                if (estadoChat === 'full') mudarEstadoChat('half');
+                else if (estadoChat === 'half') mudarEstadoChat('hidden');
+            }
+        });
+        dragHandle.addEventListener('click', toggleTamanhoChat); // Clicar na pílula também funciona
+
+        // IA Lógica
         const listaMsg = document.getElementById('listaMensagens');
         const inputMsg = document.getElementById('campoPergunta');
-        const btnTamanhoChat = document.getElementById('btnTamanhoChat');
-        const areaPrincipal = document.getElementById('areaPrincipal');
-        
-        let chatState = 'closed'; // 'closed', 'half', 'full'
-
-        // LOGICA DE ESTADOS DO CHAT
-        function abrirChatMetade() {
-            gaveta.classList.remove('full');
-            gaveta.classList.add('half');
-            chatState = 'half';
-            btnTamanhoChat.innerText = '⇈';
-            btnTamanhoChat.title = "Expandir tela";
-            areaPrincipal.style.paddingBottom = '55dvh'; // Adiciona espaço extra na bíblia para ler até o fim
-            setTimeout(() => rolarChatParaBaixo(), 100);
-        }
-
-        function alternarTamanhoChat() {
-            if (chatState === 'half') {
-                gaveta.classList.remove('half');
-                gaveta.classList.add('full');
-                chatState = 'full';
-                btnTamanhoChat.innerText = '⇊';
-                btnTamanhoChat.title = "Reduzir tela";
-            } else {
-                abrirChatMetade();
-            }
-        }
-
-        function fecharChat() {
-            gaveta.classList.remove('half', 'full');
-            chatState = 'closed';
-            areaPrincipal.style.paddingBottom = '8rem'; // Volta o padding da bíblia ao normal
-        }
-
-        // Quando foca no input para digitar, expande para tela cheia para o teclado não esmagar a interface
-        inputMsg.addEventListener('focus', () => {
-            if (chatState === 'half') alternarTamanhoChat();
-        });
-
-        // FÍSICA DO ARRASTO (SWIPE/DRAG)
-        const dragZone = document.getElementById('dragZone');
-        let startY = 0;
-        let currentY = 0;
-        let isDragging = false;
-
-        dragZone.addEventListener('touchstart', (e) => {
-            startY = e.touches[0].clientY;
-            isDragging = true;
-            gaveta.style.transition = 'none'; // Desliga animação para seguir o dedo suavemente
-        }, {passive: true});
-
-        dragZone.addEventListener('touchmove', (e) => {
-            if (!isDragging) return;
-            currentY = e.touches[0].clientY;
-            const deltaY = currentY - startY;
-            
-            if (chatState === 'half') {
-                const newTranslate = (window.innerHeight / 2) + deltaY;
-                if (newTranslate >= 0) gaveta.style.transform = `translateY(${newTranslate}px)`;
-            } else if (chatState === 'full') {
-                if (deltaY > 0) gaveta.style.transform = `translateY(${deltaY}px)`;
-            }
-        }, {passive: true});
-
-        dragZone.addEventListener('touchend', () => {
-            if (!isDragging) return;
-            isDragging = false;
-            gaveta.style.transition = 'transform 0.3s cubic-bezier(0.3, 1, 0.3, 1)';
-            gaveta.style.transform = ''; // Limpa o estilo inline para a classe CSS reassumir
-            
-            const deltaY = currentY - startY;
-            const swipeThreshold = 50; // 50px de arrasto para mudar de estado
-            
-            if (chatState === 'half') {
-                if (deltaY < -swipeThreshold) alternarTamanhoChat(); // Arrastou pra cima -> Full
-                else if (deltaY > swipeThreshold) fecharChat();      // Arrastou pra baixo -> Fecha
-            } else if (chatState === 'full') {
-                if (deltaY > swipeThreshold && deltaY < window.innerHeight / 2) alternarTamanhoChat(); // Desceu um pouco -> Metade
-                else if (deltaY > window.innerHeight / 2) fecharChat(); // Desceu muito -> Fecha
-            }
-        });
-
-
-        // LOGICA DO ASSISTENTE IA
+        const modalConfig = document.getElementById('modalConfig');
         const ALMA_INTERNA = "Atue como um exímio Teólogo. Adote a ortodoxia Neo Testamentária, a ortodoxia do Protestantismo Histórico e a Ortodoxia Pentecostal Clássica das Assembleias de Deus.";
         let historicoChat = JSON.parse(localStorage.getItem('biblia_historico_chat')) || [];
 
         inputMsg.addEventListener('input', function() {
             this.style.height = 'auto'; this.style.height = (this.scrollHeight) + 'px';
-            const btn = document.getElementById('btnEnviarMsg');
-            if(this.value.trim() === '') { btn.style.opacity = '0.5'; } else { btn.style.opacity = '1'; }
+            document.getElementById('btnEnviarMsg').style.opacity = this.value.trim() === '' ? '0.5' : '1';
         });
 
         function abrirModalConfig() { 
             document.getElementById('inputChaveApi').value = localStorage.getItem('chave_secreta_gemini') || '';
             document.getElementById('inputPerfil').value = localStorage.getItem('perfil_ia_gemini') || ''; 
-            document.getElementById('modalConfig').classList.add('aberto'); 
+            modalConfig.classList.add('aberto'); 
         }
-        function fecharModalConfig() { document.getElementById('modalConfig').classList.remove('aberto'); }
+        function fecharModalConfig() { modalConfig.classList.remove('aberto'); }
         function salvarConfig() {
-            const k = document.getElementById('inputChaveApi').value.trim();
-            if(k === '') return alert("A chave da API é obrigatória.");
-            localStorage.setItem('chave_secreta_gemini', k);
+            const chave = document.getElementById('inputChaveApi').value.trim();
+            if(!chave) return alert("Chave obrigatória.");
+            localStorage.setItem('chave_secreta_gemini', chave);
             localStorage.setItem('perfil_ia_gemini', document.getElementById('inputPerfil').value.trim()); 
             fecharModalConfig();
         }
 
         function carregarHistoricoChat() {
             if(historicoChat.length === 0) {
-                listaMsg.innerHTML = `<div class="flex flex-col items-center justify-center h-full text-center fade-in opacity-50 px-6 mt-10"><span class="text-5xl mb-4">✨</span><h2 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-2">Paz do Senhor!</h2><p class="text-sm text-gray-500">Eu sou o Assistente da Bíblia.<br>Faça uma pergunta teológica ou selecione versículos na leitura para iniciarmos.</p></div>`;
+                listaMsg.innerHTML = `<div class="flex flex-col items-center justify-center h-full text-center fade-in opacity-50 px-6 py-10"><span class="text-5xl mb-4">✨</span><h2 class="text-xl font-bold mb-2">Paz do Senhor!</h2><p class="text-sm">Selecione versículos na tela ou faça sua pergunta teológica.</p></div>`;
                 return;
             }
             listaMsg.innerHTML = '';
@@ -534,56 +493,46 @@
             rolarChatParaBaixo();
         }
 
-        function limparChat() {
-            if(confirm("Deseja apagar a conversa e iniciar um novo estudo?")) {
-                historicoChat = []; localStorage.removeItem('biblia_historico_chat'); carregarHistoricoChat();
-            }
-        }
+        function limparChat() { if(confirm("Iniciar novo estudo e limpar conversa?")) { historicoChat = []; localStorage.removeItem('biblia_historico_chat'); carregarHistoricoChat(); } }
 
         function renderizarBalao(role, texto, animar = true) {
-            const classeAnim = animar ? 'fade-in' : '';
-            const telaVazia = listaMsg.querySelector('h2');
-            if (telaVazia) listaMsg.innerHTML = '';
-
+            const anim = animar ? 'fade-in' : '';
+            if (listaMsg.querySelector('h2')) listaMsg.innerHTML = ''; // Remove welcome message
             if(role === 'user') {
-                listaMsg.innerHTML += `<div class="flex justify-end mb-2 ${classeAnim}"><div class="bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-4 py-3 rounded-3xl rounded-tr-sm max-w-[85%] font-sans text-[15px] shadow-sm whitespace-pre-wrap">${texto}</div></div>`;
+                listaMsg.innerHTML += `<div class="flex justify-end mb-2 ${anim}"><div class="bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-4 py-3 rounded-3xl rounded-tr-sm max-w-[85%] font-sans text-[15px] whitespace-pre-wrap">${texto}</div></div>`;
             } else {
-                listaMsg.innerHTML += `<div class="flex gap-3 mb-6 mt-4 ${classeAnim}"><div class="w-8 h-8 rounded-full bg-gray-900 dark:bg-gray-100 flex items-center justify-center text-white dark:text-gray-900 flex-shrink-0 mt-0.5 shadow-md"><span class="text-sm">✨</span></div><div class="text-gray-800 dark:text-gray-200 font-sans text-[15px] leading-relaxed w-full">${formatarMarkdown(texto)}</div></div>`;
+                listaMsg.innerHTML += `<div class="flex gap-3 mb-6 mt-4 ${anim}"><div class="w-8 h-8 rounded-full bg-gray-900 dark:bg-gray-100 flex items-center justify-center text-white dark:text-gray-900 flex-shrink-0 mt-0.5 shadow-md">✨</div><div class="text-gray-800 dark:text-gray-200 font-sans text-[15px] leading-relaxed w-full">${formatarMarkdown(texto)}</div></div>`;
             }
         }
 
-        function adicionarMensagem(role, texto) {
-            historicoChat.push({ role, texto });
-            localStorage.setItem('biblia_historico_chat', JSON.stringify(historicoChat));
-            renderizarBalao(role, texto, true); rolarChatParaBaixo();
-        }
+        function adicionarMensagem(role, texto) { historicoChat.push({ role, texto }); localStorage.setItem('biblia_historico_chat', JSON.stringify(historicoChat)); renderizarBalao(role, texto, true); rolarChatParaBaixo(); }
+        function rolarChatParaBaixo() { setTimeout(() => { listaMsg.scrollTop = listaMsg.scrollHeight; }, 100); }
 
         document.getElementById('btnEnviarMsg').addEventListener('click', async () => {
             const pergunta = inputMsg.value.trim();
             if (!pergunta) return;
             const chaveApi = localStorage.getItem('chave_secreta_gemini');
-            if (!chaveApi) { abrirModalConfig(); return; }
+            if (!chaveApi) return abrirModalConfig();
 
-            const instrucaoExtraDoUsuario = localStorage.getItem('perfil_ia_gemini') || '';
-            const instrucaoFinalCombinada = instrucaoExtraDoUsuario ? `${ALMA_INTERNA}\n\nInstruções adicionais: ${instrucaoExtraDoUsuario}` : ALMA_INTERNA;
+            const extra = localStorage.getItem('perfil_ia_gemini') || '';
+            const combinada = extra ? `${ALMA_INTERNA}\n\nProtocolos extras: ${extra}` : ALMA_INTERNA;
 
             adicionarMensagem('user', pergunta);
             inputMsg.value = ''; inputMsg.style.height = 'auto'; document.getElementById('btnEnviarMsg').style.opacity = '0.5';
 
             const idLoader = 'load-' + Date.now();
-            listaMsg.innerHTML += `<div id="${idLoader}" class="flex gap-3 mb-6 mt-4 fade-in"><div class="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-500 flex-shrink-0 animate-pulse">✨</div><div class="text-gray-500 dark:text-gray-400 font-sans text-[15px] italic mt-1 animate-pulse">Meditando nas Escrituras...</div></div>`;
+            listaMsg.innerHTML += `<div id="${idLoader}" class="flex gap-3 mb-6 mt-4 fade-in"><div class="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-500 flex-shrink-0 animate-pulse">✨</div><div class="text-gray-500 italic mt-1 animate-pulse">Meditando...</div></div>`;
             rolarChatParaBaixo();
 
-            let historicoRecenteFormatado = "";
-            const ultimas = historicoChat.slice(-5, -1);
-            ultimas.forEach(m => { historicoRecenteFormatado += `${m.role === 'user' ? 'Usuário' : 'IA'}: ${m.texto}\n`; });
+            let histRecente = "";
+            historicoChat.slice(-5, -1).forEach(m => { histRecente += `${m.role === 'user' ? 'Usuário' : 'IA'}: ${m.texto}\n`; });
 
             try {
                 const resposta = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${chaveApi}`, {
                     method: 'POST', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        contents: [{ parts: [{ text: `Instrução base: ${instrucaoFinalCombinada}\n\nHistórico recente:\n${historicoRecenteFormatado}\n\nNova Pergunta: ${pergunta}` }] }],
-                        generationConfig: { temperature: 0.3, maxOutputTokens: 8192, topP: 0.95, topK: 40 }
+                        contents: [{ parts: [{ text: `Instrução base: ${combinada}\n\nHistórico:\n${histRecente}\n\nNova Pergunta: ${pergunta}` }] }],
+                        generationConfig: { temperature: 0.3, maxOutputTokens: 8192, topP: 0.95 }
                     })
                 });
                 
@@ -591,26 +540,20 @@
                 document.getElementById(idLoader).remove();
 
                 if (dadosJson.error) {
-                    let msg = dadosJson.error.message;
-                    if (msg.includes("Quota") || msg.includes("429")) msg = "Irmão, muitas perguntas seguidas. Aguarde alguns segundos.";
-                    else if (msg.includes("API key not valid")) msg = "Sua chave da API é inválida.";
-                    else msg = `⚠️ Contratempo de conexão. Tente novamente.`;
-                    renderizarBalao('ia', msg, true); return;
+                    let m = dadosJson.error.message;
+                    if (m.includes("Quota") || m.includes("429")) m = "Irmão, estamos consultando muito rápido. Aguarde uns segundos.";
+                    else if (m.includes("API key not valid")) m = "Sua chave da API é inválida.";
+                    renderizarBalao('ia', m, true); return;
                 }
-                adicionarMensagem('ia', dadosJson.candidates?.[0]?.content?.parts?.[0]?.text || "Erro na formulação.");
-            } catch (erro) {
-                document.getElementById(idLoader).remove();
-                renderizarBalao('ia', "⚠️ Erro de rede. Verifique sua conexão.", true);
-            }
+                adicionarMensagem('ia', dadosJson.candidates?.[0]?.content?.parts?.[0]?.text || "Falha ao formular.");
+            } catch (e) { document.getElementById(idLoader).remove(); renderizarBalao('ia', "Erro de conexão.", true); }
         });
 
-        document.getElementById('campoPergunta').addEventListener('keydown', function (e) {
-            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); document.getElementById('btnEnviarMsg').click(); }
-        });
-
+        document.getElementById('campoPergunta').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); document.getElementById('btnEnviarMsg').click(); }});
         document.getElementById('btnTema').addEventListener('click', () => { document.documentElement.classList.toggle('dark'); });
         window.onload = iniciarBiblia;
-        if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js'); }); }
+
+        if ('serviceWorker' in navigator) { window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js')); }
     </script>
 </body>
 </html>
