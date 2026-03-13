@@ -86,7 +86,7 @@
                     <span class="text-xl">📋</span><span class="text-[10px] font-bold mt-1">Copiar</span>
                 </button>
                 <button onclick="acaoMultiplaMarcar()" class="flex flex-col items-center justify-center active:scale-95 transition-transform">
-                    <span class="text-xl">🖍️</span><span class="text-[10px] font-bold mt-1">Marcar</span>
+                    <span class="text-xl">🖍️</span><span id="textoBtnMarcar" class="text-[10px] font-bold mt-1">Marcar</span>
                 </button>
                 <button onclick="acaoMultiplaExplicar()" class="flex flex-col items-center justify-center active:scale-95 transition-transform">
                     <span class="text-xl">✨</span><span class="text-[10px] font-bold mt-1 text-indigo-200">Explicar</span>
@@ -158,7 +158,7 @@
 
     <script>
         // ----------------------------------------------------
-        // 1. ESTADO GLOBAL E UTILITÁRIOS
+        // 1. ESTADO GLOBAL
         // ----------------------------------------------------
         let bibliaCompleta = [];
         let indexLivro = parseInt(localStorage.getItem('leitura_livro')) || 0;
@@ -252,7 +252,7 @@
 
 
         // ----------------------------------------------------
-        // 3. SISTEMA DE SELEÇÃO MÚLTIPLA
+        // 3. SISTEMA DE SELEÇÃO MÚLTIPLA E MARCAÇÃO
         // ----------------------------------------------------
         function toggleSelecaoVersiculo(lIdx, cIdx, vIdx) {
             const idUnico = `${lIdx}-${cIdx}-${vIdx}`;
@@ -277,6 +277,11 @@
             const contador = document.getElementById('contadorSelecao');
             if (versiculosSelecionados.length > 0) {
                 contador.innerText = `${versiculosSelecionados.length} selecionado${versiculosSelecionados.length > 1 ? 's' : ''}`;
+                
+                // INTELIGÊNCIA DE ESTADO: Verifica se TODOS os selecionados já estão marcados
+                const todosMarcados = versiculosSelecionados.every(v => marcacoes[v.idUnico]);
+                document.getElementById('textoBtnMarcar').innerText = todosMarcados ? "Desmarcar" : "Marcar";
+                
                 barra.classList.add('aberta');
             } else {
                 barra.classList.remove('aberta');
@@ -305,16 +310,25 @@
         }
 
         function acaoMultiplaMarcar() {
+            // Se todos os selecionados já estão marcados, a ação será "desmarcar" todos.
+            const todosMarcados = versiculosSelecionados.every(v => marcacoes[v.idUnico]);
+            
             versiculosSelecionados.forEach(v => {
                 const id = v.idUnico;
-                if (marcacoes[id]) { delete marcacoes[id]; } 
-                else { marcacoes[id] = true; }
+                
+                if (todosMarcados) {
+                    delete marcacoes[id]; // Desmarca
+                } else {
+                    marcacoes[id] = true; // Marca
+                }
+                
                 const divElement = document.getElementById(`v-${id}`);
                 if(divElement) {
                     if(marcacoes[id]) divElement.classList.add('versiculo-marcado');
                     else divElement.classList.remove('versiculo-marcado');
                 }
             });
+            
             localStorage.setItem('biblia_marcacoes', JSON.stringify(marcacoes));
             limparSelecao();
         }
@@ -401,6 +415,7 @@
                         <p class="texto-biblia text-gray-800 dark:text-gray-200">${textoDestacado}</p>
                     </div>`;
                 });
+
                 areaResultados.innerHTML = htmlRes;
             }, 50);
         }
@@ -536,8 +551,8 @@
                     body: JSON.stringify({
                         contents: [{ parts: [{ text: `Instrução base: ${instrucaoFinalCombinada}\n\nHistórico recente da conversa:\n${historicoRecenteFormatado}\n\nNova Pergunta do Usuário: ${pergunta}` }] }],
                         generationConfig: {
-                            temperature: 0.3, // Mais sóbrio, focado em precisão doutrinária em vez de criatividade exagerada
-                            maxOutputTokens: 8192, // Garante que a resposta nunca seja cortada no meio, permitindo textos longos
+                            temperature: 0.3,
+                            maxOutputTokens: 8192,
                             topP: 0.95,
                             topK: 40
                         }
@@ -560,7 +575,6 @@
                     return;
                 }
 
-                // Verifica se a resposta veio completa (evita erros críticos)
                 const respostaIA = dadosJson.candidates?.[0]?.content?.parts?.[0]?.text || "Desculpe, não consegui formular uma resposta.";
                 adicionarMensagem('ia', respostaIA);
 
