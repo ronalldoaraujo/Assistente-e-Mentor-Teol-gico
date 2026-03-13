@@ -148,9 +148,9 @@
             <div class="mb-6">
                 <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Instruções Adicionais (Opcional)</label>
                 <p class="text-[11px] text-gray-500 dark:text-gray-400 mb-3 leading-tight">
-                    Atenção: A Alma do Assistente da Bíblia já está blindada com as raízes da Ortodoxia Neotestamentária, Protestantismo Histórico e Ortodoxia Pentecostal das Assembleias de Deus. Use o campo abaixo APENAS para instruções de formato (ex: "Responda em 3 tópicos curtos" ou "Use uma linguagem para jovens").
+                    A alma do Assistente da Bíblia (Doutrina, Regra de Fé e Ortodoxia) já está ativada e protegida internamente. Este campo está livre para você adicionar comandos extras ou protocolos de formatação, se desejar.
                 </p>
-                <textarea id="inputPerfil" rows="4" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white dark:bg-gray-700 outline-none focus:ring-2 focus:ring-indigo-500 text-sm shadow-inner resize-none" placeholder="Instruções adicionais de formato..."></textarea>
+                <textarea id="inputPerfil" rows="4" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white dark:bg-gray-700 outline-none focus:ring-2 focus:ring-indigo-500 text-sm shadow-inner resize-none" placeholder="Ex: Responda em tópicos curtos..."></textarea>
             </div>
             <button onclick="salvarConfig()" class="w-full p-3 rounded-xl font-bold bg-indigo-600 text-white shadow-md active:scale-95 transition-transform">Salvar Dados</button>
         </div>
@@ -169,7 +169,7 @@
         function removerAcentos(str) { return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(); }
 
         // ----------------------------------------------------
-        // 2. INICIALIZAÇÃO DA BÍBLIA
+        // 2. INICIALIZAÇÃO E LEITURA DA BÍBLIA
         // ----------------------------------------------------
         async function iniciarBiblia() {
             const urlArc = 'https://raw.githubusercontent.com/maatheusgois/bible/main/versions/pt-br/arc.json';
@@ -215,6 +215,7 @@
             if(bibliaCompleta.length === 0) return;
             
             limparSelecao();
+            
             const livroAtual = bibliaCompleta[indexLivro];
             const versiculos = livroAtual.chapters[indexCapitulo];
             
@@ -249,6 +250,7 @@
             document.getElementById('selLivro').value = indexLivro; preencherCapitulos(); exibirCapitulo();
         });
 
+
         // ----------------------------------------------------
         // 3. SISTEMA DE SELEÇÃO MÚLTIPLA
         // ----------------------------------------------------
@@ -273,7 +275,6 @@
         function atualizarBarraSelecao() {
             const barra = document.getElementById('barraSelecao');
             const contador = document.getElementById('contadorSelecao');
-            
             if (versiculosSelecionados.length > 0) {
                 contador.innerText = `${versiculosSelecionados.length} selecionado${versiculosSelecionados.length > 1 ? 's' : ''}`;
                 barra.classList.add('aberta');
@@ -297,13 +298,17 @@
             ordenarSelecao();
             let textoCopiado = "";
             versiculosSelecionados.forEach(v => { textoCopiado += `"${v.texto}" (${v.referencia})\n`; });
-            navigator.clipboard.writeText(textoCopiado.trim()).then(() => { limparSelecao(); alert("Versículos copiados!"); });
+            navigator.clipboard.writeText(textoCopiado.trim()).then(() => {
+                limparSelecao();
+                alert("Versículos copiados!");
+            });
         }
 
         function acaoMultiplaMarcar() {
             versiculosSelecionados.forEach(v => {
                 const id = v.idUnico;
-                if (marcacoes[id]) { delete marcacoes[id]; } else { marcacoes[id] = true; }
+                if (marcacoes[id]) { delete marcacoes[id]; } 
+                else { marcacoes[id] = true; }
                 const divElement = document.getElementById(`v-${id}`);
                 if(divElement) {
                     if(marcacoes[id]) divElement.classList.add('versiculo-marcado');
@@ -396,7 +401,6 @@
                         <p class="texto-biblia text-gray-800 dark:text-gray-200">${textoDestacado}</p>
                     </div>`;
                 });
-
                 areaResultados.innerHTML = htmlRes;
             }, 50);
         }
@@ -431,7 +435,7 @@
 
 
         // ----------------------------------------------------
-        // 5. CHAT COM MEMÓRIA, ALMA BLINDADA E API CORPORATIVA
+        // 5. CHAT, ALMA BLINDADA E CONFIGURAÇÕES DA API (NÍVEL MERCADO)
         // ----------------------------------------------------
         const gaveta = document.getElementById('gavetaChat');
         const listaMsg = document.getElementById('listaMensagens');
@@ -440,7 +444,7 @@
         const inputChaveApi = document.getElementById('inputChaveApi');
         const inputPerfil = document.getElementById('inputPerfil');
 
-        // A ALMA DO SISTEMA: Diretriz mestre fixada no núcleo
+        // A ALMA DO SISTEMA: Atualizada e blindada
         const ALMA_INTERNA = "Atue como um exímio Teólogo. Adote a ortodoxia Neo Testamentária, a ortodoxia do Protestantismo Histórico e a Ortodoxia Pentecostal Clássica das Assembleias de Deus.";
         
         let historicoChat = JSON.parse(localStorage.getItem('biblia_historico_chat')) || [];
@@ -506,10 +510,9 @@
             const chaveApi = localStorage.getItem('chave_secreta_gemini');
             if (!chaveApi) { abrirModalConfig(); return; }
 
-            // Configuração Ouro: Junta a alma inegociável + dicas opcionais do usuário
             const instrucaoExtraDoUsuario = localStorage.getItem('perfil_ia_gemini') || '';
             const instrucaoFinalCombinada = instrucaoExtraDoUsuario 
-                ? `${ALMA_INTERNA}\n\nInstruções/Protocolos adicionais de formato: ${instrucaoExtraDoUsuario}`
+                ? `${ALMA_INTERNA}\n\nInstruções/Protocolos adicionais do usuário: ${instrucaoExtraDoUsuario}`
                 : ALMA_INTERNA;
 
             adicionarMensagem('user', pergunta);
@@ -519,40 +522,26 @@
             listaMsg.innerHTML += `<div id="${idLoader}" class="flex justify-start mb-4 fade-in"><div class="bg-gray-100 dark:bg-gray-800 text-gray-500 italic p-3 rounded-2xl rounded-tl-none text-sm animate-pulse">Meditando nas Escrituras...</div></div>`;
             rolarChatParaBaixo();
 
-            // Configuração Ouro: Array de Conversa no padrão Google Gemini (user/model)
-            // Limitado às últimas 8 interações (4 perguntas, 4 respostas) para contexto
-            const ultimasMensagens = historicoChat.slice(-8, -1);
-            const historicoFormatado = ultimasMensagens.map(m => ({
-                role: m.role === 'user' ? 'user' : 'model',
-                parts: [{ text: m.texto }]
-            }));
-
-            // Adiciona a pergunta atual no formato esperado pelo array de conteúdos
-            historicoFormatado.push({
-                role: 'user',
-                parts: [{ text: pergunta }]
-            });
-
-            // Configuração Ouro: Parâmetros corporativos com System Instruction oficial
-            const payloadGemini = {
-                system_instruction: {
-                    parts: [{ text: instrucaoFinalCombinada }]
-                },
-                contents: historicoFormatado,
-                generationConfig: {
-                    temperature: 0.2, // Mantém a IA focada na ortodoxia bíblica, sem divagar
-                    topP: 0.95,
-                    maxOutputTokens: 2048
-                }
-            };
+            let historicoRecenteFormatado = "";
+            const ultimas = historicoChat.slice(-5, -1);
+            ultimas.forEach(m => { historicoRecenteFormatado += `${m.role === 'user' ? 'Usuário' : 'IA'}: ${m.texto}\n`; });
 
             const urlEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${chaveApi}`;
             
             try {
+                // CONFIGURAÇÃO PREMIUM DE API: Evita cortes e alucinações
                 const resposta = await fetch(urlEndpoint, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payloadGemini)
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: `Instrução base: ${instrucaoFinalCombinada}\n\nHistórico recente da conversa:\n${historicoRecenteFormatado}\n\nNova Pergunta do Usuário: ${pergunta}` }] }],
+                        generationConfig: {
+                            temperature: 0.3, // Mais sóbrio, focado em precisão doutrinária em vez de criatividade exagerada
+                            maxOutputTokens: 8192, // Garante que a resposta nunca seja cortada no meio, permitindo textos longos
+                            topP: 0.95,
+                            topK: 40
+                        }
+                    })
                 });
                 
                 const dadosJson = await resposta.json();
@@ -571,11 +560,13 @@
                     return;
                 }
 
-                adicionarMensagem('ia', dadosJson.candidates[0].content.parts[0].text);
+                // Verifica se a resposta veio completa (evita erros críticos)
+                const respostaIA = dadosJson.candidates?.[0]?.content?.parts?.[0]?.text || "Desculpe, não consegui formular uma resposta.";
+                adicionarMensagem('ia', respostaIA);
 
             } catch (erro) {
                 document.getElementById(idLoader).remove();
-                renderizarBalao('ia', "⚠️ Erro de rede. Verifique sua conexão.", true);
+                renderizarBalao('ia', "⚠️ Erro de rede. Verifique sua conexão com a internet.", true);
             }
         });
 
