@@ -12,7 +12,20 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; touch-action: manipulation; transition: padding-bottom 0.3s ease; }
+        /* BLOQUEIO DE SELEÇÃO GLOBAL: Evita que o usuário selecione a interface sem querer */
+        body { 
+            font-family: 'Inter', sans-serif; 
+            -webkit-tap-highlight-color: transparent; 
+            touch-action: manipulation; 
+            transition: padding-bottom 0.3s ease;
+            user-select: none; 
+            -webkit-user-select: none; 
+        }
+        
+        /* PERMITE SELEÇÃO APENAS ONDE IMPORTA (Chat e Input) */
+        .texto-selecionavel { user-select: text; -webkit-user-select: text; cursor: text; }
+        textarea { user-select: text; -webkit-user-select: text; }
+
         .texto-biblia { font-family: 'Lora', serif; line-height: 1.8; }
         .altura-dinamica { height: 100dvh; }
         
@@ -21,7 +34,6 @@
         .fade-in { animation: fadeIn 0.3s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Scrollbar Otimizada */
         .scroll-suave::-webkit-scrollbar { width: 4px; }
         .scroll-suave::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; }
         .dark .scroll-suave::-webkit-scrollbar-thumb { background: #475569; }
@@ -29,24 +41,19 @@
         /* VERSÍCULOS */
         .versiculo-marcado { background-color: rgba(250, 204, 21, 0.4); border-radius: 0.5rem; transition: background-color 0.2s; }
         .dark .versiculo-marcado { background-color: rgba(161, 98, 7, 0.4); }
-        
         .versiculo-selecionado { background-color: rgba(59, 130, 246, 0.1); border-left: 4px solid #2563eb; border-radius: 0 0.5rem 0.5rem 0; }
         .dark .versiculo-selecionado { background-color: rgba(59, 130, 246, 0.2); border-left-color: #60a5fa; }
-
         .highlight-busca { font-weight: 700; color: #2563eb; background-color: rgba(59, 130, 246, 0.15); padding: 0 2px; border-radius: 2px; }
         .dark .highlight-busca { color: #60a5fa; background-color: rgba(59, 130, 246, 0.25); }
 
-        /* BOTTOM SHEET (GAVETA INTELIGENTE) - Nasce ACIMA da barra de navegação */
+        /* GAVETA INTELIGENTE */
         .bottom-sheet {
             position: fixed; left: 0; right: 0; bottom: 76px; z-index: 50;
             background: white; display: flex; flex-direction: column;
-            border-radius: 1.5rem 1.5rem 0 0;
-            box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.15);
+            border-radius: 1.5rem 1.5rem 0 0; box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.15);
             transition: transform 0.3s cubic-bezier(0.3, 0.9, 0.3, 1), height 0.3s cubic-bezier(0.3, 0.9, 0.3, 1);
         }
         .dark .bottom-sheet { background: #0f172a; box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5); border-top: 1px solid #1e293b; }
-        
-        /* Estados da Gaveta */
         .sheet-hidden { transform: translateY(120%); opacity: 0; pointer-events: none; }
         .sheet-half { transform: translateY(0); height: 50dvh; opacity: 1; pointer-events: auto; }
         .sheet-full { transform: translateY(0); height: calc(100dvh - 76px); opacity: 1; pointer-events: auto; }
@@ -143,7 +150,7 @@
     <div id="telaBusca" class="fixed inset-0 bg-white dark:bg-gray-900 z-[70] flex flex-col transition-transform duration-300 translate-y-full altura-dinamica">
         <div class="p-4 border-b border-gray-200 dark:border-gray-800 flex items-center gap-3">
             <button onclick="fecharBusca()" class="p-2 text-2xl text-gray-500 hover:text-gray-800 dark:hover:text-white">←</button>
-            <input type="text" id="inputBusca" placeholder="Buscar na Bíblia..." class="flex-1 p-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-none outline-none focus:ring-2 focus:ring-blue-500 text-base font-sans">
+            <input type="text" id="inputBusca" placeholder="Buscar na Bíblia..." class="flex-1 p-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-none outline-none focus:ring-2 focus:ring-blue-500 text-base font-sans texto-selecionavel">
             <button onclick="executarBusca()" class="bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 p-3 rounded-xl font-bold shadow-md active:scale-95">Ir</button>
         </div>
         <div class="flex-1 overflow-y-auto p-4 scroll-suave" id="areaResultadosBusca">
@@ -166,14 +173,14 @@
             </div>
             <div class="mb-5">
                 <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Chave da API (Gemini)</label>
-                <input type="text" id="inputChaveApi" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white dark:bg-gray-700 outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm shadow-inner" placeholder="Ex: AIzaSyB...">
+                <input type="text" id="inputChaveApi" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white dark:bg-gray-700 outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm shadow-inner texto-selecionavel" placeholder="Ex: AIzaSyB...">
             </div>
             <div class="mb-6">
                 <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Instruções Adicionais (Opcional)</label>
                 <p class="text-[11px] text-gray-500 dark:text-gray-400 mb-3 leading-tight">
-                    A matriz doutrinária do Assistente já está operando ativamente nos bastidores. Adicione aqui apenas comandos extras de formatação (Ex: "Fale em tópicos").
+                    A alma do Assistente da Bíblia (Doutrina, Regra de Fé e Ortodoxia) já está ativada internamente. Adicione aqui apenas comandos extras de formatação.
                 </p>
-                <textarea id="inputPerfil" rows="4" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white dark:bg-gray-700 outline-none focus:ring-2 focus:ring-blue-500 text-sm shadow-inner resize-none" placeholder="Ex: Responda em tópicos curtos..."></textarea>
+                <textarea id="inputPerfil" rows="4" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white dark:bg-gray-700 outline-none focus:ring-2 focus:ring-blue-500 text-sm shadow-inner resize-none texto-selecionavel" placeholder="Ex: Responda em tópicos curtos..."></textarea>
             </div>
             <button onclick="salvarConfig()" class="w-full p-3 rounded-xl font-bold bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 shadow-md active:scale-95 transition-transform">Salvar Dados</button>
         </div>
@@ -181,7 +188,7 @@
 
     <script>
         // ----------------------------------------------------
-        // 1. ESTADO GLOBAL E UTILITÁRIOS
+        // 1. ESTADO GLOBAL, UTILITÁRIOS E MARKDOWN
         // ----------------------------------------------------
         let bibliaCompleta = [];
         let indexLivro = parseInt(localStorage.getItem('leitura_livro')) || 0;
@@ -256,14 +263,8 @@
             const idUnico = `${lIdx}-${cIdx}-${vIdx}`;
             const divElement = document.getElementById(`v-${idUnico}`);
             const indexNoArray = versiculosSelecionados.findIndex(v => v.idUnico === idUnico);
-            
-            if (indexNoArray > -1) {
-                versiculosSelecionados.splice(indexNoArray, 1);
-                divElement.classList.remove('versiculo-selecionado');
-            } else {
-                versiculosSelecionados.push({ lIdx, cIdx, vIdx, idUnico, texto: bibliaCompleta[lIdx].chapters[cIdx][vIdx], referencia: `${bibliaCompleta[lIdx].name} ${cIdx + 1}:${vIdx + 1}` });
-                divElement.classList.add('versiculo-selecionado');
-            }
+            if (indexNoArray > -1) { versiculosSelecionados.splice(indexNoArray, 1); divElement.classList.remove('versiculo-selecionado'); } 
+            else { versiculosSelecionados.push({ lIdx, cIdx, vIdx, idUnico, texto: bibliaCompleta[lIdx].chapters[cIdx][vIdx], referencia: `${bibliaCompleta[lIdx].name} ${cIdx + 1}:${vIdx + 1}` }); divElement.classList.add('versiculo-selecionado'); }
             atualizarBarraSelecao();
         }
 
@@ -273,9 +274,7 @@
                 document.getElementById('contadorSelecao').innerText = `${versiculosSelecionados.length} selecionado${versiculosSelecionados.length > 1 ? 's' : ''}`;
                 document.getElementById('textoBtnMarcar').innerText = versiculosSelecionados.every(v => marcacoes[v.idUnico]) ? "Desmarcar" : "Marcar";
                 barra.classList.remove('translate-y-full');
-            } else {
-                barra.classList.add('translate-y-full');
-            }
+            } else { barra.classList.add('translate-y-full'); }
         }
 
         function limparSelecao() { versiculosSelecionados.forEach(v => { const el = document.getElementById(`v-${v.idUnico}`); if(el) el.classList.remove('versiculo-selecionado'); }); versiculosSelecionados = []; atualizarBarraSelecao(); }
@@ -302,11 +301,8 @@
             textarea.value = promptContextual;
             textarea.style.height = 'auto'; textarea.style.height = textarea.scrollHeight + 'px';
             document.getElementById('btnEnviarMsg').style.opacity = '1';
-            document.getElementById('btnEnviarMsg').disabled = true; // previne duplo clique rápido
-            setTimeout(() => {
-                document.getElementById('btnEnviarMsg').disabled = false;
-                document.getElementById('btnEnviarMsg').click();
-            }, 300);
+            document.getElementById('btnEnviarMsg').disabled = true;
+            setTimeout(() => { document.getElementById('btnEnviarMsg').disabled = false; document.getElementById('btnEnviarMsg').click(); }, 300);
         }
 
         // ----------------------------------------------------
@@ -348,19 +344,15 @@
                 areaRes.innerHTML = htmlRes;
             }, 50);
         }
-
         function irParaResultado(l, c, v) {
             fecharBusca(); indexLivro = l; indexCapitulo = c;
             document.getElementById('selLivro').value = l; preencherCapitulos(); exibirCapitulo();
-            setTimeout(() => {
-                const el = document.getElementById(`v-${l}-${c}-${v}`);
-                if(el) { window.scrollTo({ top: (el.getBoundingClientRect().top - document.body.getBoundingClientRect().top) - 100, behavior: 'smooth' }); el.style.transition = 'background-color 0.5s'; el.style.backgroundColor = 'rgba(59, 130, 246, 0.2)'; setTimeout(() => el.style.backgroundColor = '', 1500); }
-            }, 300);
+            setTimeout(() => { const el = document.getElementById(`v-${l}-${c}-${v}`); if(el) { window.scrollTo({ top: (el.getBoundingClientRect().top - document.body.getBoundingClientRect().top) - 100, behavior: 'smooth' }); el.style.transition = 'background-color 0.5s'; el.style.backgroundColor = 'rgba(59, 130, 246, 0.2)'; setTimeout(() => el.style.backgroundColor = '', 1500); } }, 300);
         }
         document.getElementById('inputBusca').addEventListener('keypress', e => { if (e.key === 'Enter') executarBusca(); });
 
         // ----------------------------------------------------
-        // 5. CHAT E API OTIMIZADA PARA BAIXO CONSUMO
+        // 5. CHAT, SMART SCROLL E CÓPIA NATIVA
         // ----------------------------------------------------
         let estadoChat = 'hidden'; 
         const gavetaChat = document.getElementById('gavetaChat');
@@ -370,18 +362,15 @@
             estadoChat = novoEstado;
             gavetaChat.classList.remove('sheet-hidden', 'sheet-half', 'sheet-full');
             gavetaChat.classList.add(`sheet-${estadoChat}`);
-            
             if(estadoChat === 'hidden') mainBiblia.style.paddingBottom = '90px'; 
             else if (estadoChat === 'half') { mainBiblia.style.paddingBottom = 'calc(50dvh + 90px)'; document.getElementById('btnTamanhoChat').innerText = '⛶'; } 
             else if (estadoChat === 'full') { mainBiblia.style.paddingBottom = 'calc(100dvh + 90px)'; document.getElementById('btnTamanhoChat').innerText = '🗗'; }
-            if(estadoChat !== 'hidden') setTimeout(rolarChatParaBaixo, 300);
         }
 
         function toggleChat() { if (estadoChat === 'hidden') mudarEstadoChat('half'); else mudarEstadoChat('hidden'); }
         function toggleTamanhoChat() { if(estadoChat === 'half') mudarEstadoChat('full'); else if (estadoChat === 'full') mudarEstadoChat('half'); }
 
-        let touchStartY = 0;
-        const dragHandle = document.getElementById('dragHandle');
+        let touchStartY = 0; const dragHandle = document.getElementById('dragHandle');
         dragHandle.addEventListener('touchstart', e => { touchStartY = e.changedTouches[0].screenY; }, {passive: true});
         dragHandle.addEventListener('touchend', e => {
             const diff = e.changedTouches[0].screenY - touchStartY;
@@ -390,7 +379,6 @@
         });
         dragHandle.addEventListener('click', toggleTamanhoChat);
 
-        // CONFIGURAÇÕES DA IA
         const listaMsg = document.getElementById('listaMensagens');
         const inputMsg = document.getElementById('campoPergunta');
         const modalConfig = document.getElementById('modalConfig');
@@ -412,24 +400,50 @@
                 return;
             }
             listaMsg.innerHTML = '';
-            historicoChat.forEach(msg => renderizarBalao(msg.role, msg.texto, false));
-            rolarChatParaBaixo();
+            historicoChat.forEach((msg, idx) => renderizarBalao(msg.role, msg.texto, idx, false));
+            setTimeout(() => { listaMsg.scrollTop = listaMsg.scrollHeight; }, 100);
         }
 
         function limparChat() { if(confirm("Limpar todo o estudo atual?")) { historicoChat = []; localStorage.removeItem('biblia_historico_chat'); carregarHistoricoChat(); } }
 
-        function renderizarBalao(role, texto, animar = true) {
+        // NOVA FUNÇÃO DE COPIAR DIRETO DO BOTÃO DA IA
+        window.copiarDoHistorico = function(index, btnElement) {
+            const texto = historicoChat[index].texto;
+            navigator.clipboard.writeText(texto).then(() => {
+                const originalHTML = btnElement.innerHTML;
+                btnElement.innerHTML = '✅ Copiado!';
+                btnElement.classList.add('text-green-600', 'dark:text-green-400', 'bg-green-100', 'dark:bg-green-900');
+                setTimeout(() => { 
+                    btnElement.innerHTML = originalHTML; 
+                    btnElement.classList.remove('text-green-600', 'dark:text-green-400', 'bg-green-100', 'dark:bg-green-900');
+                }, 2000);
+            });
+        };
+
+        function renderizarBalao(role, texto, indexArray, animar = true) {
             const anim = animar ? 'fade-in' : '';
             if (listaMsg.querySelector('h2')) listaMsg.innerHTML = '';
+            
             if(role === 'user') {
-                listaMsg.innerHTML += `<div class="flex justify-end mb-2 ${anim}"><div class="bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-4 py-3 rounded-3xl rounded-tr-sm max-w-[85%] font-sans text-[15px] whitespace-pre-wrap">${texto}</div></div>`;
+                listaMsg.innerHTML += `<div class="flex justify-end mb-2 ${anim}"><div class="bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-4 py-3 rounded-3xl rounded-tr-sm max-w-[85%] font-sans text-[15px] whitespace-pre-wrap texto-selecionavel">${texto}</div></div>`;
             } else {
-                listaMsg.innerHTML += `<div class="flex gap-3 mb-6 mt-4 ${anim}"><div class="w-8 h-8 rounded-full bg-gray-900 dark:bg-gray-100 flex items-center justify-center text-white dark:text-gray-900 flex-shrink-0 mt-0.5 shadow-md">✨</div><div class="text-gray-800 dark:text-gray-200 font-sans text-[15px] leading-relaxed w-full">${formatarMarkdown(texto)}</div></div>`;
+                // Adicionado Botão de Copiar e ID para Ancoragem
+                listaMsg.innerHTML += `
+                <div id="msg-${indexArray}" class="flex gap-3 mb-6 mt-4 ${anim}">
+                    <div class="w-8 h-8 rounded-full bg-gray-900 dark:bg-gray-100 flex items-center justify-center text-white dark:text-gray-900 flex-shrink-0 mt-0.5 shadow-md">✨</div>
+                    <div class="w-full">
+                        <div class="text-gray-800 dark:text-gray-200 font-sans text-[15px] leading-relaxed w-full texto-selecionavel">
+                            ${formatarMarkdown(texto)}
+                        </div>
+                        <div class="mt-3 flex justify-start">
+                            <button onclick="copiarDoHistorico(${indexArray}, this)" class="flex items-center gap-1.5 text-[11px] font-bold text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 bg-gray-100 dark:bg-gray-800/80 px-3 py-1.5 rounded-lg active:scale-95 transition-all">
+                                📋 Copiar Resposta
+                            </button>
+                        </div>
+                    </div>
+                </div>`;
             }
         }
-
-        function adicionarMensagem(role, texto) { historicoChat.push({ role, texto }); localStorage.setItem('biblia_historico_chat', JSON.stringify(historicoChat)); renderizarBalao(role, texto, true); rolarChatParaBaixo(); }
-        function rolarChatParaBaixo() { setTimeout(() => { listaMsg.scrollTop = listaMsg.scrollHeight; }, 100); }
 
         document.getElementById('btnEnviarMsg').addEventListener('click', async () => {
             const pergunta = inputMsg.value.trim();
@@ -437,46 +451,35 @@
             const chaveApi = localStorage.getItem('chave_secreta_gemini');
             if (!chaveApi) return abrirModalConfig();
 
-            // Desabilita botão para evitar múltiplos cliques
             const btnEnviar = document.getElementById('btnEnviarMsg');
             btnEnviar.disabled = true;
 
             const extra = localStorage.getItem('perfil_ia_gemini') || '';
             const combinada = extra ? `${ALMA_INTERNA}\n\nProtocolo do usuário: ${extra}` : ALMA_INTERNA;
 
-            adicionarMensagem('user', pergunta);
+            // Renderiza e desce a tela para a pergunta do usuário
+            historicoChat.push({ role: 'user', texto: pergunta });
+            const indexUser = historicoChat.length - 1;
+            localStorage.setItem('biblia_historico_chat', JSON.stringify(historicoChat));
+            renderizarBalao('user', pergunta, indexUser, true);
+            
             inputMsg.value = ''; inputMsg.style.height = 'auto'; btnEnviar.style.opacity = '0.5';
 
+            // Loader com Scroll
             const idLoader = 'load-' + Date.now();
             listaMsg.innerHTML += `<div id="${idLoader}" class="flex gap-3 mb-6 mt-4 fade-in"><div class="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-500 flex-shrink-0 animate-pulse">✨</div><div class="text-gray-500 italic mt-1 animate-pulse">Meditando...</div></div>`;
-            rolarChatParaBaixo();
+            setTimeout(() => { document.getElementById(idLoader).scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 50);
 
-            // CONSTRUÇÃO ESTRUTURADA DE ARRAY (PADRÃO OURO DE BAIXO CONSUMO)
             let conteudosDaAPI = [];
-            
-            // Pega as últimas 4 mensagens de contexto real
-            const mensagensAntigas = historicoChat.slice(-5, -1); 
-            mensagensAntigas.forEach(m => {
-                conteudosDaAPI.push({
-                    role: m.role === 'user' ? 'user' : 'model',
-                    parts: [{ text: m.texto }]
-                });
-            });
-
-            // Adiciona a pergunta atual
-            conteudosDaAPI.push({
-                role: 'user',
-                parts: [{ text: pergunta }]
-            });
+            const mensagensAntigas = historicoChat.slice(0, -1).slice(-4); // Pega as ultimas 4 ignorando a atual
+            mensagensAntigas.forEach(m => { conteudosDaAPI.push({ role: m.role === 'user' ? 'user' : 'model', parts: [{ text: m.texto }] }); });
+            conteudosDaAPI.push({ role: 'user', parts: [{ text: pergunta }] });
 
             try {
                 const resposta = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${chaveApi}`, {
-                    method: 'POST', 
-                    headers: { 'Content-Type': 'application/json' },
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        // A ALMA agora vai em um campo isolado e protegido
                         system_instruction: { parts: [{ text: combinada }] },
-                        // O CONTEÚDO vai em array estruturado, sem confusão de texto concatenado
                         contents: conteudosDaAPI,
                         generationConfig: { temperature: 0.3, maxOutputTokens: 8192, topP: 0.95 }
                     })
@@ -487,22 +490,36 @@
 
                 if (dadosJson.error) {
                     let m = dadosJson.error.message;
-                    if (m.includes("Quota") || m.includes("429")) {
-                        m = "Irmão, estamos consultando muito rápido. Por favor, aguarde cerca de 30 segundos antes de continuar o estudo.";
-                    } else if (m.includes("API key not valid")) {
-                        m = "Sua chave da API é inválida.";
-                    } else {
-                        m = `⚠️ Falha técnica: ${m}`;
-                    }
-                    renderizarBalao('ia', m, true); 
+                    if (m.includes("Quota") || m.includes("429")) m = "Irmão, estamos consultando muito rápido. Por favor, aguarde cerca de 30 segundos.";
+                    else if (m.includes("API key not valid")) m = "Sua chave da API é inválida.";
+                    
+                    historicoChat.push({ role: 'ia', texto: m });
+                    const indexErro = historicoChat.length - 1;
+                    renderizarBalao('ia', m, indexErro, true); 
                     btnEnviar.disabled = false;
                     return;
                 }
                 
-                adicionarMensagem('ia', dadosJson.candidates?.[0]?.content?.parts?.[0]?.text || "Falha ao formular.");
+                const textoIA = dadosJson.candidates?.[0]?.content?.parts?.[0]?.text || "Falha ao formular.";
+                historicoChat.push({ role: 'ia', texto: textoIA });
+                localStorage.setItem('biblia_historico_chat', JSON.stringify(historicoChat));
+                
+                const novoIndexIA = historicoChat.length - 1;
+                renderizarBalao('ia', textoIA, novoIndexIA, true);
+                
+                // SMART SCROLL: Rola apenas até o TOPO da mensagem nova, não para o final.
+                setTimeout(() => {
+                    const msgEl = document.getElementById(`msg-${novoIndexIA}`);
+                    if(msgEl) {
+                        // Calcula para o topo da mensagem ficar visível no container
+                        listaMsg.scrollTo({ top: msgEl.offsetTop - 20, behavior: 'smooth' });
+                    }
+                }, 100);
+
             } catch (e) { 
                 document.getElementById(idLoader).remove(); 
-                renderizarBalao('ia', "Erro de conexão de rede.", true); 
+                historicoChat.push({ role: 'ia', texto: "Erro de conexão de rede." });
+                renderizarBalao('ia', "Erro de conexão de rede.", historicoChat.length - 1, true); 
             }
             btnEnviar.disabled = false;
         });
