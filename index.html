@@ -6,158 +6,169 @@
     <title>Bíblia ARC Pro</title>
     
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#1e293b">
+    <meta name="theme-color" content="#131314">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3073/3073403.png">
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
     <style>
-        /* BLOQUEIO DE SELEÇÃO GLOBAL: Evita que o usuário selecione a interface sem querer */
+        /* BASE E ANTIALIASING PREMIUM */
         body { 
             font-family: 'Inter', sans-serif; 
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
             -webkit-tap-highlight-color: transparent; 
             touch-action: manipulation; 
-            transition: padding-bottom 0.3s ease;
+            transition: padding-bottom 0.3s ease, background-color 0.3s ease, color 0.3s ease;
             user-select: none; 
             -webkit-user-select: none; 
         }
         
-        /* PERMITE SELEÇÃO APENAS ONDE IMPORTA (Chat e Input) */
         .texto-selecionavel { user-select: text; -webkit-user-select: text; cursor: text; }
         textarea { user-select: text; -webkit-user-select: text; }
 
-        .texto-biblia { font-family: 'Lora', serif; line-height: 1.8; }
+        .texto-biblia { font-family: 'Lora', serif; line-height: 1.85; letter-spacing: -0.01em; }
         .altura-dinamica { height: 100dvh; }
         
-        .modal { transition: opacity 0.2s; opacity: 0; pointer-events: none; }
+        .modal { transition: opacity 0.25s ease; opacity: 0; pointer-events: none; }
         .modal.aberto { opacity: 1; pointer-events: auto; }
-        .fade-in { animation: fadeIn 0.3s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
         
-        .scroll-suave::-webkit-scrollbar { width: 4px; }
-        .scroll-suave::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; }
-        .dark .scroll-suave::-webkit-scrollbar-thumb { background: #475569; }
+        .scroll-suave::-webkit-scrollbar { width: 5px; }
+        .scroll-suave::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 5px; }
+        .dark .scroll-suave::-webkit-scrollbar-thumb { background: #334155; }
         
         /* VERSÍCULOS */
-        .versiculo-marcado { background-color: rgba(250, 204, 21, 0.4); border-radius: 0.5rem; transition: background-color 0.2s; }
+        .versiculo-marcado { background-color: rgba(250, 204, 21, 0.35); border-radius: 0.5rem; transition: background-color 0.2s; }
         .dark .versiculo-marcado { background-color: rgba(161, 98, 7, 0.4); }
-        .versiculo-selecionado { background-color: rgba(59, 130, 246, 0.1); border-left: 4px solid #2563eb; border-radius: 0 0.5rem 0.5rem 0; }
-        .dark .versiculo-selecionado { background-color: rgba(59, 130, 246, 0.2); border-left-color: #60a5fa; }
-        .highlight-busca { font-weight: 700; color: #2563eb; background-color: rgba(59, 130, 246, 0.15); padding: 0 2px; border-radius: 2px; }
+        .versiculo-selecionado { background-color: rgba(59, 130, 246, 0.08); border-left: 4px solid #2563eb; border-radius: 0 0.5rem 0.5rem 0; }
+        .dark .versiculo-selecionado { background-color: rgba(59, 130, 246, 0.15); border-left-color: #60a5fa; }
+        .highlight-busca { font-weight: 700; color: #2563eb; background-color: rgba(59, 130, 246, 0.15); padding: 0 2px; border-radius: 4px; }
         .dark .highlight-busca { color: #60a5fa; background-color: rgba(59, 130, 246, 0.25); }
 
-        /* GAVETA INTELIGENTE */
+        /* GAVETA INTELIGENTE (Fundo adaptado para padrão de mercado) */
         .bottom-sheet {
             position: fixed; left: 0; right: 0; bottom: 76px; z-index: 50;
-            background: white; display: flex; flex-direction: column;
-            border-radius: 1.5rem 1.5rem 0 0; box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.15);
-            transition: transform 0.3s cubic-bezier(0.3, 0.9, 0.3, 1), height 0.3s cubic-bezier(0.3, 0.9, 0.3, 1);
+            background: #ffffff; display: flex; flex-direction: column;
+            border-radius: 1.5rem 1.5rem 0 0; box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.12);
+            transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1), height 0.35s cubic-bezier(0.32, 0.72, 0, 1);
         }
-        .dark .bottom-sheet { background: #0f172a; box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5); border-top: 1px solid #1e293b; }
+        .dark .bottom-sheet { background: #1e1e20; box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.6); border-top: 1px solid #2d2d30; }
         .sheet-hidden { transform: translateY(120%); opacity: 0; pointer-events: none; }
-        .sheet-half { transform: translateY(0); height: 50dvh; opacity: 1; pointer-events: auto; }
+        .sheet-half { transform: translateY(0); height: 55dvh; opacity: 1; pointer-events: auto; }
         .sheet-full { transform: translateY(0); height: calc(100dvh - 76px); opacity: 1; pointer-events: auto; }
+        
+        /* Cores base personalizadas para Dark Mode Premium (Estilo Gemini) */
+        .dark body { background-color: #131314; color: #e3e3e3; }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-900 transition-colors duration-300 dark:bg-gray-900 dark:text-gray-100 pb-safe">
+<body class="bg-white text-gray-900 transition-colors duration-300 dark:bg-[#131314] dark:text-[#e3e3e3] pb-safe">
 
-    <header class="fixed top-0 left-0 right-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 z-30 p-4 shadow-sm">
-        <div class="max-w-md mx-auto">
-            <div class="flex justify-between items-center mb-3">
-                <h1 class="text-xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">Bíblia ARC</h1>
+    <header class="fixed top-0 left-0 right-0 bg-white/90 dark:bg-[#131314]/90 backdrop-blur-lg border-b border-gray-100 dark:border-[#2d2d30] z-30 p-4 shadow-sm">
+        <div class="max-w-3xl mx-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">Bíblia ARC</h1>
                 <div class="flex items-center gap-2">
-                    <button onclick="abrirBusca()" class="p-2 bg-gray-100 dark:bg-gray-800 rounded-full text-lg shadow-sm active:scale-95 transition-transform" title="Buscar Palavra">🔍</button>
-                    <button onclick="abrirModalConfig()" class="p-2 bg-gray-100 dark:bg-gray-800 rounded-full text-lg shadow-sm active:scale-95 transition-transform" title="Configurar IA">⚙️</button>
-                    <button id="btnTema" class="p-2 bg-gray-100 dark:bg-gray-800 rounded-full text-lg shadow-sm active:scale-95 transition-transform" title="Mudar Tema">🌓</button>
+                    <button onclick="abrirBusca()" class="p-2.5 bg-gray-50 dark:bg-[#1e1e20] rounded-full text-lg hover:bg-gray-100 dark:hover:bg-[#2d2d30] transition-colors" title="Buscar Palavra">🔍</button>
+                    <button onclick="abrirModalConfig()" class="p-2.5 bg-gray-50 dark:bg-[#1e1e20] rounded-full text-lg hover:bg-gray-100 dark:hover:bg-[#2d2d30] transition-colors" title="Configurar IA">⚙️</button>
+                    <button id="btnTema" class="p-2.5 bg-gray-50 dark:bg-[#1e1e20] rounded-full text-lg hover:bg-gray-100 dark:hover:bg-[#2d2d30] transition-colors" title="Mudar Tema">🌓</button>
                 </div>
             </div>
             <div class="flex gap-2">
-                <select id="selLivro" class="flex-[2] bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 appearance-none font-semibold"></select>
-                <select id="selCapitulo" class="flex-1 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-blue-500 appearance-none font-semibold text-center"></select>
+                <select id="selLivro" class="flex-[2] bg-gray-50 dark:bg-[#1e1e20] border border-gray-200 dark:border-[#2d2d30] p-3 rounded-2xl text-[15px] outline-none focus:ring-2 focus:ring-blue-500 appearance-none font-medium text-gray-800 dark:text-gray-200 shadow-sm"></select>
+                <select id="selCapitulo" class="flex-1 bg-gray-50 dark:bg-[#1e1e20] border border-gray-200 dark:border-[#2d2d30] p-3 rounded-2xl text-[15px] outline-none focus:ring-2 focus:ring-blue-500 appearance-none font-medium text-center text-gray-800 dark:text-gray-200 shadow-sm"></select>
             </div>
         </div>
     </header>
 
-    <main id="mainBiblia" class="pt-32 pb-24 px-4 max-w-md mx-auto min-h-screen">
-        <div id="areaLeitura" class="texto-biblia text-xl">
-            <div class="flex flex-col items-center justify-center mt-20 text-blue-600 dark:text-blue-400">
-                <svg class="w-12 h-12 mb-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                <p class="font-sans font-bold text-lg animate-pulse">Preparando as Escrituras...</p>
+    <main id="mainBiblia" class="pt-36 pb-24 px-5 max-w-3xl mx-auto min-h-screen">
+        <div id="areaLeitura" class="texto-biblia text-[19px] md:text-[21px] text-gray-800 dark:text-[#e3e3e3]">
+            <div class="flex flex-col items-center justify-center mt-32 text-blue-600 dark:text-blue-400">
+                <svg class="w-10 h-10 mb-4 animate-spin opacity-80" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                <p class="font-sans font-medium text-base animate-pulse">Preparando as Escrituras...</p>
             </div>
         </div>
     </main>
 
-    <nav id="navInferior" class="fixed bottom-0 left-0 right-0 h-[76px] bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 p-3 z-40 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.05)]">
-        <div class="max-w-md mx-auto flex gap-2">
-            <button id="btnAnterior" class="flex-none w-14 bg-gray-100 dark:bg-gray-800 p-3 rounded-xl font-bold active:scale-95 transition-transform flex items-center justify-center text-lg">←</button>
-            <button onclick="toggleChat()" class="flex-1 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 shadow-md p-3 rounded-xl font-bold flex items-center justify-center gap-2 active:scale-95 transition-transform whitespace-nowrap">
+    <nav id="navInferior" class="fixed bottom-0 left-0 right-0 h-[76px] bg-white/95 dark:bg-[#131314]/95 backdrop-blur-lg border-t border-gray-100 dark:border-[#2d2d30] p-3 z-40">
+        <div class="max-w-3xl mx-auto flex gap-3">
+            <button id="btnAnterior" class="flex-none w-14 bg-gray-50 dark:bg-[#1e1e20] p-3 rounded-2xl font-bold active:scale-95 transition-transform flex items-center justify-center text-xl text-gray-700 dark:text-gray-300">←</button>
+            <button onclick="toggleChat()" class="flex-1 bg-gray-900 dark:bg-white text-white dark:text-gray-900 shadow-md p-3 rounded-2xl font-semibold flex items-center justify-center gap-2 active:scale-95 transition-transform whitespace-nowrap text-[15px]">
                 <span class="text-xl">✨</span> Assistente da Bíblia
             </button>
-            <button id="btnProximo" class="flex-none w-14 bg-gray-100 dark:bg-gray-800 p-3 rounded-xl font-bold active:scale-95 transition-transform flex items-center justify-center text-lg">→</button>
+            <button id="btnProximo" class="flex-none w-14 bg-gray-50 dark:bg-[#1e1e20] p-3 rounded-2xl font-bold active:scale-95 transition-transform flex items-center justify-center text-xl text-gray-700 dark:text-gray-300">→</button>
         </div>
     </nav>
 
     <div id="gavetaChat" class="bottom-sheet sheet-hidden">
-        <div id="dragHandle" class="w-full pt-3 pb-1 flex justify-center cursor-pointer touch-none" title="Arraste para cima/baixo">
-            <div class="w-12 h-1.5 bg-gray-300 dark:bg-gray-600 rounded-full"></div>
+        <div id="dragHandle" class="w-full pt-4 pb-2 flex justify-center cursor-pointer touch-none" title="Arraste para cima/baixo">
+            <div class="w-10 h-1 bg-gray-300 dark:bg-[#474747] rounded-full"></div>
         </div>
-        <div class="px-4 pb-3 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center">
-            <div class="flex items-center gap-2">
-                <span class="text-2xl">✨</span>
+        <div class="px-5 pb-3 flex justify-between items-center bg-white dark:bg-[#1e1e20]">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-sm shadow-sm">✨</div>
                 <div>
-                    <h3 class="font-bold text-lg text-gray-900 dark:text-gray-100 leading-tight">Assistente da Bíblia</h3>
-                    <p class="text-[11px] text-gray-500 dark:text-gray-400 font-medium">Ortodoxia & Teologia</p>
+                    <h3 class="font-semibold text-[17px] text-gray-900 dark:text-gray-100 leading-tight">Assistente da Bíblia</h3>
                 </div>
             </div>
-            <div class="flex items-center gap-1">
-                <button onclick="limparChat()" class="p-2 text-gray-400 hover:text-red-500 rounded-full font-bold text-lg transition-colors" title="Limpar Conversa">🗑️</button>
-                <button onclick="toggleTamanhoChat()" id="btnTamanhoChat" class="p-2 text-gray-400 hover:text-blue-500 rounded-full font-bold text-lg transition-colors" title="Tela Cheia">⛶</button>
-                <button onclick="mudarEstadoChat('hidden')" class="p-2 text-gray-500 hover:text-gray-800 dark:hover:text-white rounded-full font-bold text-2xl">&times;</button>
+            <div class="flex items-center gap-2">
+                <button onclick="limparChat()" class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 rounded-full transition-colors" title="Limpar Conversa">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                </button>
+                <button onclick="toggleTamanhoChat()" id="btnTamanhoChat" class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 rounded-full transition-colors" title="Tela Cheia">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" /></svg>
+                </button>
+                <button onclick="mudarEstadoChat('hidden')" class="p-2 text-gray-500 hover:text-gray-800 dark:hover:text-white rounded-full transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
             </div>
         </div>
-        <div id="listaMensagens" class="flex-1 overflow-y-auto p-4 space-y-6 scroll-suave bg-gray-50 dark:bg-gray-800/50">
+        
+        <div id="listaMensagens" class="flex-1 overflow-y-auto px-5 py-6 space-y-8 scroll-suave bg-white dark:bg-[#1e1e20]">
         </div>
-        <div class="p-4 bg-white dark:bg-[#0f172a] border-t border-gray-200 dark:border-gray-800 pb-safe shadow-[0_-5px_15px_rgba(0,0,0,0.05)]">
-            <div class="max-w-3xl mx-auto flex gap-2 items-end bg-gray-100 dark:bg-gray-800 rounded-2xl p-2 border border-transparent focus-within:border-gray-300 dark:focus-within:border-gray-600 transition-colors">
-                <textarea id="campoPergunta" rows="1" placeholder="Pergunte ou comente um versículo..." class="flex-1 max-h-32 min-h-[44px] p-3 bg-transparent border-none outline-none text-sm font-sans resize-none text-gray-900 dark:text-gray-100 overflow-y-auto scroll-suave"></textarea>
-                <button id="btnEnviarMsg" class="w-11 h-11 mb-0.5 flex-shrink-0 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-xl flex items-center justify-center font-bold active:scale-90 transition-transform shadow-sm opacity-50 disabled:opacity-50">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5"><path d="M3.478 2.404a.75.75 0 0 0-.926.941l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.404Z" /></svg>
+        
+        <div class="px-4 py-3 bg-white dark:bg-[#1e1e20] pb-safe">
+            <div class="max-w-3xl mx-auto flex gap-2 items-end bg-gray-100 dark:bg-[#2d2d30] rounded-3xl px-4 py-2 border border-transparent focus-within:bg-white focus-within:border-gray-300 dark:focus-within:bg-[#1e1e20] dark:focus-within:border-[#474747] transition-all shadow-sm">
+                <textarea id="campoPergunta" rows="1" placeholder="Escreva aqui..." class="flex-1 max-h-32 min-h-[44px] py-3 bg-transparent border-none outline-none text-[16px] font-sans resize-none text-gray-900 dark:text-[#e3e3e3] overflow-y-auto scroll-suave placeholder-gray-500 dark:placeholder-gray-400 texto-selecionavel"></textarea>
+                <button id="btnEnviarMsg" class="w-10 h-10 mb-1 flex-shrink-0 bg-transparent text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 rounded-full flex items-center justify-center transition-colors disabled:opacity-30 disabled:hover:text-gray-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6"><path d="M3.478 2.404a.75.75 0 0 0-.926.941l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.404Z" /></svg>
                 </button>
             </div>
         </div>
     </div>
 
-    <div id="barraSelecao" class="fixed bottom-0 left-0 right-0 bg-blue-600 dark:bg-blue-800 text-white p-4 z-[60] transition-transform duration-300 translate-y-full shadow-[0_-15px_40px_rgba(0,0,0,0.3)] pb-6 rounded-t-2xl min-h-[90px]">
-        <div class="max-w-md mx-auto flex justify-between items-center">
+    <div id="barraSelecao" class="fixed bottom-0 left-0 right-0 bg-[#0b57d0] dark:bg-[#a8c7fa] text-white dark:text-gray-900 p-4 z-[60] transition-transform duration-300 translate-y-full shadow-[0_-15px_40px_rgba(0,0,0,0.2)] pb-6 rounded-t-3xl min-h-[90px]">
+        <div class="max-w-md mx-auto flex justify-between items-center px-2">
             <div class="flex items-center gap-3">
-                <button onclick="limparSelecao()" class="bg-blue-700 hover:bg-blue-900 rounded-full w-8 h-8 flex items-center justify-center font-bold text-lg active:scale-95 transition-colors">&times;</button>
-                <span id="contadorSelecao" class="font-bold text-sm tracking-wide">0 selecionados</span>
+                <button onclick="limparSelecao()" class="bg-white/20 hover:bg-white/30 dark:bg-black/10 dark:hover:bg-black/20 rounded-full w-9 h-9 flex items-center justify-center font-bold text-xl active:scale-95 transition-colors">&times;</button>
+                <span id="contadorSelecao" class="font-semibold text-[15px]">0 selecionados</span>
             </div>
-            <div class="flex gap-5">
-                <button onclick="acaoMultiplaCopiar()" class="flex flex-col items-center justify-center active:scale-95 transition-transform text-blue-100 hover:text-white">
-                    <span class="text-xl">📋</span><span class="text-[10px] font-bold mt-1">Copiar</span>
+            <div class="flex gap-6">
+                <button onclick="acaoMultiplaCopiar()" class="flex flex-col items-center justify-center active:scale-95 transition-transform opacity-90 hover:opacity-100">
+                    <span class="text-2xl mb-1">📋</span><span class="text-[11px] font-semibold tracking-wide">Copiar</span>
                 </button>
-                <button onclick="acaoMultiplaMarcar()" class="flex flex-col items-center justify-center active:scale-95 transition-transform text-blue-100 hover:text-white">
-                    <span class="text-xl">🖍️</span><span id="textoBtnMarcar" class="text-[10px] font-bold mt-1">Marcar</span>
+                <button onclick="acaoMultiplaMarcar()" class="flex flex-col items-center justify-center active:scale-95 transition-transform opacity-90 hover:opacity-100">
+                    <span class="text-2xl mb-1">🖍️</span><span id="textoBtnMarcar" class="text-[11px] font-semibold tracking-wide">Marcar</span>
                 </button>
-                <button onclick="acaoMultiplaExplicar()" class="flex flex-col items-center justify-center active:scale-95 transition-transform font-bold bg-white text-blue-700 px-3 py-1.5 rounded-xl shadow-sm">
-                    <span class="text-lg">✨</span><span class="text-[10px] mt-0.5 uppercase tracking-wider">Explicar</span>
+                <button onclick="acaoMultiplaExplicar()" class="flex flex-col items-center justify-center active:scale-95 transition-transform bg-white text-[#0b57d0] dark:bg-gray-900 dark:text-[#a8c7fa] px-4 py-2 rounded-2xl shadow-sm">
+                    <span class="text-xl leading-none">✨</span><span class="text-[11px] font-bold mt-1 tracking-wider uppercase">Explicar</span>
                 </button>
             </div>
         </div>
     </div>
 
-    <div id="telaBusca" class="fixed inset-0 bg-white dark:bg-gray-900 z-[70] flex flex-col transition-transform duration-300 translate-y-full altura-dinamica">
-        <div class="p-4 border-b border-gray-200 dark:border-gray-800 flex items-center gap-3">
-            <button onclick="fecharBusca()" class="p-2 text-2xl text-gray-500 hover:text-gray-800 dark:hover:text-white">←</button>
-            <input type="text" id="inputBusca" placeholder="Buscar na Bíblia..." class="flex-1 p-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-none outline-none focus:ring-2 focus:ring-blue-500 text-base font-sans texto-selecionavel">
-            <button onclick="executarBusca()" class="bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 p-3 rounded-xl font-bold shadow-md active:scale-95">Ir</button>
+    <div id="telaBusca" class="fixed inset-0 bg-white dark:bg-[#131314] z-[70] flex flex-col transition-transform duration-300 translate-y-full altura-dinamica">
+        <div class="p-4 border-b border-gray-100 dark:border-[#2d2d30] flex items-center gap-3">
+            <button onclick="fecharBusca()" class="p-2 text-2xl text-gray-500 hover:text-gray-900 dark:hover:text-white">←</button>
+            <input type="text" id="inputBusca" placeholder="Pesquisar..." class="flex-1 p-3.5 rounded-2xl bg-gray-100 dark:bg-[#1e1e20] border-none outline-none focus:ring-2 focus:ring-blue-500 text-[16px] font-sans texto-selecionavel">
+            <button onclick="executarBusca()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3.5 rounded-2xl font-semibold shadow-sm active:scale-95">Buscar</button>
         </div>
-        <div class="flex-1 overflow-y-auto p-4 scroll-suave" id="areaResultadosBusca">
+        <div class="flex-1 overflow-y-auto p-5 scroll-suave" id="areaResultadosBusca">
             <div id="containerHistoricoBusca" class="mb-6">
-                <div class="flex justify-between items-center mb-3">
-                    <h4 class="text-sm font-bold text-gray-500 uppercase tracking-wide">Buscas Recentes</h4>
-                    <button onclick="limparHistoricoBusca()" class="text-xs text-blue-600 dark:text-blue-400 font-bold active:scale-95">Limpar</button>
+                <div class="flex justify-between items-center mb-4">
+                    <h4 class="text-sm font-semibold text-gray-500">Buscas Recentes</h4>
+                    <button onclick="limparHistoricoBusca()" class="text-sm text-blue-600 dark:text-blue-400 font-medium active:scale-95">Limpar</button>
                 </div>
                 <div id="listaHistoricoBusca" class="flex flex-wrap gap-2"></div>
             </div>
@@ -165,30 +176,30 @@
         </div>
     </div>
 
-    <div id="modalConfig" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[80] flex items-center justify-center p-4 modal">
-        <div class="bg-white dark:bg-gray-800 rounded-3xl p-6 w-full max-w-md shadow-2xl transform transition-all max-h-[90vh] overflow-y-auto scroll-suave">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="font-bold text-xl flex items-center gap-2"><span class="text-2xl">⚙️</span> Configurações</h3>
-                <button onclick="fecharModalConfig()" class="text-gray-500 font-bold text-2xl active:scale-95">&times;</button>
-            </div>
-            <div class="mb-5">
-                <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Chave da API (Gemini)</label>
-                <input type="text" id="inputChaveApi" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white dark:bg-gray-700 outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm shadow-inner texto-selecionavel" placeholder="Ex: AIzaSyB...">
+    <div id="modalConfig" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[80] flex items-center justify-center p-5 modal">
+        <div class="bg-white dark:bg-[#1e1e20] rounded-3xl p-6 w-full max-w-md shadow-2xl transform transition-all max-h-[90vh] overflow-y-auto scroll-suave">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="font-bold text-[20px] flex items-center gap-2">Configurações</h3>
+                <button onclick="fecharModalConfig()" class="text-gray-400 hover:text-gray-800 dark:hover:text-white font-bold text-2xl active:scale-95">&times;</button>
             </div>
             <div class="mb-6">
-                <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Instruções Adicionais (Opcional)</label>
-                <p class="text-[11px] text-gray-500 dark:text-gray-400 mb-3 leading-tight">
-                    A alma do Assistente da Bíblia (Doutrina, Regra de Fé e Ortodoxia) já está ativada internamente. Adicione aqui apenas comandos extras de formatação.
-                </p>
-                <textarea id="inputPerfil" rows="4" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white dark:bg-gray-700 outline-none focus:ring-2 focus:ring-blue-500 text-sm shadow-inner resize-none texto-selecionavel" placeholder="Ex: Responda em tópicos curtos..."></textarea>
+                <label class="block text-[14px] font-semibold text-gray-800 dark:text-gray-200 mb-2">Chave da API (Gemini)</label>
+                <input type="text" id="inputChaveApi" class="w-full p-4 border border-gray-200 dark:border-[#474747] rounded-2xl text-gray-900 dark:text-white dark:bg-[#131314] outline-none focus:ring-2 focus:ring-blue-500 font-mono text-[14px] texto-selecionavel" placeholder="Coloque sua chave aqui...">
             </div>
-            <button onclick="salvarConfig()" class="w-full p-3 rounded-xl font-bold bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 shadow-md active:scale-95 transition-transform">Salvar Dados</button>
+            <div class="mb-8">
+                <label class="block text-[14px] font-semibold text-gray-800 dark:text-gray-200 mb-1">Instruções Adicionais (Opcional)</label>
+                <p class="text-[12px] text-gray-500 dark:text-gray-400 mb-3 leading-relaxed">
+                    A alma do Assistente (Regra de Fé e Ortodoxia) já está fixada internamente. Adicione aqui apenas comandos extras de formatação de texto.
+                </p>
+                <textarea id="inputPerfil" rows="3" class="w-full p-4 border border-gray-200 dark:border-[#474747] rounded-2xl text-gray-900 dark:text-white dark:bg-[#131314] outline-none focus:ring-2 focus:ring-blue-500 text-[14px] resize-none texto-selecionavel" placeholder="Ex: Use parágrafos curtos..."></textarea>
+            </div>
+            <button onclick="salvarConfig()" class="w-full p-4 rounded-2xl font-semibold bg-gray-900 dark:bg-white text-white dark:text-gray-900 shadow-md active:scale-95 transition-transform text-[16px]">Salvar Configurações</button>
         </div>
     </div>
 
     <script>
         // ----------------------------------------------------
-        // 1. ESTADO GLOBAL, UTILITÁRIOS E MARKDOWN
+        // 1. ESTADO GLOBAL, UTILITÁRIOS E MARKDOWN PREMIUM
         // ----------------------------------------------------
         let bibliaCompleta = [];
         let indexLivro = parseInt(localStorage.getItem('leitura_livro')) || 0;
@@ -200,15 +211,23 @@
 
         function formatarMarkdown(texto) {
             let html = texto.trim();
-            html = html.replace(/^### (.*$)/gim, '<h3 class="text-lg font-bold mt-5 mb-2 text-gray-900 dark:text-gray-100">$1</h3>');
-            html = html.replace(/^## (.*$)/gim, '<h2 class="text-xl font-bold mt-6 mb-3 text-gray-900 dark:text-gray-100">$1</h2>');
-            html = html.replace(/^# (.*$)/gim, '<h1 class="text-2xl font-bold mt-6 mb-4 text-gray-900 dark:text-gray-100">$1</h1>');
-            html = html.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-gray-900 dark:text-gray-100">$1</strong>');
-            html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
-            html = html.replace(/^\* (.*$)/gim, '<li class="ml-5 list-disc mb-1">$1</li>');
-            html = html.replace(/^- (.*$)/gim, '<li class="ml-5 list-disc mb-1">$1</li>');
+            // Headers com espaçamento de leitura (Padrão Artigo)
+            html = html.replace(/^### (.*$)/gim, '<h3 class="text-[18px] font-semibold mt-6 mb-2 text-gray-900 dark:text-[#f8f9fa]">$1</h3>');
+            html = html.replace(/^## (.*$)/gim, '<h2 class="text-[20px] font-semibold mt-7 mb-3 text-gray-900 dark:text-[#f8f9fa]">$1</h2>');
+            html = html.replace(/^# (.*$)/gim, '<h1 class="text-[24px] font-bold mt-7 mb-4 text-gray-900 dark:text-[#f8f9fa]">$1</h1>');
+            // Formatação Inline
+            html = html.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-gray-900 dark:text-[#f8f9fa]">$1</strong>');
+            html = html.replace(/\*(.*?)\*/g, '<em class="text-gray-700 dark:text-gray-300">$1</em>');
+            // Listas
+            html = html.replace(/^\* (.*$)/gim, '<li class="ml-5 list-disc mb-1.5 pl-1 marker:text-gray-400">$1</li>');
+            html = html.replace(/^- (.*$)/gim, '<li class="ml-5 list-disc mb-1.5 pl-1 marker:text-gray-400">$1</li>');
+            // Parágrafos (Substitui dupla quebra por margem e quebra simples por br)
+            html = html.split('\n\n').join('</p><p class="mb-4">');
             html = html.split('\n').join('<br>');
-            html = html.replace(/<\/li><br>/g, '</li>').replace(/<\/h3><br>/g, '</h3>').replace(/<\/h2><br>/g, '</h2>').replace(/<\/h1><br>/g, '</h1>');
+            html = `<p class="mb-4">${html}</p>`;
+            // Limpeza de tags HTML quebradas
+            html = html.replace(/<p class="mb-4"><\/li>/g, '</li>').replace(/<\/h3><br>/g, '</h3>').replace(/<\/h2><br>/g, '</h2>');
+            html = html.replace(/<br><\/p>/g, '</p>');
             return html;
         }
 
@@ -227,7 +246,7 @@
                 preencherLivros(); exibirCapitulo(); carregarHistoricoBusca(); carregarHistoricoChat();
                 mudarEstadoChat('hidden'); 
             } catch (erro) {
-                document.getElementById('areaLeitura').innerHTML = `<div class="text-center mt-20 text-red-500 font-bold">Erro ao conectar. Verifique a internet.</div>`;
+                document.getElementById('areaLeitura').innerHTML = `<div class="text-center mt-20 text-red-500 font-bold">Erro de conexão.</div>`;
             }
         }
 
@@ -240,11 +259,17 @@
             limparSelecao();
             const livroAtual = bibliaCompleta[indexLivro];
             const versiculos = livroAtual.chapters[indexCapitulo];
-            let html = `<h2 class="text-3xl font-extrabold mb-8 text-gray-900 dark:text-gray-100 text-center fade-in">${livroAtual.name} ${indexCapitulo + 1}</h2>`;
+            
+            let html = `<h2 class="text-3xl font-extrabold mb-10 text-gray-900 dark:text-gray-100 text-center fade-in">${livroAtual.name} ${indexCapitulo + 1}</h2>`;
+            
             versiculos.forEach((texto, i) => {
                 const idUnico = `${indexLivro}-${indexCapitulo}-${i}`;
                 const classMarcado = marcacoes[idUnico] ? 'versiculo-marcado' : '';
-                html += `<div id="v-${idUnico}" onclick="toggleSelecaoVersiculo(${indexLivro}, ${indexCapitulo}, ${i})" class="flex gap-4 mb-5 items-start cursor-pointer p-2 rounded-xl transition-all -mx-2 hover:bg-gray-100 dark:hover:bg-gray-800 ${classMarcado}"><span class="text-[11px] font-black bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 px-2 py-1 rounded shadow-sm mt-1.5 flex-shrink-0 pointer-events-none">${i + 1}</span><p class="flex-1 text-gray-800 dark:text-gray-200 leading-relaxed pointer-events-none">${texto}</p></div>`;
+                html += `
+                <div id="v-${idUnico}" onclick="toggleSelecaoVersiculo(${indexLivro}, ${indexCapitulo}, ${i})" class="flex gap-4 mb-6 items-start cursor-pointer p-2.5 rounded-2xl transition-all -mx-2 hover:bg-gray-50 dark:hover:bg-[#1e1e20] ${classMarcado}">
+                    <span class="text-[12px] font-bold bg-gray-100 dark:bg-[#2d2d30] text-gray-500 dark:text-gray-400 px-2 py-1 rounded-lg mt-1.5 flex-shrink-0 pointer-events-none">${i + 1}</span>
+                    <p class="flex-1 pointer-events-none">${texto}</p>
+                </div>`;
             });
             document.getElementById('areaLeitura').innerHTML = html;
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -263,8 +288,14 @@
             const idUnico = `${lIdx}-${cIdx}-${vIdx}`;
             const divElement = document.getElementById(`v-${idUnico}`);
             const indexNoArray = versiculosSelecionados.findIndex(v => v.idUnico === idUnico);
-            if (indexNoArray > -1) { versiculosSelecionados.splice(indexNoArray, 1); divElement.classList.remove('versiculo-selecionado'); } 
-            else { versiculosSelecionados.push({ lIdx, cIdx, vIdx, idUnico, texto: bibliaCompleta[lIdx].chapters[cIdx][vIdx], referencia: `${bibliaCompleta[lIdx].name} ${cIdx + 1}:${vIdx + 1}` }); divElement.classList.add('versiculo-selecionado'); }
+            
+            if (indexNoArray > -1) {
+                versiculosSelecionados.splice(indexNoArray, 1);
+                divElement.classList.remove('versiculo-selecionado');
+            } else {
+                versiculosSelecionados.push({ lIdx, cIdx, vIdx, idUnico, texto: bibliaCompleta[lIdx].chapters[cIdx][vIdx], referencia: `${bibliaCompleta[lIdx].name} ${cIdx + 1}:${vIdx + 1}` });
+                divElement.classList.add('versiculo-selecionado');
+            }
             atualizarBarraSelecao();
         }
 
@@ -274,7 +305,9 @@
                 document.getElementById('contadorSelecao').innerText = `${versiculosSelecionados.length} selecionado${versiculosSelecionados.length > 1 ? 's' : ''}`;
                 document.getElementById('textoBtnMarcar').innerText = versiculosSelecionados.every(v => marcacoes[v.idUnico]) ? "Desmarcar" : "Marcar";
                 barra.classList.remove('translate-y-full');
-            } else { barra.classList.add('translate-y-full'); }
+            } else {
+                barra.classList.add('translate-y-full');
+            }
         }
 
         function limparSelecao() { versiculosSelecionados.forEach(v => { const el = document.getElementById(`v-${v.idUnico}`); if(el) el.classList.remove('versiculo-selecionado'); }); versiculosSelecionados = []; atualizarBarraSelecao(); }
@@ -294,13 +327,12 @@
         function acaoMultiplaExplicar() {
             ordenarSelecao();
             let blocoTexto = ""; versiculosSelecionados.forEach(v => { blocoTexto += `"${v.texto}" (${v.referencia})\n`; });
-            const promptContextual = `Por favor, explique esta passagem à luz da Palavra:\n\n${blocoTexto}`;
+            const promptContextual = `Explique esta passagem bíblica:\n\n${blocoTexto}`;
             limparSelecao();
             if(estadoChat === 'hidden') mudarEstadoChat('half');
             const textarea = document.getElementById('campoPergunta');
             textarea.value = promptContextual;
             textarea.style.height = 'auto'; textarea.style.height = textarea.scrollHeight + 'px';
-            document.getElementById('btnEnviarMsg').style.opacity = '1';
             document.getElementById('btnEnviarMsg').disabled = true;
             setTimeout(() => { document.getElementById('btnEnviarMsg').disabled = false; document.getElementById('btnEnviarMsg').click(); }, 300);
         }
@@ -312,10 +344,11 @@
         function abrirBusca() { document.getElementById('telaBusca').classList.remove('translate-y-full'); document.getElementById('inputBusca').focus(); }
         function fecharBusca() { document.getElementById('telaBusca').classList.add('translate-y-full'); }
         function limparHistoricoBusca() { historicoBusca = []; localStorage.setItem('biblia_historico_busca', JSON.stringify(historicoBusca)); carregarHistoricoBusca(); }
+        
         function carregarHistoricoBusca() {
             const container = document.getElementById('listaHistoricoBusca');
-            if(historicoBusca.length === 0) return container.innerHTML = '<span class="text-xs text-gray-400">Nenhuma busca recente.</span>';
-            container.innerHTML = historicoBusca.map(t => `<button onclick="document.getElementById('inputBusca').value='${t}'; executarBusca();" class="px-3 py-1.5 bg-gray-200 dark:bg-gray-800 text-sm font-semibold rounded-lg active:scale-95">${t}</button>`).join('');
+            if(historicoBusca.length === 0) return container.innerHTML = '<span class="text-[14px] text-gray-400">Nenhuma pesquisa recente.</span>';
+            container.innerHTML = historicoBusca.map(t => `<button onclick="document.getElementById('inputBusca').value='${t}'; executarBusca();" class="px-4 py-2 bg-gray-100 dark:bg-[#1e1e20] text-[14px] text-gray-700 dark:text-gray-300 font-medium rounded-xl active:scale-95 transition-transform">${t}</button>`).join('');
         }
 
         function executarBusca() {
@@ -326,7 +359,7 @@
             if(!historicoBusca.includes(termo)) { historicoBusca.unshift(termo); if(historicoBusca.length > 8) historicoBusca.pop(); localStorage.setItem('biblia_historico_busca', JSON.stringify(historicoBusca)); carregarHistoricoBusca(); }
 
             const areaRes = document.getElementById('listaResultadosBusca');
-            areaRes.innerHTML = `<div class="text-center p-4 text-blue-500 font-bold animate-pulse">Buscando...</div>`;
+            areaRes.innerHTML = `<div class="text-center p-6 text-blue-500 font-medium animate-pulse">Consultando as Escrituras...</div>`;
             
             setTimeout(() => {
                 const termoLimpo = removerAcentos(termo);
@@ -334,12 +367,12 @@
                 for (let l = 0; l < bibliaCompleta.length; l++) { for (let c = 0; c < bibliaCompleta[l].chapters.length; c++) { for (let v = 0; v < bibliaCompleta[l].chapters[c].length; v++) {
                     if (removerAcentos(bibliaCompleta[l].chapters[c][v]).includes(termoLimpo)) resultados.push({ l, c, v, livro: bibliaCompleta[l].name, texto: bibliaCompleta[l].chapters[c][v] });
                 }}}
-                if (resultados.length === 0) return areaRes.innerHTML = `<div class="text-center p-8 text-gray-500">Nada encontrado para "${termo}".</div>`;
-                let htmlRes = `<p class="text-sm font-bold text-gray-500 mb-4">${resultados.length} resultados</p>`;
+                if (resultados.length === 0) return areaRes.innerHTML = `<div class="text-center p-8 text-gray-500">Nenhuma passagem encontrada.</div>`;
+                let htmlRes = `<p class="text-[13px] font-medium text-gray-500 mb-5 ml-1">${resultados.length} resultados encontrados</p>`;
                 const regex = new RegExp(`(${termo})`, 'gi');
                 resultados.forEach(res => {
                     const txt = res.texto.replace(regex, '<span class="highlight-busca">$1</span>');
-                    htmlRes += `<div onclick="irParaResultado(${res.l}, ${res.c}, ${res.v})" class="p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 cursor-pointer active:scale-95 fade-in mb-3"><span class="text-xs font-black text-blue-600 dark:text-blue-400 block mb-1 uppercase">${res.livro} ${res.c + 1}:${res.v + 1}</span><p class="texto-biblia">${txt}</p></div>`;
+                    htmlRes += `<div onclick="irParaResultado(${res.l}, ${res.c}, ${res.v})" class="p-5 bg-gray-50 dark:bg-[#1e1e20] rounded-2xl cursor-pointer active:scale-95 transition-transform mb-4 border border-transparent hover:border-gray-200 dark:hover:border-[#2d2d30]"><span class="text-[12px] font-bold text-blue-600 dark:text-blue-400 block mb-2 tracking-wide uppercase">${res.livro} ${res.c + 1}:${res.v + 1}</span><p class="texto-biblia text-[17px]">${txt}</p></div>`;
                 });
                 areaRes.innerHTML = htmlRes;
             }, 50);
@@ -347,12 +380,12 @@
         function irParaResultado(l, c, v) {
             fecharBusca(); indexLivro = l; indexCapitulo = c;
             document.getElementById('selLivro').value = l; preencherCapitulos(); exibirCapitulo();
-            setTimeout(() => { const el = document.getElementById(`v-${l}-${c}-${v}`); if(el) { window.scrollTo({ top: (el.getBoundingClientRect().top - document.body.getBoundingClientRect().top) - 100, behavior: 'smooth' }); el.style.transition = 'background-color 0.5s'; el.style.backgroundColor = 'rgba(59, 130, 246, 0.2)'; setTimeout(() => el.style.backgroundColor = '', 1500); } }, 300);
+            setTimeout(() => { const el = document.getElementById(`v-${l}-${c}-${v}`); if(el) { window.scrollTo({ top: (el.getBoundingClientRect().top - document.body.getBoundingClientRect().top) - 150, behavior: 'smooth' }); el.style.transition = 'background-color 0.5s'; el.style.backgroundColor = 'rgba(59, 130, 246, 0.2)'; setTimeout(() => el.style.backgroundColor = '', 1500); } }, 300);
         }
         document.getElementById('inputBusca').addEventListener('keypress', e => { if (e.key === 'Enter') executarBusca(); });
 
         // ----------------------------------------------------
-        // 5. CHAT, SMART SCROLL E CÓPIA NATIVA
+        // 5. CHAT COM IA (Design Premium Padrão de Mercado)
         // ----------------------------------------------------
         let estadoChat = 'hidden'; 
         const gavetaChat = document.getElementById('gavetaChat');
@@ -363,8 +396,8 @@
             gavetaChat.classList.remove('sheet-hidden', 'sheet-half', 'sheet-full');
             gavetaChat.classList.add(`sheet-${estadoChat}`);
             if(estadoChat === 'hidden') mainBiblia.style.paddingBottom = '90px'; 
-            else if (estadoChat === 'half') { mainBiblia.style.paddingBottom = 'calc(50dvh + 90px)'; document.getElementById('btnTamanhoChat').innerText = '⛶'; } 
-            else if (estadoChat === 'full') { mainBiblia.style.paddingBottom = 'calc(100dvh + 90px)'; document.getElementById('btnTamanhoChat').innerText = '🗗'; }
+            else if (estadoChat === 'half') { mainBiblia.style.paddingBottom = 'calc(55dvh + 90px)'; document.getElementById('btnTamanhoChat').innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" /></svg>'; } 
+            else if (estadoChat === 'full') { mainBiblia.style.paddingBottom = 'calc(100dvh + 90px)'; document.getElementById('btnTamanhoChat').innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>'; }
         }
 
         function toggleChat() { if (estadoChat === 'hidden') mudarEstadoChat('half'); else mudarEstadoChat('hidden'); }
@@ -387,7 +420,9 @@
 
         inputMsg.addEventListener('input', function() {
             this.style.height = 'auto'; this.style.height = (this.scrollHeight) + 'px';
-            document.getElementById('btnEnviarMsg').style.opacity = this.value.trim() === '' ? '0.5' : '1';
+            const btn = document.getElementById('btnEnviarMsg');
+            if(this.value.trim() === '') { btn.disabled = true; btn.classList.remove('text-blue-600', 'dark:text-blue-400'); } 
+            else { btn.disabled = false; btn.classList.add('text-blue-600', 'dark:text-blue-400'); }
         });
 
         function abrirModalConfig() { document.getElementById('inputChaveApi').value = localStorage.getItem('chave_secreta_gemini') || ''; document.getElementById('inputPerfil').value = localStorage.getItem('perfil_ia_gemini') || ''; modalConfig.classList.add('aberto'); }
@@ -396,7 +431,12 @@
 
         function carregarHistoricoChat() {
             if(historicoChat.length === 0) {
-                listaMsg.innerHTML = `<div class="flex flex-col items-center justify-center h-full text-center fade-in opacity-50 px-6 py-10"><span class="text-5xl mb-4">✨</span><h2 class="text-xl font-bold mb-2">Paz do Senhor!</h2><p class="text-sm">Selecione versículos ou faça uma pergunta teológica.</p></div>`;
+                listaMsg.innerHTML = `
+                <div class="flex flex-col items-center justify-center h-full text-center fade-in px-6">
+                    <div class="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-3xl shadow-lg mb-6 opacity-90">✨</div>
+                    <h2 class="text-[22px] font-semibold text-gray-900 dark:text-[#f8f9fa] mb-2 tracking-tight">Paz do Senhor!</h2>
+                    <p class="text-[15px] text-gray-500 dark:text-gray-400">Qual será o estudo bíblico de hoje?</p>
+                </div>`;
                 return;
             }
             listaMsg.innerHTML = '';
@@ -404,19 +444,15 @@
             setTimeout(() => { listaMsg.scrollTop = listaMsg.scrollHeight; }, 100);
         }
 
-        function limparChat() { if(confirm("Limpar todo o estudo atual?")) { historicoChat = []; localStorage.removeItem('biblia_historico_chat'); carregarHistoricoChat(); } }
+        function limparChat() { if(confirm("Iniciar novo estudo em branco?")) { historicoChat = []; localStorage.removeItem('biblia_historico_chat'); carregarHistoricoChat(); } }
 
-        // NOVA FUNÇÃO DE COPIAR DIRETO DO BOTÃO DA IA
         window.copiarDoHistorico = function(index, btnElement) {
             const texto = historicoChat[index].texto;
             navigator.clipboard.writeText(texto).then(() => {
                 const originalHTML = btnElement.innerHTML;
-                btnElement.innerHTML = '✅ Copiado!';
-                btnElement.classList.add('text-green-600', 'dark:text-green-400', 'bg-green-100', 'dark:bg-green-900');
-                setTimeout(() => { 
-                    btnElement.innerHTML = originalHTML; 
-                    btnElement.classList.remove('text-green-600', 'dark:text-green-400', 'bg-green-100', 'dark:bg-green-900');
-                }, 2000);
+                btnElement.innerHTML = '✅ Copiado';
+                btnElement.classList.add('text-green-600', 'dark:text-green-400');
+                setTimeout(() => { btnElement.innerHTML = originalHTML; btnElement.classList.remove('text-green-600', 'dark:text-green-400'); }, 2000);
             });
         };
 
@@ -425,19 +461,24 @@
             if (listaMsg.querySelector('h2')) listaMsg.innerHTML = '';
             
             if(role === 'user') {
-                listaMsg.innerHTML += `<div class="flex justify-end mb-2 ${anim}"><div class="bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-4 py-3 rounded-3xl rounded-tr-sm max-w-[85%] font-sans text-[15px] whitespace-pre-wrap texto-selecionavel">${texto}</div></div>`;
-            } else {
-                // Adicionado Botão de Copiar e ID para Ancoragem
+                // Layout do Usuário (Alinhamento à direita, bolha limpa)
                 listaMsg.innerHTML += `
-                <div id="msg-${indexArray}" class="flex gap-3 mb-6 mt-4 ${anim}">
-                    <div class="w-8 h-8 rounded-full bg-gray-900 dark:bg-gray-100 flex items-center justify-center text-white dark:text-gray-900 flex-shrink-0 mt-0.5 shadow-md">✨</div>
-                    <div class="w-full">
-                        <div class="text-gray-800 dark:text-gray-200 font-sans text-[15px] leading-relaxed w-full texto-selecionavel">
+                <div class="flex justify-end mb-6 ${anim}">
+                    <div class="bg-gray-100 dark:bg-[#2d2d30] text-gray-900 dark:text-[#e3e3e3] px-5 py-3 rounded-[1.5rem] rounded-tr-md max-w-[85%] font-sans text-[16px] whitespace-pre-wrap texto-selecionavel leading-relaxed">${texto}</div>
+                </div>`;
+            } else {
+                // Layout da IA (Avatar à esquerda, texto formatado solto, botão de copiar)
+                listaMsg.innerHTML += `
+                <div id="msg-${indexArray}" class="flex gap-4 mb-8 ${anim}">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white flex-shrink-0 mt-1 shadow-sm"><span class="text-sm">✨</span></div>
+                    <div class="w-full min-w-0">
+                        <div class="text-gray-800 dark:text-[#e3e3e3] font-sans text-[16px] leading-[1.75] w-full texto-selecionavel tracking-[0.01em]">
                             ${formatarMarkdown(texto)}
                         </div>
-                        <div class="mt-3 flex justify-start">
-                            <button onclick="copiarDoHistorico(${indexArray}, this)" class="flex items-center gap-1.5 text-[11px] font-bold text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 bg-gray-100 dark:bg-gray-800/80 px-3 py-1.5 rounded-lg active:scale-95 transition-all">
-                                📋 Copiar Resposta
+                        <div class="mt-4 flex justify-start">
+                            <button onclick="copiarDoHistorico(${indexArray}, this)" class="flex items-center gap-1.5 text-[13px] font-medium text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                Copiar
                             </button>
                         </div>
                     </div>
@@ -457,21 +498,30 @@
             const extra = localStorage.getItem('perfil_ia_gemini') || '';
             const combinada = extra ? `${ALMA_INTERNA}\n\nProtocolo do usuário: ${extra}` : ALMA_INTERNA;
 
-            // Renderiza e desce a tela para a pergunta do usuário
             historicoChat.push({ role: 'user', texto: pergunta });
             const indexUser = historicoChat.length - 1;
             localStorage.setItem('biblia_historico_chat', JSON.stringify(historicoChat));
             renderizarBalao('user', pergunta, indexUser, true);
             
-            inputMsg.value = ''; inputMsg.style.height = 'auto'; btnEnviar.style.opacity = '0.5';
+            inputMsg.value = ''; inputMsg.style.height = 'auto'; btnEnviar.classList.remove('text-blue-600', 'dark:text-blue-400');
+            rolarChatParaBaixo();
 
-            // Loader com Scroll
             const idLoader = 'load-' + Date.now();
-            listaMsg.innerHTML += `<div id="${idLoader}" class="flex gap-3 mb-6 mt-4 fade-in"><div class="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-500 flex-shrink-0 animate-pulse">✨</div><div class="text-gray-500 italic mt-1 animate-pulse">Meditando...</div></div>`;
-            setTimeout(() => { document.getElementById(idLoader).scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 50);
+            listaMsg.innerHTML += `
+            <div id="${idLoader}" class="flex gap-4 mb-8 fade-in">
+                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-gray-300 to-gray-400 dark:from-gray-600 dark:to-gray-700 flex items-center justify-center text-white flex-shrink-0 mt-1 animate-pulse">✨</div>
+                <div class="w-full flex items-center h-10">
+                    <div class="flex gap-1">
+                        <div class="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style="animation-delay: 0s"></div>
+                        <div class="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                        <div class="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style="animation-delay: 0.4s"></div>
+                    </div>
+                </div>
+            </div>`;
+            setTimeout(() => { document.getElementById(idLoader).scrollIntoView({ behavior: 'smooth', block: 'end' }); }, 50);
 
             let conteudosDaAPI = [];
-            const mensagensAntigas = historicoChat.slice(0, -1).slice(-4); // Pega as ultimas 4 ignorando a atual
+            const mensagensAntigas = historicoChat.slice(0, -1).slice(-4); 
             mensagensAntigas.forEach(m => { conteudosDaAPI.push({ role: m.role === 'user' ? 'user' : 'model', parts: [{ text: m.texto }] }); });
             conteudosDaAPI.push({ role: 'user', parts: [{ text: pergunta }] });
 
@@ -490,38 +540,27 @@
 
                 if (dadosJson.error) {
                     let m = dadosJson.error.message;
-                    if (m.includes("Quota") || m.includes("429")) m = "Irmão, estamos consultando muito rápido. Por favor, aguarde cerca de 30 segundos.";
+                    if (m.includes("Quota") || m.includes("429")) m = "Por favor, aguarde alguns segundos antes de enviar outra pergunta.";
                     else if (m.includes("API key not valid")) m = "Sua chave da API é inválida.";
-                    
                     historicoChat.push({ role: 'ia', texto: m });
-                    const indexErro = historicoChat.length - 1;
-                    renderizarBalao('ia', m, indexErro, true); 
-                    btnEnviar.disabled = false;
+                    renderizarBalao('ia', m, historicoChat.length - 1, true); 
                     return;
                 }
                 
-                const textoIA = dadosJson.candidates?.[0]?.content?.parts?.[0]?.text || "Falha ao formular.";
+                const textoIA = dadosJson.candidates?.[0]?.content?.parts?.[0]?.text || "Falha de comunicação.";
                 historicoChat.push({ role: 'ia', texto: textoIA });
                 localStorage.setItem('biblia_historico_chat', JSON.stringify(historicoChat));
                 
                 const novoIndexIA = historicoChat.length - 1;
                 renderizarBalao('ia', textoIA, novoIndexIA, true);
                 
-                // SMART SCROLL: Rola apenas até o TOPO da mensagem nova, não para o final.
+                // Ancoragem de leitura refinada
                 setTimeout(() => {
                     const msgEl = document.getElementById(`msg-${novoIndexIA}`);
-                    if(msgEl) {
-                        // Calcula para o topo da mensagem ficar visível no container
-                        listaMsg.scrollTo({ top: msgEl.offsetTop - 20, behavior: 'smooth' });
-                    }
+                    if(msgEl) { listaMsg.scrollTo({ top: msgEl.offsetTop - 24, behavior: 'smooth' }); }
                 }, 100);
 
-            } catch (e) { 
-                document.getElementById(idLoader).remove(); 
-                historicoChat.push({ role: 'ia', texto: "Erro de conexão de rede." });
-                renderizarBalao('ia', "Erro de conexão de rede.", historicoChat.length - 1, true); 
-            }
-            btnEnviar.disabled = false;
+            } catch (e) { document.getElementById(idLoader).remove(); historicoChat.push({ role: 'ia', texto: "Erro de conexão." }); renderizarBalao('ia', "Erro de conexão.", historicoChat.length - 1, true); }
         });
 
         document.getElementById('campoPergunta').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if(!document.getElementById('btnEnviarMsg').disabled) document.getElementById('btnEnviarMsg').click(); }});
