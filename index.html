@@ -6,32 +6,30 @@
     <title>Bíblia ARC Pro</title>
     
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" id="meta-theme-color" content="#ffffff">
+    <meta name="theme-color" content="#0f172a" id="meta-theme-color">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3073/3073403.png">
     
+    <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        if (localStorage.getItem('tema_biblia') === 'dark' || (!('tema_biblia' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-            document.getElementById('meta-theme-color').setAttribute('content', '#0b1120');
-        } else {
-            document.documentElement.classList.remove('dark');
-            document.getElementById('meta-theme-color').setAttribute('content', '#ffffff');
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { extend: {} }
         }
     </script>
-
-    <script src="https://cdn.tailwindcss.com"></script>
+    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
     <style>
-        /* BASE & TYPOGRAPHY */
+        /* BASE & TRANSIÇÕES SUAVES GLOBAIS */
         body { 
             font-family: 'Inter', sans-serif; 
             -webkit-tap-highlight-color: transparent; 
             touch-action: manipulation; 
-            transition: background-color 0.4s ease, color 0.4s ease;
+            transition: background-color 0.3s ease, color 0.3s ease, padding-bottom 0.3s ease;
             user-select: none; -webkit-user-select: none;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
+            -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
         }
+        
+        * { transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease; }
         
         .texto-selecionavel { user-select: text; -webkit-user-select: text; cursor: text; }
         textarea { user-select: text; -webkit-user-select: text; }
@@ -39,7 +37,7 @@
         .texto-biblia { font-family: 'Lora', serif; line-height: 1.85; letter-spacing: -0.01em; }
         .altura-dinamica { height: 100dvh; }
         
-        /* ANIMATIONS */
+        /* ANIMAÇÕES */
         .modal { transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1); opacity: 0; pointer-events: none; }
         .modal.aberto { opacity: 1; pointer-events: auto; }
         .fade-in { animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
@@ -51,8 +49,8 @@
         .dark .scroll-suave::-webkit-scrollbar-thumb { background: #334155; }
         
         /* VERSÍCULOS */
-        .versiculo-marcado { background-color: rgba(250, 204, 21, 0.3); border-radius: 0.75rem; transition: all 0.3s ease; }
-        .dark .versiculo-marcado { background-color: rgba(161, 98, 7, 0.3); }
+        .versiculo-marcado { background-color: rgba(250, 204, 21, 0.3); border-radius: 0.75rem; }
+        .dark .versiculo-marcado { background-color: rgba(161, 98, 7, 0.4); }
         .versiculo-selecionado { background-color: rgba(59, 130, 246, 0.08); border-left: 4px solid #3b82f6; border-radius: 0 0.75rem 0.75rem 0; }
         .dark .versiculo-selecionado { background-color: rgba(59, 130, 246, 0.15); border-left-color: #60a5fa; }
         .highlight-busca { font-weight: 600; color: #1d4ed8; background-color: rgba(59, 130, 246, 0.15); padding: 0 4px; border-radius: 4px; }
@@ -64,53 +62,59 @@
             background: #ffffff; display: flex; flex-direction: column;
             border-radius: 1.75rem 1.75rem 0 0; 
             box-shadow: 0 -10px 40px -10px rgba(0, 0, 0, 0.1);
-            transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1), height 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+            transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1), height 0.4s cubic-bezier(0.32, 0.72, 0, 1), background-color 0.3s ease;
             border-top: 1px solid rgba(255,255,255,0.5);
         }
         .dark .bottom-sheet { 
             background: #0f172a; 
-            box-shadow: 0 -15px 50px -10px rgba(0, 0, 0, 0.5); 
+            box-shadow: 0 -15px 50px -10px rgba(0, 0, 0, 0.7); 
             border-top: 1px solid rgba(255,255,255,0.05); 
         }
         .sheet-hidden { transform: translateY(120%); opacity: 0; pointer-events: none; }
         .sheet-half { transform: translateY(0); height: 55dvh; opacity: 1; pointer-events: auto; }
         .sheet-full { transform: translateY(0); height: calc(100dvh - 76px); opacity: 1; pointer-events: auto; }
 
-        /* CHAT MARKDOWN STYLING */
+        /* CHAT MARKDOWN STYLING OTIMIZADO PARA LIGHT/DARK */
         .prose h1, .prose h2, .prose h3 { color: #111827; font-weight: 700; margin-top: 1.5em; margin-bottom: 0.5em; line-height: 1.3; }
-        .dark .prose h1, .dark .prose h2, .dark .prose h3 { color: #f9fafb; }
-        .prose p { margin-bottom: 1em; }
-        .prose ul { padding-left: 1.25em; list-style-type: disc; margin-bottom: 1em; }
+        .dark .prose h1, .dark .prose h2, .dark .prose h3 { color: #f8fafc; }
+        .prose p { margin-bottom: 1em; color: #334155; }
+        .dark .prose p { color: #cbd5e1; }
+        .prose ul { padding-left: 1.25em; list-style-type: disc; margin-bottom: 1em; color: #334155; }
+        .dark .prose ul { color: #cbd5e1; }
         .prose li { margin-bottom: 0.25em; }
-        .prose strong { font-weight: 600; color: #1f2937; }
-        .dark .prose strong { color: #f3f4f6; }
+        .prose strong { font-weight: 600; color: #0f172a; }
+        .dark .prose strong { color: #f1f5f9; }
+        .prose em { color: #475569; }
+        .dark .prose em { color: #94a3b8; }
     </style>
 </head>
-<body class="bg-white text-slate-900 dark:bg-[#0b1120] dark:text-slate-100 pb-safe transition-colors duration-300">
+<body class="bg-slate-50 text-slate-900 dark:bg-[#0b1120] dark:text-slate-100 pb-safe">
 
-    <header class="fixed top-0 left-0 right-0 bg-white/80 dark:bg-[#0b1120]/80 backdrop-blur-xl border-b border-slate-200/80 dark:border-slate-800/80 z-30 p-4 shadow-sm transition-colors duration-300">
+    <header class="fixed top-0 left-0 right-0 bg-white/80 dark:bg-[#0b1120]/80 backdrop-blur-xl border-b border-slate-200/80 dark:border-slate-800/80 z-30 p-4 shadow-sm">
         <div class="max-w-md mx-auto">
             <div class="flex justify-between items-center mb-3">
                 <h1 class="text-2xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 tracking-tight">Bíblia ARC</h1>
                 <div class="flex items-center gap-2">
-                    <button onclick="abrirBusca()" class="w-10 h-10 flex items-center justify-center bg-slate-100 dark:bg-slate-800 rounded-full text-slate-600 dark:text-slate-300 shadow-sm active:scale-95 transition-all hover:bg-slate-200 dark:hover:bg-slate-700" title="Buscar Palavra">
+                    <button onclick="abrirBusca()" class="w-10 h-10 flex items-center justify-center bg-slate-100 dark:bg-slate-800 rounded-full text-slate-600 dark:text-slate-300 shadow-sm active:scale-95 hover:bg-slate-200 dark:hover:bg-slate-700" title="Buscar Palavra">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
                     </button>
-                    <button onclick="abrirModalConfig()" class="w-10 h-10 flex items-center justify-center bg-slate-100 dark:bg-slate-800 rounded-full text-slate-600 dark:text-slate-300 shadow-sm active:scale-95 transition-all hover:bg-slate-200 dark:hover:bg-slate-700" title="Configurar IA">
+                    <button onclick="abrirModalConfig()" class="w-10 h-10 flex items-center justify-center bg-slate-100 dark:bg-slate-800 rounded-full text-slate-600 dark:text-slate-300 shadow-sm active:scale-95 hover:bg-slate-200 dark:hover:bg-slate-700" title="Configurar IA">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M10.343 3.94c.09-.542.56-.94 1.11-.94h1.093c.55 0 1.02.398 1.11.94l.149.894c.07.424.384.764.78.93.398.164.855.142 1.205-.108l.737-.527a1.125 1.125 0 0 1 1.45.12l.773.774c.39.389.44 1.002.12 1.45l-.527.737c-.25.35-.272.806-.107 1.204.165.397.505.71.93.78l.893.15c.543.09.94.559.94 1.109v1.094c0 .55-.397 1.02-.94 1.11l-.894.149c-.424.07-.764.383-.929.78-.165.398-.143.854.107 1.204l.527.738c.32.447.269 1.06-.12 1.45l-.774.773a1.125 1.125 0 0 1-1.449.12l-.738-.527c-.35-.25-.806-.272-1.203-.107-.398.165-.71.505-.781.929l-.149.894c-.09.542-.56.94-1.11.94h-1.094c-.55 0-1.019-.398-1.11-.94l-.148-.894c-.071-.424-.384-.764-.781-.93-.398-.164-.854-.142-1.204.108l-.738.527c-.447.32-1.06.269-1.45-.12l-.773-.774a1.125 1.125 0 0 1-.12-1.45l.527-.737c.25-.35.272-.806.108-1.204-.165-.397-.506-.71-.93-.78l-.894-.15c-.542-.09-.94-.56-.94-1.109v-1.094c0-.55.398-1.02.94-1.11l.894-.149c.424-.07.765-.383.93-.78.165-.398.143-.854-.108-1.204l-.526-.738a1.125 1.125 0 0 1 .12-1.45l.773-.773a1.125 1.125 0 0 1 1.45-.12l.737.527c.35.25.807.272 1.204.107.397-.165.71-.505.78-.929l.15-.894Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>
                     </button>
-                    <button id="btnTema" class="w-10 h-10 flex items-center justify-center bg-slate-100 dark:bg-slate-800 rounded-full text-slate-600 dark:text-slate-300 shadow-sm active:scale-95 transition-all hover:bg-slate-200 dark:hover:bg-slate-700" title="Mudar Tema"></button>
+                    <button id="btnTema" class="w-10 h-10 flex items-center justify-center bg-slate-100 dark:bg-slate-800 rounded-full text-slate-600 dark:text-slate-300 shadow-sm active:scale-95 hover:bg-slate-200 dark:hover:bg-slate-700" title="Mudar Tema">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" /></svg>
+                    </button>
                 </div>
             </div>
             <div class="flex gap-2">
-                <select id="selLivro" class="flex-[2] bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 p-2.5 rounded-2xl text-[15px] outline-none focus:ring-2 focus:ring-blue-500 appearance-none font-semibold text-slate-800 dark:text-slate-200 backdrop-blur-md transition-colors"></select>
-                <select id="selCapitulo" class="flex-1 bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 p-2.5 rounded-2xl text-[15px] outline-none focus:ring-2 focus:ring-blue-500 appearance-none font-semibold text-center text-slate-800 dark:text-slate-200 backdrop-blur-md transition-colors"></select>
+                <select id="selLivro" class="flex-[2] bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 p-2.5 rounded-2xl text-[15px] outline-none focus:ring-2 focus:ring-blue-500 appearance-none font-semibold text-slate-800 dark:text-slate-200 backdrop-blur-md"></select>
+                <select id="selCapitulo" class="flex-1 bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 p-2.5 rounded-2xl text-[15px] outline-none focus:ring-2 focus:ring-blue-500 appearance-none font-semibold text-center text-slate-800 dark:text-slate-200 backdrop-blur-md"></select>
             </div>
         </div>
     </header>
 
     <main id="mainBiblia" class="pt-[140px] pb-24 px-4 max-w-md mx-auto min-h-screen">
-        <div id="areaLeitura" class="texto-biblia text-[19px] md:text-[21px] text-slate-800 dark:text-slate-200 transition-colors duration-300">
+        <div id="areaLeitura" class="texto-biblia text-[19px] md:text-[21px] text-slate-800 dark:text-slate-200">
             <div class="flex flex-col items-center justify-center mt-32 text-blue-500">
                 <svg class="w-10 h-10 mb-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                 <p class="font-sans font-medium text-lg animate-pulse tracking-wide">Preparando as Escrituras...</p>
@@ -118,14 +122,14 @@
         </div>
     </main>
 
-    <nav id="navInferior" class="fixed bottom-0 left-0 right-0 h-[76px] bg-white/90 dark:bg-[#0b1120]/90 backdrop-blur-xl border-t border-slate-200/80 dark:border-slate-800/80 p-3 z-40 transition-colors duration-300">
+    <nav id="navInferior" class="fixed bottom-0 left-0 right-0 h-[76px] bg-white/90 dark:bg-[#0b1120]/90 backdrop-blur-xl border-t border-slate-200/80 dark:border-slate-800/80 p-3 z-40">
         <div class="max-w-md mx-auto flex gap-2">
-            <button id="btnAnterior" class="flex-none w-14 bg-slate-100 dark:bg-slate-800 p-3 rounded-2xl font-bold active:scale-95 transition-all hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300">←</button>
-            <button onclick="toggleChat()" class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-[0_8px_20px_-6px_rgba(59,130,246,0.5)] p-3 rounded-2xl font-semibold flex items-center justify-center gap-2 active:scale-95 transition-all whitespace-nowrap text-[16px]">
+            <button id="btnAnterior" class="flex-none w-14 bg-slate-100 dark:bg-slate-800 p-3 rounded-2xl font-bold active:scale-95 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300">←</button>
+            <button onclick="toggleChat()" class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-[0_8px_20px_-6px_rgba(59,130,246,0.5)] dark:shadow-[0_8px_20px_-6px_rgba(59,130,246,0.2)] p-3 rounded-2xl font-semibold flex items-center justify-center gap-2 active:scale-95 whitespace-nowrap text-[16px]">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z" clip-rule="evenodd" /></svg>
                 Assistente da Bíblia
             </button>
-            <button id="btnProximo" class="flex-none w-14 bg-slate-100 dark:bg-slate-800 p-3 rounded-2xl font-bold active:scale-95 transition-all hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300">→</button>
+            <button id="btnProximo" class="flex-none w-14 bg-slate-100 dark:bg-slate-800 p-3 rounded-2xl font-bold active:scale-95 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300">→</button>
         </div>
     </nav>
 
@@ -134,7 +138,7 @@
             <div class="w-10 h-1.5 bg-slate-300 dark:bg-slate-600 rounded-full"></div>
         </div>
         
-        <div class="px-5 pb-3 border-b border-slate-100 dark:border-slate-800/60 bg-white/60 dark:bg-[#0f172a]/60 backdrop-blur-md flex justify-between items-center sticky top-0 z-10 transition-colors">
+        <div class="px-5 pb-3 border-b border-slate-100 dark:border-slate-800/60 bg-white/60 dark:bg-[#0f172a]/60 backdrop-blur-md flex justify-between items-center sticky top-0 z-10">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 shadow-md flex items-center justify-center text-white">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6"><path fill-rule="evenodd" d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5Z" clip-rule="evenodd" /></svg>
@@ -145,25 +149,25 @@
                 </div>
             </div>
             <div class="flex items-center gap-1.5">
-                <button onclick="limparChat()" class="p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-red-500 rounded-full font-bold transition-all" title="Limpar Conversa">
+                <button onclick="limparChat()" class="p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-red-500 rounded-full font-bold" title="Limpar Conversa">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" /></svg>
                 </button>
-                <button onclick="toggleTamanhoChat()" id="btnTamanhoChat" class="p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-blue-500 rounded-full font-bold transition-all" title="Tela Cheia">
+                <button onclick="toggleTamanhoChat()" id="btnTamanhoChat" class="p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-blue-500 rounded-full font-bold" title="Tela Cheia">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" /></svg>
                 </button>
-                <button onclick="mudarEstadoChat('hidden')" class="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white rounded-full transition-all">
+                <button onclick="mudarEstadoChat('hidden')" class="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white rounded-full">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
                 </button>
             </div>
         </div>
         
-        <div id="listaMensagens" class="flex-1 overflow-y-auto px-4 py-6 space-y-8 scroll-suave bg-slate-50/50 dark:bg-[#0f172a] transition-colors duration-300">
+        <div id="listaMensagens" class="flex-1 overflow-y-auto px-4 py-6 space-y-8 scroll-suave bg-slate-50/50 dark:bg-[#0f172a]">
         </div>
 
-        <div class="px-4 py-3 bg-white dark:bg-[#0f172a] pb-safe transition-colors duration-300">
-            <div class="max-w-3xl mx-auto flex items-end bg-slate-100 dark:bg-slate-800 rounded-[1.5rem] p-1.5 border border-slate-200/50 dark:border-slate-700/50 shadow-[0_2px_10px_rgba(0,0,0,0.02)] focus-within:ring-2 focus-within:ring-blue-500/20 transition-all">
+        <div class="px-4 py-3 bg-white dark:bg-[#0f172a] pb-safe shadow-[0_-5px_15px_rgba(0,0,0,0.02)]">
+            <div class="max-w-3xl mx-auto flex items-end bg-slate-100 dark:bg-slate-800 rounded-[1.5rem] p-1.5 border border-slate-200/50 dark:border-slate-700/50 shadow-inner focus-within:ring-2 focus-within:ring-blue-500/20">
                 <textarea id="campoPergunta" rows="1" placeholder="Pergunte ao assistente..." class="flex-1 max-h-32 min-h-[46px] p-3 pl-4 bg-transparent border-none outline-none text-[16px] font-sans resize-none text-slate-900 dark:text-slate-100 overflow-y-auto scroll-suave texto-selecionavel leading-relaxed placeholder-slate-400 dark:placeholder-slate-500"></textarea>
-                <button id="btnEnviarMsg" class="w-11 h-11 mb-0.5 flex-shrink-0 bg-blue-600 hover:bg-blue-700 text-white rounded-[1.1rem] flex items-center justify-center transition-all shadow-sm opacity-50 disabled:opacity-50">
+                <button id="btnEnviarMsg" class="w-11 h-11 mb-0.5 flex-shrink-0 bg-blue-600 hover:bg-blue-700 text-white rounded-[1.1rem] flex items-center justify-center shadow-sm opacity-50 disabled:opacity-50">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5"><path d="M3.478 2.404a.75.75 0 0 0-.926.941l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.404Z" /></svg>
                 </button>
             </div>
@@ -174,19 +178,19 @@
     <div id="barraSelecao" class="fixed bottom-0 left-0 right-0 bg-slate-900 dark:bg-slate-800 text-white p-4 z-[60] transition-transform duration-400 cubic-bezier(0.32, 0.72, 0, 1) translate-y-full shadow-[0_-20px_50px_rgba(0,0,0,0.25)] pb-6 rounded-t-3xl min-h-[90px]">
         <div class="max-w-md mx-auto flex justify-between items-center px-2">
             <div class="flex items-center gap-3">
-                <button onclick="limparSelecao()" class="bg-slate-800 dark:bg-slate-700 hover:bg-slate-700 rounded-full w-9 h-9 flex items-center justify-center font-bold text-lg active:scale-95 transition-colors">&times;</button>
+                <button onclick="limparSelecao()" class="bg-slate-800 dark:bg-slate-700 hover:bg-slate-600 rounded-full w-9 h-9 flex items-center justify-center font-bold text-lg active:scale-95">&times;</button>
                 <span id="contadorSelecao" class="font-medium text-[15px] tracking-wide">0 selecionados</span>
             </div>
             <div class="flex gap-4">
-                <button onclick="acaoMultiplaCopiar()" class="flex flex-col items-center justify-center active:scale-95 transition-transform text-slate-300 hover:text-white px-2">
+                <button onclick="acaoMultiplaCopiar()" class="flex flex-col items-center justify-center active:scale-95 text-slate-300 hover:text-white px-2">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 mb-1"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 0 1-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H9.75" /></svg>
                     <span class="text-[11px] font-semibold">Copiar</span>
                 </button>
-                <button onclick="acaoMultiplaMarcar()" class="flex flex-col items-center justify-center active:scale-95 transition-transform text-slate-300 hover:text-white px-2">
+                <button onclick="acaoMultiplaMarcar()" class="flex flex-col items-center justify-center active:scale-95 text-slate-300 hover:text-white px-2">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 mb-1"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg>
                     <span id="textoBtnMarcar" class="text-[11px] font-semibold">Marcar</span>
                 </button>
-                <button onclick="acaoMultiplaExplicar()" class="flex flex-col items-center justify-center active:scale-95 transition-transform font-bold bg-white text-slate-900 px-4 py-2 rounded-2xl shadow-sm ml-2 hover:bg-slate-100">
+                <button onclick="acaoMultiplaExplicar()" class="flex flex-col items-center justify-center active:scale-95 font-bold bg-white text-slate-900 px-4 py-2 rounded-2xl shadow-sm ml-2 hover:bg-slate-100">
                     <span class="text-xl">✨</span><span class="text-[10px] mt-0.5 tracking-wide">EXPLICAR</span>
                 </button>
             </div>
@@ -197,7 +201,7 @@
         <div class="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center gap-3 bg-white dark:bg-slate-900">
             <button onclick="fecharBusca()" class="p-2 text-2xl text-slate-500 hover:text-slate-800 dark:hover:text-white">&times;</button>
             <input type="text" id="inputBusca" placeholder="Buscar palavra na Bíblia..." class="flex-1 p-3 rounded-2xl bg-slate-100 dark:bg-slate-800 border-none outline-none focus:ring-2 focus:ring-blue-500 text-[16px] font-sans texto-selecionavel placeholder-slate-400 dark:placeholder-slate-500">
-            <button onclick="executarBusca()" class="bg-blue-600 hover:bg-blue-700 text-white p-3 px-5 rounded-2xl font-bold shadow-sm active:scale-95 transition-colors">Ir</button>
+            <button onclick="executarBusca()" class="bg-blue-600 hover:bg-blue-700 text-white p-3 px-5 rounded-2xl font-bold shadow-sm active:scale-95">Ir</button>
         </div>
         <div class="flex-1 overflow-y-auto p-4 scroll-suave" id="areaResultadosBusca">
             <div id="containerHistoricoBusca" class="mb-6">
@@ -219,46 +223,46 @@
             </div>
             <div class="mb-5">
                 <label class="block text-[14px] font-bold text-slate-700 dark:text-slate-300 mb-2">Chave da API (Gemini)</label>
-                <input type="text" id="inputChaveApi" class="w-full p-3.5 border border-slate-200 dark:border-slate-600 rounded-2xl text-slate-900 dark:text-white dark:bg-slate-700/50 outline-none focus:ring-2 focus:ring-blue-500 font-mono text-[14px] shadow-inner texto-selecionavel transition-all" placeholder="Ex: AIzaSyB...">
+                <input type="text" id="inputChaveApi" class="w-full p-3.5 border border-slate-200 dark:border-slate-600 rounded-2xl text-slate-900 dark:text-white dark:bg-slate-700/50 outline-none focus:ring-2 focus:ring-blue-500 font-mono text-[14px] shadow-inner texto-selecionavel" placeholder="Ex: AIzaSyB...">
             </div>
             <div class="mb-8">
                 <label class="block text-[14px] font-bold text-slate-700 dark:text-slate-300 mb-1">Instruções Adicionais</label>
-                <p class="text-[12px] text-slate-500 dark:text-slate-400 mb-3 leading-relaxed">
-                    A alma do Assistente (Regra de Fé e Ortodoxia) já está blindada. Adicione aqui apenas comandos de formatação.
-                </p>
-                <textarea id="inputPerfil" rows="3" class="w-full p-3.5 border border-slate-200 dark:border-slate-600 rounded-2xl text-slate-900 dark:text-white dark:bg-slate-700/50 outline-none focus:ring-2 focus:ring-blue-500 text-[15px] shadow-inner resize-none texto-selecionavel transition-all" placeholder="Ex: Responda em tópicos..."></textarea>
+                <p class="text-[12px] text-slate-500 dark:text-slate-400 mb-3 leading-relaxed">A alma do Assistente (Regra de Fé e Ortodoxia) já está blindada. Adicione aqui comandos de formatação.</p>
+                <textarea id="inputPerfil" rows="3" class="w-full p-3.5 border border-slate-200 dark:border-slate-600 rounded-2xl text-slate-900 dark:text-white dark:bg-slate-700/50 outline-none focus:ring-2 focus:ring-blue-500 text-[15px] shadow-inner resize-none texto-selecionavel" placeholder="Ex: Responda em tópicos..."></textarea>
             </div>
-            <button onclick="salvarConfig()" class="w-full p-4 rounded-2xl font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-md active:scale-95 transition-all text-[16px]">Salvar Configurações</button>
+            <button onclick="salvarConfig()" class="w-full p-4 rounded-2xl font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-md active:scale-95 text-[16px]">Salvar Configurações</button>
         </div>
     </div>
 
     <script>
         // ----------------------------------------------------
-        // LÓGICA DE TEMA (DARK MODE INTELIGENTE E ÍCONES)
+        // LÓGICA DE TEMA E INICIALIZAÇÃO
         // ----------------------------------------------------
         const btnTema = document.getElementById('btnTema');
-        const metaThemeColor = document.getElementById('meta-theme-color');
-        
-        const iconeSol = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" /></svg>`;
-        const iconeLua = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" /></svg>`;
+        const htmlElement = document.documentElement;
 
-        function atualizarTemaUI() {
-            const isDark = document.documentElement.classList.contains('dark');
-            btnTema.innerHTML = isDark ? iconeSol : iconeLua;
-            metaThemeColor.setAttribute('content', isDark ? '#0b1120' : '#ffffff');
+        function atualizarCoresDoNavegador() {
+            const isDark = htmlElement.classList.contains('dark');
+            document.getElementById('meta-theme-color').content = isDark ? "#0f172a" : "#ffffff";
         }
 
+        // Verifica preferência salva ou do sistema (Melhor do Mercado)
+        if (localStorage.getItem('tema') === 'dark' || (!('tema' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            htmlElement.classList.add('dark');
+        } else {
+            htmlElement.classList.remove('dark');
+        }
+        atualizarCoresDoNavegador();
+
         btnTema.addEventListener('click', () => {
-            document.documentElement.classList.toggle('dark');
-            const isDark = document.documentElement.classList.contains('dark');
-            localStorage.setItem('tema_biblia', isDark ? 'dark' : 'light');
-            atualizarTemaUI();
+            htmlElement.classList.toggle('dark');
+            if (htmlElement.classList.contains('dark')) localStorage.setItem('tema', 'dark');
+            else localStorage.setItem('tema', 'light');
+            atualizarCoresDoNavegador();
         });
 
-        atualizarTemaUI(); // Roda ao carregar a página
-
         // ----------------------------------------------------
-        // ESTADO GLOBAL
+        // 1. ESTADO GLOBAL, UTILITÁRIOS E MARKDOWN
         // ----------------------------------------------------
         let bibliaCompleta = [];
         let indexLivro = parseInt(localStorage.getItem('leitura_livro')) || 0;
@@ -268,7 +272,6 @@
 
         function removerAcentos(str) { return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(); }
 
-        // MARKDOWN PARSER
         function formatarMarkdown(texto) {
             let html = texto.trim();
             html = html.replace(/^### (.*$)/gim, '<h3 class="text-[19px] font-bold mt-6 mb-2">$1</h3>');
@@ -284,7 +287,7 @@
         }
 
         // ----------------------------------------------------
-        // BÍBLIA
+        // 2. BÍBLIA
         // ----------------------------------------------------
         async function iniciarBiblia() {
             const urlArc = 'https://raw.githubusercontent.com/maatheusgois/bible/main/versions/pt-br/arc.json';
@@ -328,7 +331,7 @@
         document.getElementById('btnAnterior').addEventListener('click', () => { if (indexCapitulo > 0) indexCapitulo--; else if (indexLivro > 0) { indexLivro--; indexCapitulo = bibliaCompleta[indexLivro].chapters.length - 1; } document.getElementById('selLivro').value = indexLivro; preencherCapitulos(); exibirCapitulo(); });
 
         // ----------------------------------------------------
-        // SELEÇÃO MÚLTIPLA
+        // 3. SELEÇÃO MÚLTIPLA
         // ----------------------------------------------------
         function toggleSelecaoVersiculo(lIdx, cIdx, vIdx) {
             const idUnico = `${lIdx}-${cIdx}-${vIdx}`;
@@ -377,7 +380,7 @@
         }
 
         // ----------------------------------------------------
-        // MOTOR DE BUSCA
+        // 4. MOTOR DE BUSCA
         // ----------------------------------------------------
         let historicoBusca = JSON.parse(localStorage.getItem('biblia_historico_busca')) || [];
         function abrirBusca() { document.getElementById('telaBusca').classList.remove('translate-y-full'); document.getElementById('inputBusca').focus(); }
@@ -423,7 +426,7 @@
         document.getElementById('inputBusca').addEventListener('keypress', e => { if (e.key === 'Enter') executarBusca(); });
 
         // ----------------------------------------------------
-        // CHAT (UI PREMIUM E SMART SCROLL)
+        // 5. CHAT (SMART SCROLL E CÓPIA NATIVA)
         // ----------------------------------------------------
         let estadoChat = 'hidden'; 
         const gavetaChat = document.getElementById('gavetaChat');
@@ -434,7 +437,7 @@
             gavetaChat.classList.remove('sheet-hidden', 'sheet-half', 'sheet-full');
             gavetaChat.classList.add(`sheet-${estadoChat}`);
             if(estadoChat === 'hidden') mainBiblia.style.paddingBottom = '90px'; 
-            else if (estadoChat === 'half') { mainBiblia.style.paddingBottom = 'calc(55dvh + 90px)'; document.getElementById('btnTamanhoChat').innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" /></svg>'; } 
+            else if (estadoChat === 'half') { mainBiblia.style.paddingBottom = 'calc(50dvh + 90px)'; document.getElementById('btnTamanhoChat').innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" /></svg>'; } 
             else if (estadoChat === 'full') { mainBiblia.style.paddingBottom = 'calc(100dvh + 90px)'; document.getElementById('btnTamanhoChat').innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 9V4.5M9 9H4.5M9 9 3.75 3.75M9 15v4.5M9 15H4.5M9 15l-5.25 5.25M15 9h4.5M15 9V4.5M15 9l5.25-5.25M15 15h4.5M15 15v4.5m0-4.5 5.25 5.25" /></svg>'; }
         }
 
@@ -494,13 +497,13 @@
             if (listaMsg.querySelector('h2')) listaMsg.innerHTML = '';
             
             if(role === 'user') {
-                listaMsg.innerHTML += `<div class="flex justify-end mb-4 ${anim}"><div class="bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-slate-100 px-5 py-3.5 rounded-3xl rounded-tr-sm max-w-[85%] font-sans text-[16px] whitespace-pre-wrap texto-selecionavel">${texto}</div></div>`;
+                listaMsg.innerHTML += `<div class="flex justify-end mb-4 ${anim}"><div class="bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-slate-100 px-5 py-3.5 rounded-3xl rounded-tr-sm max-w-[85%] font-sans text-[16px] whitespace-pre-wrap texto-selecionavel shadow-sm">${texto}</div></div>`;
             } else {
                 listaMsg.innerHTML += `
                 <div id="msg-${indexArray}" class="flex gap-4 mb-8 mt-6 ${anim}">
                     <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white flex-shrink-0 mt-1 shadow-sm"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4"><path fill-rule="evenodd" d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5Z" clip-rule="evenodd" /></svg></div>
-                    <div class="w-full overflow-hidden">
-                        <div class="font-sans text-[16.5px] leading-8 w-full texto-selecionavel tracking-tight break-words">
+                    <div class="w-full">
+                        <div class="font-sans text-[16.5px] leading-8 w-full texto-selecionavel tracking-tight">
                             ${formatarMarkdown(texto)}
                         </div>
                         <div class="mt-4 flex justify-start">
