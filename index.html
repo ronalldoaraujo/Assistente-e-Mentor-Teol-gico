@@ -21,7 +21,6 @@
         .fade-in { animation: fadeIn 0.3s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Scrollbar Otimizada */
         .scroll-suave::-webkit-scrollbar { width: 4px; }
         .scroll-suave::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; }
         .dark .scroll-suave::-webkit-scrollbar-thumb { background: #475569; }
@@ -36,7 +35,7 @@
         .highlight-busca { font-weight: 700; color: #2563eb; background-color: rgba(59, 130, 246, 0.15); padding: 0 2px; border-radius: 2px; }
         .dark .highlight-busca { color: #60a5fa; background-color: rgba(59, 130, 246, 0.25); }
 
-        /* BOTTOM SHEET (GAVETA INTELIGENTE) - Nasce ACIMA da barra de navegação */
+        /* BOTTOM SHEET (GAVETA INTELIGENTE) */
         .bottom-sheet {
             position: fixed; left: 0; right: 0; bottom: 76px; z-index: 50;
             background: white; display: flex; flex-direction: column;
@@ -46,10 +45,16 @@
         }
         .dark .bottom-sheet { background: #0f172a; box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5); border-top: 1px solid #1e293b; }
         
-        /* Estados da Gaveta */
         .sheet-hidden { transform: translateY(120%); opacity: 0; pointer-events: none; }
         .sheet-half { transform: translateY(0); height: 50dvh; opacity: 1; pointer-events: auto; }
         .sheet-full { transform: translateY(0); height: calc(100dvh - 76px); opacity: 1; pointer-events: auto; }
+        
+        /* Loading Customizado */
+        .dot-flashing { display: flex; gap: 4px; align-items: center; margin-top: 4px; }
+        .dot-flashing div { width: 6px; height: 6px; background-color: #94a3b8; border-radius: 50%; animation: pulse 1.4s infinite ease-in-out both; }
+        .dot-flashing div:nth-child(1) { animation-delay: -0.32s; }
+        .dot-flashing div:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes pulse { 0%, 80%, 100% { transform: scale(0); opacity: 0.5; } 40% { transform: scale(1); opacity: 1; } }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-900 transition-colors duration-300 dark:bg-gray-900 dark:text-gray-100 pb-safe">
@@ -109,7 +114,7 @@
             </div>
         </div>
         <div id="listaMensagens" class="flex-1 overflow-y-auto p-4 space-y-6 scroll-suave bg-gray-50 dark:bg-gray-800/50">
-        </div>
+            </div>
         <div class="p-4 bg-white dark:bg-[#0f172a] border-t border-gray-200 dark:border-gray-800 pb-safe shadow-[0_-5px_15px_rgba(0,0,0,0.05)]">
             <div class="max-w-3xl mx-auto flex gap-2 items-end bg-gray-100 dark:bg-gray-800 rounded-2xl p-2 border border-transparent focus-within:border-gray-300 dark:focus-within:border-gray-600 transition-colors">
                 <textarea id="campoPergunta" rows="1" placeholder="Pergunte ou comente um versículo..." class="flex-1 max-h-32 min-h-[44px] p-3 bg-transparent border-none outline-none text-sm font-sans resize-none text-gray-900 dark:text-gray-100 overflow-y-auto scroll-suave"></textarea>
@@ -170,9 +175,7 @@
             </div>
             <div class="mb-6">
                 <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Instruções Adicionais (Opcional)</label>
-                <p class="text-[11px] text-gray-500 dark:text-gray-400 mb-3 leading-tight">
-                    A alma do Assistente da Bíblia (Doutrina, Regra de Fé e Ortodoxia) já está ativada e protegida internamente. Adicione aqui apenas comandos extras de formatação.
-                </p>
+                <p class="text-[11px] text-gray-500 dark:text-gray-400 mb-3 leading-tight">A alma do Assistente da Bíblia (Doutrina e Ortodoxia) já está ativada. Adicione aqui apenas comandos extras de formatação.</p>
                 <textarea id="inputPerfil" rows="4" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white dark:bg-gray-700 outline-none focus:ring-2 focus:ring-blue-500 text-sm shadow-inner resize-none" placeholder="Ex: Responda em tópicos curtos..."></textarea>
             </div>
             <button onclick="salvarConfig()" class="w-full p-3 rounded-xl font-bold bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 shadow-md active:scale-95 transition-transform">Salvar Dados</button>
@@ -226,73 +229,40 @@
         }
 
         function salvarEstadoLeitura() { localStorage.setItem('leitura_livro', indexLivro); localStorage.setItem('leitura_capitulo', indexCapitulo); }
-
-        function preencherLivros() {
-            const select = document.getElementById('selLivro');
-            select.innerHTML = bibliaCompleta.map((l, i) => `<option value="${i}">${l.name}</option>`).join('');
-            select.value = indexLivro; preencherCapitulos();
-        }
-
-        function preencherCapitulos() {
-            const select = document.getElementById('selCapitulo');
-            const total = bibliaCompleta[indexLivro].chapters.length;
-            let options = '';
-            for(let i = 0; i < total; i++) options += `<option value="${i}">Capítulo ${i + 1}</option>`;
-            select.innerHTML = options; select.value = indexCapitulo;
-        }
+        function preencherLivros() { const s = document.getElementById('selLivro'); s.innerHTML = bibliaCompleta.map((l, i) => `<option value="${i}">${l.name}</option>`).join(''); s.value = indexLivro; preencherCapitulos(); }
+        function preencherCapitulos() { const s = document.getElementById('selCapitulo'); let opt = ''; for(let i = 0; i < bibliaCompleta[indexLivro].chapters.length; i++) opt += `<option value="${i}">Capítulo ${i + 1}</option>`; s.innerHTML = opt; s.value = indexCapitulo; }
 
         function exibirCapitulo() {
             if(bibliaCompleta.length === 0) return;
             limparSelecao();
-            const livroAtual = bibliaCompleta[indexLivro];
-            const versiculos = livroAtual.chapters[indexCapitulo];
+            const livro = bibliaCompleta[indexLivro];
+            const versiculos = livro.chapters[indexCapitulo];
             
-            let html = `<h2 class="text-3xl font-extrabold mb-8 text-gray-900 dark:text-gray-100 text-center fade-in">${livroAtual.name} ${indexCapitulo + 1}</h2>`;
-            
+            let html = `<h2 class="text-3xl font-extrabold mb-8 text-gray-900 dark:text-gray-100 text-center fade-in">${livro.name} ${indexCapitulo + 1}</h2>`;
             versiculos.forEach((texto, i) => {
-                const idUnico = `${indexLivro}-${indexCapitulo}-${i}`;
-                const classMarcado = marcacoes[idUnico] ? 'versiculo-marcado' : '';
-                html += `
-                <div id="v-${idUnico}" onclick="toggleSelecaoVersiculo(${indexLivro}, ${indexCapitulo}, ${i})" class="flex gap-4 mb-5 items-start cursor-pointer p-2 rounded-xl transition-all -mx-2 hover:bg-gray-100 dark:hover:bg-gray-800 ${classMarcado}">
-                    <span class="text-[11px] font-black bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 px-2 py-1 rounded shadow-sm mt-1.5 flex-shrink-0 pointer-events-none">${i + 1}</span>
-                    <p class="flex-1 text-gray-800 dark:text-gray-200 leading-relaxed pointer-events-none">${texto}</p>
-                </div>`;
+                const id = `${indexLivro}-${indexCapitulo}-${i}`;
+                const cl = marcacoes[id] ? 'versiculo-marcado' : '';
+                html += `<div id="v-${id}" onclick="toggleSelecaoVersiculo(${indexLivro}, ${indexCapitulo}, ${i})" class="flex gap-4 mb-5 items-start cursor-pointer p-2 rounded-xl transition-all -mx-2 hover:bg-gray-100 dark:hover:bg-gray-800 ${cl}"><span class="text-[11px] font-black bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 px-2 py-1 rounded shadow-sm mt-1.5 flex-shrink-0 pointer-events-none">${i + 1}</span><p class="flex-1 text-gray-800 dark:text-gray-200 leading-relaxed pointer-events-none">${texto}</p></div>`;
             });
             document.getElementById('areaLeitura').innerHTML = html;
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            salvarEstadoLeitura();
+            window.scrollTo({ top: 0, behavior: 'smooth' }); salvarEstadoLeitura();
         }
 
-        document.getElementById('selLivro').addEventListener('change', (e) => { indexLivro = parseInt(e.target.value); indexCapitulo = 0; preencherCapitulos(); exibirCapitulo(); });
-        document.getElementById('selCapitulo').addEventListener('change', (e) => { indexCapitulo = parseInt(e.target.value); exibirCapitulo(); });
-        document.getElementById('btnProximo').addEventListener('click', () => {
-            if (indexCapitulo < bibliaCompleta[indexLivro].chapters.length - 1) { indexCapitulo++; } 
-            else if (indexLivro < bibliaCompleta.length - 1) { indexLivro++; indexCapitulo = 0; }
-            document.getElementById('selLivro').value = indexLivro; preencherCapitulos(); exibirCapitulo();
-        });
-        document.getElementById('btnAnterior').addEventListener('click', () => {
-            if (indexCapitulo > 0) { indexCapitulo--; } 
-            else if (indexLivro > 0) { indexLivro--; indexCapitulo = bibliaCompleta[indexLivro].chapters.length - 1; }
-            document.getElementById('selLivro').value = indexLivro; preencherCapitulos(); exibirCapitulo();
-        });
+        document.getElementById('selLivro').addEventListener('change', e => { indexLivro = parseInt(e.target.value); indexCapitulo = 0; preencherCapitulos(); exibirCapitulo(); });
+        document.getElementById('selCapitulo').addEventListener('change', e => { indexCapitulo = parseInt(e.target.value); exibirCapitulo(); });
+        document.getElementById('btnProximo').addEventListener('click', () => { if (indexCapitulo < bibliaCompleta[indexLivro].chapters.length - 1) indexCapitulo++; else if (indexLivro < bibliaCompleta.length - 1) { indexLivro++; indexCapitulo = 0; } document.getElementById('selLivro').value = indexLivro; preencherCapitulos(); exibirCapitulo(); });
+        document.getElementById('btnAnterior').addEventListener('click', () => { if (indexCapitulo > 0) indexCapitulo--; else if (indexLivro > 0) { indexLivro--; indexCapitulo = bibliaCompleta[indexLivro].chapters.length - 1; } document.getElementById('selLivro').value = indexLivro; preencherCapitulos(); exibirCapitulo(); });
 
         // ----------------------------------------------------
         // 3. SELEÇÃO MÚLTIPLA
         // ----------------------------------------------------
-        function toggleSelecaoVersiculo(lIdx, cIdx, vIdx) {
-            const idUnico = `${lIdx}-${cIdx}-${vIdx}`;
-            const divElement = document.getElementById(`v-${idUnico}`);
-            const indexNoArray = versiculosSelecionados.findIndex(v => v.idUnico === idUnico);
+        function toggleSelecaoVersiculo(l, c, v) {
+            const id = `${l}-${c}-${v}`;
+            const div = document.getElementById(`v-${id}`);
+            const idx = versiculosSelecionados.findIndex(x => x.idUnico === id);
             
-            if (indexNoArray > -1) {
-                versiculosSelecionados.splice(indexNoArray, 1);
-                divElement.classList.remove('versiculo-selecionado');
-            } else {
-                const livroNome = bibliaCompleta[lIdx].name;
-                const texto = bibliaCompleta[lIdx].chapters[cIdx][vIdx];
-                versiculosSelecionados.push({ lIdx, cIdx, vIdx, idUnico, texto, referencia: `${livroNome} ${cIdx + 1}:${vIdx + 1}` });
-                divElement.classList.add('versiculo-selecionado');
-            }
+            if (idx > -1) { versiculosSelecionados.splice(idx, 1); div.classList.remove('versiculo-selecionado'); } 
+            else { versiculosSelecionados.push({ lIdx: l, cIdx: c, vIdx: v, idUnico: id, texto: bibliaCompleta[l].chapters[c][v], referencia: `${bibliaCompleta[l].name} ${c + 1}:${v + 1}` }); div.classList.add('versiculo-selecionado'); }
             atualizarBarraSelecao();
         }
 
@@ -302,28 +272,17 @@
                 document.getElementById('contadorSelecao').innerText = `${versiculosSelecionados.length} selecionado${versiculosSelecionados.length > 1 ? 's' : ''}`;
                 document.getElementById('textoBtnMarcar').innerText = versiculosSelecionados.every(v => marcacoes[v.idUnico]) ? "Desmarcar" : "Marcar";
                 barra.classList.remove('translate-y-full');
-            } else {
-                barra.classList.add('translate-y-full');
-            }
+            } else { barra.classList.add('translate-y-full'); }
         }
 
-        function limparSelecao() {
-            versiculosSelecionados.forEach(v => { const el = document.getElementById(`v-${v.idUnico}`); if(el) el.classList.remove('versiculo-selecionado'); });
-            versiculosSelecionados = []; atualizarBarraSelecao();
-        }
-
+        function limparSelecao() { versiculosSelecionados.forEach(v => { const el = document.getElementById(`v-${v.idUnico}`); if(el) el.classList.remove('versiculo-selecionado'); }); versiculosSelecionados = []; atualizarBarraSelecao(); }
         function ordenarSelecao() { versiculosSelecionados.sort((a, b) => a.vIdx - b.vIdx); }
 
-        function acaoMultiplaCopiar() {
-            ordenarSelecao();
-            let texto = ""; versiculosSelecionados.forEach(v => { texto += `"${v.texto}" (${v.referencia})\n`; });
-            navigator.clipboard.writeText(texto.trim()).then(() => { limparSelecao(); alert("Copiado!"); });
-        }
-
+        function acaoMultiplaCopiar() { ordenarSelecao(); let txt = ""; versiculosSelecionados.forEach(v => txt += `"${v.texto}" (${v.referencia})\n`); navigator.clipboard.writeText(txt.trim()).then(() => { limparSelecao(); alert("Copiado!"); }); }
         function acaoMultiplaMarcar() {
-            const todosMarcados = versiculosSelecionados.every(v => marcacoes[v.idUnico]);
+            const todos = versiculosSelecionados.every(v => marcacoes[v.idUnico]);
             versiculosSelecionados.forEach(v => {
-                if (todosMarcados) delete marcacoes[v.idUnico]; else marcacoes[v.idUnico] = true;
+                if (todos) delete marcacoes[v.idUnico]; else marcacoes[v.idUnico] = true;
                 const el = document.getElementById(`v-${v.idUnico}`);
                 if(el) { if(marcacoes[v.idUnico]) el.classList.add('versiculo-marcado'); else el.classList.remove('versiculo-marcado'); }
             });
@@ -331,18 +290,13 @@
         }
 
         function acaoMultiplaExplicar() {
-            ordenarSelecao();
-            let blocoTexto = ""; versiculosSelecionados.forEach(v => { blocoTexto += `"${v.texto}" (${v.referencia})\n`; });
-            const promptContextual = `Por favor, explique esta passagem à luz da Palavra:\n\n${blocoTexto}`;
+            ordenarSelecao(); let txt = ""; versiculosSelecionados.forEach(v => txt += `"${v.texto}" (${v.referencia})\n`);
             limparSelecao();
-            
             if(estadoChat === 'hidden') mudarEstadoChat('half');
-            
-            const textarea = document.getElementById('campoPergunta');
-            textarea.value = promptContextual;
-            textarea.style.height = 'auto'; textarea.style.height = textarea.scrollHeight + 'px';
+            const ta = document.getElementById('campoPergunta');
+            ta.value = `Por favor, explique esta passagem à luz da Palavra:\n\n${txt}`;
+            ta.style.height = 'auto'; ta.style.height = ta.scrollHeight + 'px';
             document.getElementById('btnEnviarMsg').style.opacity = '1';
-            
             setTimeout(() => document.getElementById('btnEnviarMsg').click(), 300);
         }
 
@@ -355,64 +309,33 @@
         function limparHistoricoBusca() { historicoBusca = []; localStorage.setItem('biblia_historico_busca', JSON.stringify(historicoBusca)); carregarHistoricoBusca(); }
 
         function carregarHistoricoBusca() {
-            const container = document.getElementById('listaHistoricoBusca');
-            if(historicoBusca.length === 0) return container.innerHTML = '<span class="text-xs text-gray-400">Nenhuma busca recente.</span>';
-            container.innerHTML = historicoBusca.map(t => `<button onclick="document.getElementById('inputBusca').value='${t}'; executarBusca();" class="px-3 py-1.5 bg-gray-200 dark:bg-gray-800 text-sm font-semibold rounded-lg active:scale-95">${t}</button>`).join('');
+            const c = document.getElementById('listaHistoricoBusca');
+            if(historicoBusca.length === 0) return c.innerHTML = '<span class="text-xs text-gray-400">Nenhuma busca recente.</span>';
+            c.innerHTML = historicoBusca.map(t => `<button onclick="document.getElementById('inputBusca').value='${t}'; executarBusca();" class="px-3 py-1.5 bg-gray-200 dark:bg-gray-800 text-sm font-semibold rounded-lg active:scale-95">${t}</button>`).join('');
         }
 
         function executarBusca() {
-            const input = document.getElementById('inputBusca');
-            const termo = input.value.trim();
-            if(termo.length < 2) return alert("Digite pelo menos 2 letras.");
-
-            if(!historicoBusca.includes(termo)) {
-                historicoBusca.unshift(termo); if(historicoBusca.length > 8) historicoBusca.pop();
-                localStorage.setItem('biblia_historico_busca', JSON.stringify(historicoBusca)); carregarHistoricoBusca();
-            }
-
-            const areaRes = document.getElementById('listaResultadosBusca');
-            areaRes.innerHTML = `<div class="text-center p-4 text-blue-500 font-bold animate-pulse">Buscando...</div>`;
-            
+            const t = document.getElementById('inputBusca').value.trim();
+            if(t.length < 2) return alert("Digite pelo menos 2 letras.");
+            if(!historicoBusca.includes(t)) { historicoBusca.unshift(t); if(historicoBusca.length > 8) historicoBusca.pop(); localStorage.setItem('biblia_historico_busca', JSON.stringify(historicoBusca)); carregarHistoricoBusca(); }
+            const area = document.getElementById('listaResultadosBusca'); area.innerHTML = `<div class="text-center p-4 text-blue-500 font-bold animate-pulse">Buscando...</div>`;
             setTimeout(() => {
-                const termoLimpo = removerAcentos(termo);
-                let resultados = [];
-                for (let l = 0; l < bibliaCompleta.length; l++) {
-                    for (let c = 0; c < bibliaCompleta[l].chapters.length; c++) {
-                        for (let v = 0; v < bibliaCompleta[l].chapters[c].length; v++) {
-                            if (removerAcentos(bibliaCompleta[l].chapters[c][v]).includes(termoLimpo)) {
-                                resultados.push({ l, c, v, livro: bibliaCompleta[l].name, texto: bibliaCompleta[l].chapters[c][v] });
-                            }
-                        }
-                    }
-                }
-                if (resultados.length === 0) return areaRes.innerHTML = `<div class="text-center p-8 text-gray-500">Nada encontrado para "${termo}".</div>`;
-
-                let htmlRes = `<p class="text-sm font-bold text-gray-500 mb-4">${resultados.length} resultados</p>`;
-                const regex = new RegExp(`(${termo})`, 'gi');
-                resultados.forEach(res => {
-                    const txt = res.texto.replace(regex, '<span class="highlight-busca">$1</span>');
-                    htmlRes += `<div onclick="irParaResultado(${res.l}, ${res.c}, ${res.v})" class="p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 cursor-pointer active:scale-95 fade-in mb-3"><span class="text-xs font-black text-blue-600 dark:text-blue-400 block mb-1 uppercase">${res.livro} ${res.c + 1}:${res.v + 1}</span><p class="texto-biblia">${txt}</p></div>`;
-                });
-                areaRes.innerHTML = htmlRes;
+                const limpo = removerAcentos(t); let res = [];
+                for (let l = 0; l < bibliaCompleta.length; l++) { for (let c = 0; c < bibliaCompleta[l].chapters.length; c++) { for (let v = 0; v < bibliaCompleta[l].chapters[c].length; v++) {
+                    if (removerAcentos(bibliaCompleta[l].chapters[c][v]).includes(limpo)) res.push({ l, c, v, livro: bibliaCompleta[l].name, texto: bibliaCompleta[l].chapters[c][v] });
+                }}}
+                if (res.length === 0) return area.innerHTML = `<div class="text-center p-8 text-gray-500">Nada encontrado para "${t}".</div>`;
+                let html = `<p class="text-sm font-bold text-gray-500 mb-4">${res.length} resultados</p>`;
+                const rx = new RegExp(`(${t})`, 'gi');
+                res.forEach(r => { html += `<div onclick="irParaResultado(${r.l}, ${r.c}, ${r.v})" class="p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 cursor-pointer active:scale-95 fade-in mb-3"><span class="text-xs font-black text-blue-600 dark:text-blue-400 block mb-1 uppercase">${r.livro} ${r.c + 1}:${r.v + 1}</span><p class="texto-biblia">${r.texto.replace(rx, '<span class="highlight-busca">$1</span>')}</p></div>`; });
+                area.innerHTML = html;
             }, 50);
         }
-
-        function irParaResultado(l, c, v) {
-            fecharBusca(); indexLivro = l; indexCapitulo = c;
-            document.getElementById('selLivro').value = l; preencherCapitulos(); exibirCapitulo();
-            setTimeout(() => {
-                const el = document.getElementById(`v-${l}-${c}-${v}`);
-                if(el) {
-                    window.scrollTo({ top: (el.getBoundingClientRect().top - document.body.getBoundingClientRect().top) - 100, behavior: 'smooth' });
-                    el.style.transition = 'background-color 0.5s'; el.style.backgroundColor = 'rgba(59, 130, 246, 0.2)';
-                    setTimeout(() => el.style.backgroundColor = '', 1500);
-                }
-            }, 300);
-        }
+        function irParaResultado(l, c, v) { fecharBusca(); indexLivro = l; indexCapitulo = c; document.getElementById('selLivro').value = l; preencherCapitulos(); exibirCapitulo(); setTimeout(() => { const el = document.getElementById(`v-${l}-${c}-${v}`); if(el) { window.scrollTo({ top: (el.getBoundingClientRect().top - document.body.getBoundingClientRect().top) - 100, behavior: 'smooth' }); el.style.transition = 'background-color 0.5s'; el.style.backgroundColor = 'rgba(59, 130, 246, 0.2)'; setTimeout(() => el.style.backgroundColor = '', 1500); } }, 300); }
         document.getElementById('inputBusca').addEventListener('keypress', e => { if (e.key === 'Enter') executarBusca(); });
 
         // ----------------------------------------------------
-        // 5. CHAT COM BOTTOM SHEET, GESTOS E ALMA BLINDADA
+        // 5. CHAT COM BOTTOM SHEET E ESTRUTURA OFICIAL GOOGLE API
         // ----------------------------------------------------
         let estadoChat = 'hidden'; 
         const gavetaChat = document.getElementById('gavetaChat');
@@ -423,115 +346,104 @@
             gavetaChat.classList.remove('sheet-hidden', 'sheet-half', 'sheet-full');
             gavetaChat.classList.add(`sheet-${estadoChat}`);
             
-            if(estadoChat === 'hidden') {
-                mainBiblia.style.paddingBottom = '90px'; 
-            } else if (estadoChat === 'half') {
-                mainBiblia.style.paddingBottom = 'calc(50dvh + 90px)'; 
-                document.getElementById('btnTamanhoChat').innerText = '⛶'; 
-            } else if (estadoChat === 'full') {
-                mainBiblia.style.paddingBottom = 'calc(100dvh + 90px)';
-                document.getElementById('btnTamanhoChat').innerText = '🗗'; 
-            }
+            if(estadoChat === 'hidden') { mainBiblia.style.paddingBottom = '90px'; } 
+            else if (estadoChat === 'half') { mainBiblia.style.paddingBottom = 'calc(50dvh + 90px)'; document.getElementById('btnTamanhoChat').innerText = '⛶'; } 
+            else if (estadoChat === 'full') { mainBiblia.style.paddingBottom = 'calc(100dvh + 90px)'; document.getElementById('btnTamanhoChat').innerText = '🗗'; }
             if(estadoChat !== 'hidden') setTimeout(rolarChatParaBaixo, 300);
         }
 
         function toggleChat() { if (estadoChat === 'hidden') mudarEstadoChat('half'); else mudarEstadoChat('hidden'); }
         function toggleTamanhoChat() { if(estadoChat === 'half') mudarEstadoChat('full'); else if (estadoChat === 'full') mudarEstadoChat('half'); }
 
-        let touchStartY = 0;
-        const dragHandle = document.getElementById('dragHandle');
+        let touchStartY = 0; const dragHandle = document.getElementById('dragHandle');
         dragHandle.addEventListener('touchstart', e => { touchStartY = e.changedTouches[0].screenY; }, {passive: true});
         dragHandle.addEventListener('touchend', e => {
             const diff = e.changedTouches[0].screenY - touchStartY;
             if (diff < -40) { if (estadoChat === 'half') mudarEstadoChat('full'); } 
-            else if (diff > 40) { 
-                if (estadoChat === 'full') mudarEstadoChat('half');
-                else if (estadoChat === 'half') mudarEstadoChat('hidden');
-            }
+            else if (diff > 40) { if (estadoChat === 'full') mudarEstadoChat('half'); else if (estadoChat === 'half') mudarEstadoChat('hidden'); }
         });
         dragHandle.addEventListener('click', toggleTamanhoChat);
 
-        // ALMA DA IA ATUALIZADA (ORGÂNICA)
-        const listaMsg = document.getElementById('listaMensagens');
-        const inputMsg = document.getElementById('campoPergunta');
-        const modalConfig = document.getElementById('modalConfig');
+        // A ALMA DO SISTEMA: ORGÂNICA (Nova versão de consciência única)
         const ALMA_INTERNA = "Atue como um exímio teólogo de mente neotestamentária, raiz protestante histórica e identidade pentecostal clássica das Assembleias de Deus, respondendo a partir dessa única consciência doutrinária indivisível.";
+        
         let historicoChat = JSON.parse(localStorage.getItem('biblia_historico_chat')) || [];
+        let aguardandoResposta = false; // Trava anti-spam (Debounce)
 
+        const inputMsg = document.getElementById('campoPergunta');
         inputMsg.addEventListener('input', function() {
             this.style.height = 'auto'; this.style.height = (this.scrollHeight) + 'px';
             document.getElementById('btnEnviarMsg').style.opacity = this.value.trim() === '' ? '0.5' : '1';
         });
 
-        function abrirModalConfig() { 
-            document.getElementById('inputChaveApi').value = localStorage.getItem('chave_secreta_gemini') || '';
-            document.getElementById('inputPerfil').value = localStorage.getItem('perfil_ia_gemini') || ''; 
-            modalConfig.classList.add('aberto'); 
-        }
-        function fecharModalConfig() { modalConfig.classList.remove('aberto'); }
+        function abrirModalConfig() { document.getElementById('inputChaveApi').value = localStorage.getItem('chave_secreta_gemini') || ''; document.getElementById('inputPerfil').value = localStorage.getItem('perfil_ia_gemini') || ''; document.getElementById('modalConfig').classList.add('aberto'); }
+        function fecharModalConfig() { document.getElementById('modalConfig').classList.remove('aberto'); }
         function salvarConfig() {
-            const chave = document.getElementById('inputChaveApi').value.trim();
-            if(!chave) return alert("Chave obrigatória.");
-            localStorage.setItem('chave_secreta_gemini', chave);
-            localStorage.setItem('perfil_ia_gemini', document.getElementById('inputPerfil').value.trim()); 
-            fecharModalConfig();
+            const chave = document.getElementById('inputChaveApi').value.trim(); if(!chave) return alert("Chave obrigatória.");
+            localStorage.setItem('chave_secreta_gemini', chave); localStorage.setItem('perfil_ia_gemini', document.getElementById('inputPerfil').value.trim()); fecharModalConfig();
         }
 
         function carregarHistoricoChat() {
-            if(historicoChat.length === 0) {
-                listaMsg.innerHTML = `<div class="flex flex-col items-center justify-center h-full text-center fade-in opacity-50 px-6 py-10"><span class="text-5xl mb-4">✨</span><h2 class="text-xl font-bold mb-2">Paz do Senhor!</h2><p class="text-sm">Selecione versículos ou faça uma pergunta teológica.</p></div>`;
-                return;
-            }
-            listaMsg.innerHTML = '';
-            historicoChat.forEach(msg => renderizarBalao(msg.role, msg.texto, false));
-            rolarChatParaBaixo();
+            const lst = document.getElementById('listaMensagens');
+            if(historicoChat.length === 0) { lst.innerHTML = `<div class="flex flex-col items-center justify-center h-full text-center fade-in opacity-50 px-6 py-10"><span class="text-5xl mb-4">✨</span><h2 class="text-xl font-bold mb-2">Paz do Senhor!</h2><p class="text-sm">Selecione versículos ou faça uma pergunta teológica.</p></div>`; return; }
+            lst.innerHTML = ''; historicoChat.forEach(msg => renderizarBalao(msg.role, msg.texto, false)); rolarChatParaBaixo();
         }
 
         function limparChat() { if(confirm("Limpar todo o estudo atual?")) { historicoChat = []; localStorage.removeItem('biblia_historico_chat'); carregarHistoricoChat(); } }
 
         function renderizarBalao(role, texto, animar = true) {
-            const anim = animar ? 'fade-in' : '';
-            if (listaMsg.querySelector('h2')) listaMsg.innerHTML = '';
-            if(role === 'user') {
-                listaMsg.innerHTML += `<div class="flex justify-end mb-2 ${anim}"><div class="bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-4 py-3 rounded-3xl rounded-tr-sm max-w-[85%] font-sans text-[15px] whitespace-pre-wrap">${texto}</div></div>`;
-            } else {
-                listaMsg.innerHTML += `<div class="flex gap-3 mb-6 mt-4 ${anim}"><div class="w-8 h-8 rounded-full bg-gray-900 dark:bg-gray-100 flex items-center justify-center text-white dark:text-gray-900 flex-shrink-0 mt-0.5 shadow-md">✨</div><div class="text-gray-800 dark:text-gray-200 font-sans text-[15px] leading-relaxed w-full">${formatarMarkdown(texto)}</div></div>`;
-            }
+            const lst = document.getElementById('listaMensagens'); const anim = animar ? 'fade-in' : '';
+            if (lst.querySelector('h2')) lst.innerHTML = '';
+            if(role === 'user') { lst.innerHTML += `<div class="flex justify-end mb-2 ${anim}"><div class="bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-4 py-3 rounded-3xl rounded-tr-sm max-w-[85%] font-sans text-[15px] whitespace-pre-wrap">${texto}</div></div>`; } 
+            else { lst.innerHTML += `<div class="flex gap-3 mb-6 mt-4 ${anim}"><div class="w-8 h-8 rounded-full bg-gray-900 dark:bg-gray-100 flex items-center justify-center text-white dark:text-gray-900 flex-shrink-0 mt-0.5 shadow-md">✨</div><div class="text-gray-800 dark:text-gray-200 font-sans text-[15px] leading-relaxed w-full overflow-hidden">${formatarMarkdown(texto)}</div></div>`; }
         }
 
         function adicionarMensagem(role, texto) { historicoChat.push({ role, texto }); localStorage.setItem('biblia_historico_chat', JSON.stringify(historicoChat)); renderizarBalao(role, texto, true); rolarChatParaBaixo(); }
-        function rolarChatParaBaixo() { setTimeout(() => { listaMsg.scrollTop = listaMsg.scrollHeight; }, 100); }
+        function rolarChatParaBaixo() { const lst = document.getElementById('listaMensagens'); setTimeout(() => { lst.scrollTop = lst.scrollHeight; }, 100); }
 
         document.getElementById('btnEnviarMsg').addEventListener('click', async () => {
+            if (aguardandoResposta) return; // Evita duplo clique e estouro de limite
+            
             const pergunta = inputMsg.value.trim();
             if (!pergunta) return;
             const chaveApi = localStorage.getItem('chave_secreta_gemini');
             if (!chaveApi) return abrirModalConfig();
 
-            const extra = localStorage.getItem('perfil_ia_gemini') || '';
-            const combinada = extra ? `${ALMA_INTERNA}\n\nProtocolos extras: ${extra}` : ALMA_INTERNA;
-
+            aguardandoResposta = true;
             adicionarMensagem('user', pergunta);
             inputMsg.value = ''; inputMsg.style.height = 'auto'; document.getElementById('btnEnviarMsg').style.opacity = '0.5';
 
             const idLoader = 'load-' + Date.now();
-            listaMsg.innerHTML += `<div id="${idLoader}" class="flex gap-3 mb-6 mt-4 fade-in"><div class="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-500 flex-shrink-0 animate-pulse">✨</div><div class="text-gray-500 italic mt-1 animate-pulse">Meditando...</div></div>`;
+            document.getElementById('listaMensagens').innerHTML += `<div id="${idLoader}" class="flex gap-3 mb-6 mt-4 fade-in"><div class="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-500 flex-shrink-0">✨</div><div class="text-gray-500 italic mt-2"><div class="dot-flashing"><div></div><div></div><div></div></div></div></div>`;
             rolarChatParaBaixo();
 
-            let histRecente = "";
-            historicoChat.slice(-5, -1).forEach(m => { histRecente += `${m.role === 'user' ? 'Usuário' : 'IA'}: ${m.texto}\n`; });
+            const extra = localStorage.getItem('perfil_ia_gemini') || '';
+            const instrucaoFinal = extra ? `${ALMA_INTERNA}\n\nInstruções adicionais: ${extra}` : ALMA_INTERNA;
+
+            // ESTRUTURA OFICIAL DO GOOGLE (Otimização Extrema de Limite de Cota)
+            // Separa os papéis nativamente: "user" e "model"
+            const historicoLimitado = historicoChat.slice(-6, -1); // Pega as 6 últimas msgs
+            let conteudosDaConversa = historicoLimitado.map(msg => ({
+                role: msg.role === 'ia' ? 'model' : 'user',
+                parts: [{ text: msg.texto }]
+            }));
+            
+            // Adiciona a nova pergunta no fim do array
+            conteudosDaConversa.push({ role: "user", parts: [{ text: pergunta }] });
 
             try {
                 const resposta = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${chaveApi}`, {
                     method: 'POST', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        contents: [{ parts: [{ text: `Instrução base: ${combinada}\n\nHistórico:\n${histRecente}\n\nNova Pergunta: ${pergunta}` }] }],
+                        system_instruction: { parts: [{ text: instrucaoFinal }] }, // Camada VIP de Consciência
+                        contents: conteudosDaConversa, // Array nativo (gasta muito menos tokens)
                         generationConfig: { temperature: 0.3, maxOutputTokens: 8192, topP: 0.95 }
                     })
                 });
                 
                 const dadosJson = await resposta.json();
                 document.getElementById(idLoader).remove();
+                aguardandoResposta = false;
 
                 if (dadosJson.error) {
                     let m = dadosJson.error.message;
@@ -539,8 +451,12 @@
                     else if (m.includes("API key not valid")) m = "Sua chave da API é inválida.";
                     renderizarBalao('ia', m, true); return;
                 }
-                adicionarMensagem('ia', dadosJson.candidates?.[0]?.content?.parts?.[0]?.text || "Falha ao formular.");
-            } catch (e) { document.getElementById(idLoader).remove(); renderizarBalao('ia', "Erro de conexão.", true); }
+                adicionarMensagem('ia', dadosJson.candidates?.[0]?.content?.parts?.[0]?.text || "Falha ao formular resposta.");
+            } catch (e) { 
+                document.getElementById(idLoader).remove(); 
+                aguardandoResposta = false;
+                renderizarBalao('ia', "Erro de conexão com a internet.", true); 
+            }
         });
 
         document.getElementById('campoPergunta').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); document.getElementById('btnEnviarMsg').click(); }});
