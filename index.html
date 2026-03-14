@@ -36,7 +36,7 @@
         .highlight-busca { font-weight: 700; color: #2563eb; background-color: rgba(59, 130, 246, 0.15); padding: 0 2px; border-radius: 2px; }
         .dark .highlight-busca { color: #60a5fa; background-color: rgba(59, 130, 246, 0.25); }
 
-        /* BOTTOM SHEET (GAVETA INTELIGENTE) */
+        /* BOTTOM SHEET (GAVETA INTELIGENTE) - Nasce ACIMA da barra de navegação */
         .bottom-sheet {
             position: fixed; left: 0; right: 0; bottom: 76px; z-index: 50;
             background: white; display: flex; flex-direction: column;
@@ -94,7 +94,6 @@
         <div id="dragHandle" class="w-full pt-3 pb-1 flex justify-center cursor-pointer touch-none" title="Arraste para cima/baixo">
             <div class="w-12 h-1.5 bg-gray-300 dark:bg-gray-600 rounded-full"></div>
         </div>
-
         <div class="px-4 pb-3 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center">
             <div class="flex items-center gap-2">
                 <span class="text-2xl">✨</span>
@@ -109,9 +108,8 @@
                 <button onclick="mudarEstadoChat('hidden')" class="p-2 text-gray-500 hover:text-gray-800 dark:hover:text-white rounded-full font-bold text-2xl">&times;</button>
             </div>
         </div>
-        
-        <div id="listaMensagens" class="flex-1 overflow-y-auto p-4 space-y-6 scroll-suave bg-gray-50 dark:bg-gray-800/50"></div>
-
+        <div id="listaMensagens" class="flex-1 overflow-y-auto p-4 space-y-6 scroll-suave bg-gray-50 dark:bg-gray-800/50">
+        </div>
         <div class="p-4 bg-white dark:bg-[#0f172a] border-t border-gray-200 dark:border-gray-800 pb-safe shadow-[0_-5px_15px_rgba(0,0,0,0.05)]">
             <div class="max-w-3xl mx-auto flex gap-2 items-end bg-gray-100 dark:bg-gray-800 rounded-2xl p-2 border border-transparent focus-within:border-gray-300 dark:focus-within:border-gray-600 transition-colors">
                 <textarea id="campoPergunta" rows="1" placeholder="Pergunte ou comente um versículo..." class="flex-1 max-h-32 min-h-[44px] p-3 bg-transparent border-none outline-none text-sm font-sans resize-none text-gray-900 dark:text-gray-100 overflow-y-auto scroll-suave"></textarea>
@@ -182,6 +180,9 @@
     </div>
 
     <script>
+        // ----------------------------------------------------
+        // 1. ESTADO GLOBAL, UTILITÁRIOS E MARKDOWN
+        // ----------------------------------------------------
         let bibliaCompleta = [];
         let indexLivro = parseInt(localStorage.getItem('leitura_livro')) || 0;
         let indexCapitulo = parseInt(localStorage.getItem('leitura_capitulo')) || 0;
@@ -204,6 +205,9 @@
             return html;
         }
 
+        // ----------------------------------------------------
+        // 2. BÍBLIA: INICIALIZAÇÃO, NAVEGAÇÃO
+        // ----------------------------------------------------
         async function iniciarBiblia() {
             const urlArc = 'https://raw.githubusercontent.com/maatheusgois/bible/main/versions/pt-br/arc.json';
             try {
@@ -248,7 +252,6 @@
             versiculos.forEach((texto, i) => {
                 const idUnico = `${indexLivro}-${indexCapitulo}-${i}`;
                 const classMarcado = marcacoes[idUnico] ? 'versiculo-marcado' : '';
-                
                 html += `
                 <div id="v-${idUnico}" onclick="toggleSelecaoVersiculo(${indexLivro}, ${indexCapitulo}, ${i})" class="flex gap-4 mb-5 items-start cursor-pointer p-2 rounded-xl transition-all -mx-2 hover:bg-gray-100 dark:hover:bg-gray-800 ${classMarcado}">
                     <span class="text-[11px] font-black bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 px-2 py-1 rounded shadow-sm mt-1.5 flex-shrink-0 pointer-events-none">${i + 1}</span>
@@ -273,7 +276,9 @@
             document.getElementById('selLivro').value = indexLivro; preencherCapitulos(); exibirCapitulo();
         });
 
-        // SELEÇÃO MÚLTIPLA
+        // ----------------------------------------------------
+        // 3. SELEÇÃO MÚLTIPLA
+        // ----------------------------------------------------
         function toggleSelecaoVersiculo(lIdx, cIdx, vIdx) {
             const idUnico = `${lIdx}-${cIdx}-${vIdx}`;
             const divElement = document.getElementById(`v-${idUnico}`);
@@ -328,19 +333,22 @@
         function acaoMultiplaExplicar() {
             ordenarSelecao();
             let blocoTexto = ""; versiculosSelecionados.forEach(v => { blocoTexto += `"${v.texto}" (${v.referencia})\n`; });
+            const promptContextual = `Por favor, explique esta passagem à luz da Palavra:\n\n${blocoTexto}`;
             limparSelecao();
             
             if(estadoChat === 'hidden') mudarEstadoChat('half');
             
             const textarea = document.getElementById('campoPergunta');
-            textarea.value = `Por favor, explique esta passagem à luz da Palavra:\n\n${blocoTexto}`;
+            textarea.value = promptContextual;
             textarea.style.height = 'auto'; textarea.style.height = textarea.scrollHeight + 'px';
             document.getElementById('btnEnviarMsg').style.opacity = '1';
             
             setTimeout(() => document.getElementById('btnEnviarMsg').click(), 300);
         }
 
-        // BUSCA
+        // ----------------------------------------------------
+        // 4. MOTOR DE BUSCA
+        // ----------------------------------------------------
         let historicoBusca = JSON.parse(localStorage.getItem('biblia_historico_busca')) || [];
         function abrirBusca() { document.getElementById('telaBusca').classList.remove('translate-y-full'); document.getElementById('inputBusca').focus(); }
         function fecharBusca() { document.getElementById('telaBusca').classList.add('translate-y-full'); }
@@ -404,7 +412,7 @@
         document.getElementById('inputBusca').addEventListener('keypress', e => { if (e.key === 'Enter') executarBusca(); });
 
         // ----------------------------------------------------
-        // 5. CHAT, IA E COMPORTAMENTO
+        // 5. CHAT COM BOTTOM SHEET, GESTOS E ALMA BLINDADA
         // ----------------------------------------------------
         let estadoChat = 'hidden'; 
         const gavetaChat = document.getElementById('gavetaChat');
@@ -416,34 +424,25 @@
             gavetaChat.classList.add(`sheet-${estadoChat}`);
             
             if(estadoChat === 'hidden') {
-                mainBiblia.style.paddingBottom = '90px';
+                mainBiblia.style.paddingBottom = '90px'; 
             } else if (estadoChat === 'half') {
                 mainBiblia.style.paddingBottom = 'calc(50dvh + 90px)'; 
                 document.getElementById('btnTamanhoChat').innerText = '⛶'; 
             } else if (estadoChat === 'full') {
-                mainBiblia.style.paddingBottom = 'calc(100dvh - 76px)';
+                mainBiblia.style.paddingBottom = 'calc(100dvh + 90px)';
                 document.getElementById('btnTamanhoChat').innerText = '🗗'; 
             }
             if(estadoChat !== 'hidden') setTimeout(rolarChatParaBaixo, 300);
         }
 
-        function toggleChat() {
-            if (estadoChat === 'hidden') mudarEstadoChat('half');
-            else mudarEstadoChat('hidden');
-        }
+        function toggleChat() { if (estadoChat === 'hidden') mudarEstadoChat('half'); else mudarEstadoChat('hidden'); }
+        function toggleTamanhoChat() { if(estadoChat === 'half') mudarEstadoChat('full'); else if (estadoChat === 'full') mudarEstadoChat('half'); }
 
-        function toggleTamanhoChat() {
-            if(estadoChat === 'half') mudarEstadoChat('full');
-            else if (estadoChat === 'full') mudarEstadoChat('half');
-        }
-
-        // SWIPE
         let touchStartY = 0;
         const dragHandle = document.getElementById('dragHandle');
         dragHandle.addEventListener('touchstart', e => { touchStartY = e.changedTouches[0].screenY; }, {passive: true});
         dragHandle.addEventListener('touchend', e => {
-            const touchEndY = e.changedTouches[0].screenY;
-            const diff = touchEndY - touchStartY;
+            const diff = e.changedTouches[0].screenY - touchStartY;
             if (diff < -40) { if (estadoChat === 'half') mudarEstadoChat('full'); } 
             else if (diff > 40) { 
                 if (estadoChat === 'full') mudarEstadoChat('half');
@@ -452,14 +451,11 @@
         });
         dragHandle.addEventListener('click', toggleTamanhoChat);
 
-        // IA
+        // ALMA DA IA ATUALIZADA (ORGÂNICA)
         const listaMsg = document.getElementById('listaMensagens');
         const inputMsg = document.getElementById('campoPergunta');
         const modalConfig = document.getElementById('modalConfig');
-        
-        // A NOVA ALMA INTERNA COMPORTAMENTAL (Sem divisões de texto)
-        const ALMA_INTERNA = "Incorpore a mente de um exímio teólogo. Sua consciência é única e indivisível, formada organicamente pela fusão da ortodoxia Neotestamentária, Protestantismo Histórico e fé Pentecostal Clássica das Assembleias de Deus. Ensine a partir dessa voz integrada, sem fragmentar ou listar as tradições separadamente.";
-        
+        const ALMA_INTERNA = "Atue como um exímio teólogo de mente neotestamentária, raiz protestante histórica e identidade pentecostal clássica das Assembleias de Deus, respondendo a partir dessa única consciência doutrinária indivisível.";
         let historicoChat = JSON.parse(localStorage.getItem('biblia_historico_chat')) || [];
 
         inputMsg.addEventListener('input', function() {
@@ -513,7 +509,7 @@
             if (!chaveApi) return abrirModalConfig();
 
             const extra = localStorage.getItem('perfil_ia_gemini') || '';
-            const combinada = extra ? `${ALMA_INTERNA}\n\nProtocolos extras do usuário: ${extra}` : ALMA_INTERNA;
+            const combinada = extra ? `${ALMA_INTERNA}\n\nProtocolos extras: ${extra}` : ALMA_INTERNA;
 
             adicionarMensagem('user', pergunta);
             inputMsg.value = ''; inputMsg.style.height = 'auto'; document.getElementById('btnEnviarMsg').style.opacity = '0.5';
