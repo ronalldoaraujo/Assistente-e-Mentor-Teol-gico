@@ -11,15 +11,12 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: { extend: {} }
-        }
+        tailwind.config = { darkMode: 'class', theme: { extend: {} } }
     </script>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
     <style>
-        /* BASE & TRANSIÇÕES SUAVES GLOBAIS */
+        /* BASE & TRANSIÇÕES */
         body { 
             font-family: 'Inter', sans-serif; 
             -webkit-tap-highlight-color: transparent; 
@@ -56,7 +53,7 @@
         .highlight-busca { font-weight: 600; color: #1d4ed8; background-color: rgba(59, 130, 246, 0.15); padding: 0 4px; border-radius: 4px; }
         .dark .highlight-busca { color: #93c5fd; background-color: rgba(59, 130, 246, 0.25); }
 
-        /* GAVETA INTELIGENTE (BOTTOM SHEET) */
+        /* GAVETA INTELIGENTE */
         .bottom-sheet {
             position: fixed; left: 0; right: 0; bottom: 76px; z-index: 50;
             background: #ffffff; display: flex; flex-direction: column;
@@ -74,7 +71,7 @@
         .sheet-half { transform: translateY(0); height: 55dvh; opacity: 1; pointer-events: auto; }
         .sheet-full { transform: translateY(0); height: calc(100dvh - 76px); opacity: 1; pointer-events: auto; }
 
-        /* CHAT MARKDOWN STYLING OTIMIZADO PARA LIGHT/DARK */
+        /* CHAT MARKDOWN STYLING */
         .prose h1, .prose h2, .prose h3 { color: #111827; font-weight: 700; margin-top: 1.5em; margin-bottom: 0.5em; line-height: 1.3; }
         .dark .prose h1, .dark .prose h2, .dark .prose h3 { color: #f8fafc; }
         .prose p { margin-bottom: 1em; color: #334155; }
@@ -95,7 +92,7 @@
             <div class="flex justify-between items-center mb-3">
                 <h1 class="text-2xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 tracking-tight">Bíblia ARC</h1>
                 <div class="flex items-center gap-2">
-                    <button onclick="abrirBusca()" class="w-10 h-10 flex items-center justify-center bg-slate-100 dark:bg-slate-800 rounded-full text-slate-600 dark:text-slate-300 shadow-sm active:scale-95 hover:bg-slate-200 dark:hover:bg-slate-700" title="Buscar Palavra">
+                    <button onclick="abrirBusca()" class="w-10 h-10 flex items-center justify-center bg-slate-100 dark:bg-slate-800 rounded-full text-slate-600 dark:text-slate-300 shadow-sm active:scale-95 hover:bg-slate-200 dark:hover:bg-slate-700" title="Buscar">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
                     </button>
                     <button onclick="abrirModalConfig()" class="w-10 h-10 flex items-center justify-center bg-slate-100 dark:bg-slate-800 rounded-full text-slate-600 dark:text-slate-300 shadow-sm active:scale-95 hover:bg-slate-200 dark:hover:bg-slate-700" title="Configurar IA">
@@ -145,29 +142,28 @@
                 </div>
                 <div>
                     <h3 class="font-bold text-[17px] text-slate-900 dark:text-slate-100 leading-tight tracking-tight">Assistente da Bíblia</h3>
-                    <p class="text-[12px] text-slate-500 dark:text-slate-400 font-medium">Ortodoxia & Teologia</p>
+                    <p class="text-[12px] text-slate-500 dark:text-slate-400 font-medium">Memória Contínua Ativa</p>
                 </div>
             </div>
             <div class="flex items-center gap-1.5">
-                <button onclick="limparChat()" class="p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-red-500 rounded-full font-bold" title="Limpar Conversa">
+                <button onclick="limparChat()" class="p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-red-500 rounded-full font-bold transition-all" title="Limpar Conversa">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" /></svg>
                 </button>
-                <button onclick="toggleTamanhoChat()" id="btnTamanhoChat" class="p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-blue-500 rounded-full font-bold" title="Tela Cheia">
+                <button onclick="toggleTamanhoChat()" id="btnTamanhoChat" class="p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-blue-500 rounded-full font-bold transition-all" title="Tela Cheia">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" /></svg>
                 </button>
-                <button onclick="mudarEstadoChat('hidden')" class="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white rounded-full">
+                <button onclick="mudarEstadoChat('hidden')" class="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white rounded-full transition-all">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
                 </button>
             </div>
         </div>
         
-        <div id="listaMensagens" class="flex-1 overflow-y-auto px-4 py-6 space-y-8 scroll-suave bg-slate-50/50 dark:bg-[#0f172a]">
-        </div>
+        <div id="listaMensagens" class="flex-1 overflow-y-auto px-4 py-6 space-y-8 scroll-suave bg-slate-50/50 dark:bg-[#0f172a]"></div>
 
-        <div class="px-4 py-3 bg-white dark:bg-[#0f172a] pb-safe shadow-[0_-5px_15px_rgba(0,0,0,0.02)]">
-            <div class="max-w-3xl mx-auto flex items-end bg-slate-100 dark:bg-slate-800 rounded-[1.5rem] p-1.5 border border-slate-200/50 dark:border-slate-700/50 shadow-inner focus-within:ring-2 focus-within:ring-blue-500/20">
+        <div class="px-4 py-3 bg-white dark:bg-[#0f172a] pb-safe">
+            <div class="max-w-3xl mx-auto flex items-end bg-slate-100 dark:bg-slate-800 rounded-[1.5rem] p-1.5 border border-slate-200/50 dark:border-slate-700/50 shadow-[0_2px_10px_rgba(0,0,0,0.02)] focus-within:ring-2 focus-within:ring-blue-500/20 transition-all">
                 <textarea id="campoPergunta" rows="1" placeholder="Pergunte ao assistente..." class="flex-1 max-h-32 min-h-[46px] p-3 pl-4 bg-transparent border-none outline-none text-[16px] font-sans resize-none text-slate-900 dark:text-slate-100 overflow-y-auto scroll-suave texto-selecionavel leading-relaxed placeholder-slate-400 dark:placeholder-slate-500"></textarea>
-                <button id="btnEnviarMsg" class="w-11 h-11 mb-0.5 flex-shrink-0 bg-blue-600 hover:bg-blue-700 text-white rounded-[1.1rem] flex items-center justify-center shadow-sm opacity-50 disabled:opacity-50">
+                <button id="btnEnviarMsg" class="w-11 h-11 mb-0.5 flex-shrink-0 bg-blue-600 hover:bg-blue-700 text-white rounded-[1.1rem] flex items-center justify-center transition-all shadow-sm opacity-50 disabled:opacity-50">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5"><path d="M3.478 2.404a.75.75 0 0 0-.926.941l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.404Z" /></svg>
                 </button>
             </div>
@@ -178,19 +174,19 @@
     <div id="barraSelecao" class="fixed bottom-0 left-0 right-0 bg-slate-900 dark:bg-slate-800 text-white p-4 z-[60] transition-transform duration-400 cubic-bezier(0.32, 0.72, 0, 1) translate-y-full shadow-[0_-20px_50px_rgba(0,0,0,0.25)] pb-6 rounded-t-3xl min-h-[90px]">
         <div class="max-w-md mx-auto flex justify-between items-center px-2">
             <div class="flex items-center gap-3">
-                <button onclick="limparSelecao()" class="bg-slate-800 dark:bg-slate-700 hover:bg-slate-600 rounded-full w-9 h-9 flex items-center justify-center font-bold text-lg active:scale-95">&times;</button>
+                <button onclick="limparSelecao()" class="bg-slate-800 dark:bg-slate-700 hover:bg-slate-700 rounded-full w-9 h-9 flex items-center justify-center font-bold text-lg active:scale-95 transition-colors">&times;</button>
                 <span id="contadorSelecao" class="font-medium text-[15px] tracking-wide">0 selecionados</span>
             </div>
             <div class="flex gap-4">
-                <button onclick="acaoMultiplaCopiar()" class="flex flex-col items-center justify-center active:scale-95 text-slate-300 hover:text-white px-2">
+                <button onclick="acaoMultiplaCopiar()" class="flex flex-col items-center justify-center active:scale-95 transition-transform text-slate-300 hover:text-white px-2">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 mb-1"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 0 1-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H9.75" /></svg>
                     <span class="text-[11px] font-semibold">Copiar</span>
                 </button>
-                <button onclick="acaoMultiplaMarcar()" class="flex flex-col items-center justify-center active:scale-95 text-slate-300 hover:text-white px-2">
+                <button onclick="acaoMultiplaMarcar()" class="flex flex-col items-center justify-center active:scale-95 transition-transform text-slate-300 hover:text-white px-2">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 mb-1"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg>
                     <span id="textoBtnMarcar" class="text-[11px] font-semibold">Marcar</span>
                 </button>
-                <button onclick="acaoMultiplaExplicar()" class="flex flex-col items-center justify-center active:scale-95 font-bold bg-white text-slate-900 px-4 py-2 rounded-2xl shadow-sm ml-2 hover:bg-slate-100">
+                <button onclick="acaoMultiplaExplicar()" class="flex flex-col items-center justify-center active:scale-95 transition-transform font-bold bg-white text-slate-900 px-4 py-2 rounded-2xl shadow-sm ml-2 hover:bg-slate-100">
                     <span class="text-xl">✨</span><span class="text-[10px] mt-0.5 tracking-wide">EXPLICAR</span>
                 </button>
             </div>
@@ -201,7 +197,7 @@
         <div class="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center gap-3 bg-white dark:bg-slate-900">
             <button onclick="fecharBusca()" class="p-2 text-2xl text-slate-500 hover:text-slate-800 dark:hover:text-white">&times;</button>
             <input type="text" id="inputBusca" placeholder="Buscar palavra na Bíblia..." class="flex-1 p-3 rounded-2xl bg-slate-100 dark:bg-slate-800 border-none outline-none focus:ring-2 focus:ring-blue-500 text-[16px] font-sans texto-selecionavel placeholder-slate-400 dark:placeholder-slate-500">
-            <button onclick="executarBusca()" class="bg-blue-600 hover:bg-blue-700 text-white p-3 px-5 rounded-2xl font-bold shadow-sm active:scale-95">Ir</button>
+            <button onclick="executarBusca()" class="bg-blue-600 hover:bg-blue-700 text-white p-3 px-5 rounded-2xl font-bold shadow-sm active:scale-95 transition-colors">Ir</button>
         </div>
         <div class="flex-1 overflow-y-auto p-4 scroll-suave" id="areaResultadosBusca">
             <div id="containerHistoricoBusca" class="mb-6">
@@ -223,20 +219,20 @@
             </div>
             <div class="mb-5">
                 <label class="block text-[14px] font-bold text-slate-700 dark:text-slate-300 mb-2">Chave da API (Gemini)</label>
-                <input type="text" id="inputChaveApi" class="w-full p-3.5 border border-slate-200 dark:border-slate-600 rounded-2xl text-slate-900 dark:text-white dark:bg-slate-700/50 outline-none focus:ring-2 focus:ring-blue-500 font-mono text-[14px] shadow-inner texto-selecionavel" placeholder="Ex: AIzaSyB...">
+                <input type="text" id="inputChaveApi" class="w-full p-3.5 border border-slate-200 dark:border-slate-600 rounded-2xl text-slate-900 dark:text-white dark:bg-slate-700/50 outline-none focus:ring-2 focus:ring-blue-500 font-mono text-[14px] shadow-inner texto-selecionavel transition-all" placeholder="Ex: AIzaSyB...">
             </div>
             <div class="mb-8">
                 <label class="block text-[14px] font-bold text-slate-700 dark:text-slate-300 mb-1">Instruções Adicionais</label>
-                <p class="text-[12px] text-slate-500 dark:text-slate-400 mb-3 leading-relaxed">A alma do Assistente (Regra de Fé e Ortodoxia) já está blindada. Adicione aqui comandos de formatação.</p>
-                <textarea id="inputPerfil" rows="3" class="w-full p-3.5 border border-slate-200 dark:border-slate-600 rounded-2xl text-slate-900 dark:text-white dark:bg-slate-700/50 outline-none focus:ring-2 focus:ring-blue-500 text-[15px] shadow-inner resize-none texto-selecionavel" placeholder="Ex: Responda em tópicos..."></textarea>
+                <p class="text-[12px] text-slate-500 dark:text-slate-400 mb-3 leading-relaxed">A alma do Assistente (Regra de Fé e Ortodoxia) já está blindada. Adicione aqui apenas comandos de formatação.</p>
+                <textarea id="inputPerfil" rows="3" class="w-full p-3.5 border border-slate-200 dark:border-slate-600 rounded-2xl text-slate-900 dark:text-white dark:bg-slate-700/50 outline-none focus:ring-2 focus:ring-blue-500 text-[15px] shadow-inner resize-none texto-selecionavel transition-all" placeholder="Ex: Responda em tópicos..."></textarea>
             </div>
-            <button onclick="salvarConfig()" class="w-full p-4 rounded-2xl font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-md active:scale-95 text-[16px]">Salvar Configurações</button>
+            <button onclick="salvarConfig()" class="w-full p-4 rounded-2xl font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-md active:scale-95 transition-all text-[16px]">Salvar Configurações</button>
         </div>
     </div>
 
     <script>
         // ----------------------------------------------------
-        // LÓGICA DE TEMA E INICIALIZAÇÃO
+        // LÓGICA DE TEMA (O PADRÃO OURO DE MODO ESCURO)
         // ----------------------------------------------------
         const btnTema = document.getElementById('btnTema');
         const htmlElement = document.documentElement;
@@ -246,7 +242,7 @@
             document.getElementById('meta-theme-color').content = isDark ? "#0f172a" : "#ffffff";
         }
 
-        // Verifica preferência salva ou do sistema (Melhor do Mercado)
+        // Lê a preferência do LocalStorage OU o sistema operacional do usuário
         if (localStorage.getItem('tema') === 'dark' || (!('tema' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             htmlElement.classList.add('dark');
         } else {
@@ -262,47 +258,22 @@
         });
 
         // ----------------------------------------------------
-        // 1. ESTADO GLOBAL, UTILITÁRIOS E MARKDOWN
+        // UTILITÁRIOS
         // ----------------------------------------------------
-        let bibliaCompleta = [];
-        let indexLivro = parseInt(localStorage.getItem('leitura_livro')) || 0;
-        let indexCapitulo = parseInt(localStorage.getItem('leitura_capitulo')) || 0;
-        let marcacoes = JSON.parse(localStorage.getItem('biblia_marcacoes')) || {};
-        let versiculosSelecionados = [];
-
+        let bibliaCompleta = []; let indexLivro = parseInt(localStorage.getItem('leitura_livro')) || 0; let indexCapitulo = parseInt(localStorage.getItem('leitura_capitulo')) || 0; let marcacoes = JSON.parse(localStorage.getItem('biblia_marcacoes')) || {}; let versiculosSelecionados = [];
         function removerAcentos(str) { return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(); }
 
-        function formatarMarkdown(texto) {
-            let html = texto.trim();
-            html = html.replace(/^### (.*$)/gim, '<h3 class="text-[19px] font-bold mt-6 mb-2">$1</h3>');
-            html = html.replace(/^## (.*$)/gim, '<h2 class="text-[21px] font-bold mt-7 mb-3">$1</h2>');
-            html = html.replace(/^# (.*$)/gim, '<h1 class="text-[24px] font-extrabold mt-8 mb-4">$1</h1>');
-            html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-            html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
-            html = html.replace(/^\* (.*$)/gim, '<li class="ml-5 list-disc mb-1.5">$1</li>');
-            html = html.replace(/^- (.*$)/gim, '<li class="ml-5 list-disc mb-1.5">$1</li>');
-            html = html.split('\n').join('<br>');
-            html = html.replace(/<\/li><br>/g, '</li>').replace(/<\/h3><br>/g, '</h3>').replace(/<\/h2><br>/g, '</h2>').replace(/<\/h1><br>/g, '</h1>');
-            return `<div class="prose dark:prose-invert">${html}</div>`;
-        }
-
         // ----------------------------------------------------
-        // 2. BÍBLIA
+        // BÍBLIA & NAVEGAÇÃO
         // ----------------------------------------------------
         async function iniciarBiblia() {
-            const urlArc = 'https://raw.githubusercontent.com/maatheusgois/bible/main/versions/pt-br/arc.json';
             try {
-                const resposta = await fetch(urlArc);
+                const resposta = await fetch('https://raw.githubusercontent.com/maatheusgois/bible/main/versions/pt-br/arc.json');
                 if (!resposta.ok) throw new Error("Falha");
                 bibliaCompleta = await resposta.json();
-                if(indexLivro >= bibliaCompleta.length) indexLivro = 0;
-                if(indexCapitulo >= bibliaCompleta[indexLivro].chapters.length) indexCapitulo = 0;
-
-                preencherLivros(); exibirCapitulo(); carregarHistoricoBusca(); carregarHistoricoChat();
-                mudarEstadoChat('hidden'); 
-            } catch (erro) {
-                document.getElementById('areaLeitura').innerHTML = `<div class="text-center mt-20 text-red-500 font-bold">Erro ao conectar. Verifique a internet.</div>`;
-            }
+                if(indexLivro >= bibliaCompleta.length) indexLivro = 0; if(indexCapitulo >= bibliaCompleta[indexLivro].chapters.length) indexCapitulo = 0;
+                preencherLivros(); exibirCapitulo(); carregarHistoricoBusca(); carregarHistoricoChat(); mudarEstadoChat('hidden'); 
+            } catch (e) { document.getElementById('areaLeitura').innerHTML = `<div class="text-center mt-20 text-red-500 font-bold">Erro de conexão.</div>`; }
         }
 
         function salvarEstadoLeitura() { localStorage.setItem('leitura_livro', indexLivro); localStorage.setItem('leitura_capitulo', indexCapitulo); }
@@ -311,18 +282,13 @@
 
         function exibirCapitulo() {
             if(bibliaCompleta.length === 0) return;
-            limparSelecao();
-            const livroAtual = bibliaCompleta[indexLivro];
-            const versiculos = livroAtual.chapters[indexCapitulo];
+            limparSelecao(); const livroAtual = bibliaCompleta[indexLivro]; const versiculos = livroAtual.chapters[indexCapitulo];
             let html = `<h2 class="text-3xl font-extrabold mb-10 text-slate-900 dark:text-slate-100 text-center fade-in">${livroAtual.name} ${indexCapitulo + 1}</h2>`;
             versiculos.forEach((texto, i) => {
-                const idUnico = `${indexLivro}-${indexCapitulo}-${i}`;
-                const classMarcado = marcacoes[idUnico] ? 'versiculo-marcado' : '';
+                const idUnico = `${indexLivro}-${indexCapitulo}-${i}`; const classMarcado = marcacoes[idUnico] ? 'versiculo-marcado' : '';
                 html += `<div id="v-${idUnico}" onclick="toggleSelecaoVersiculo(${indexLivro}, ${indexCapitulo}, ${i})" class="flex gap-4 mb-6 items-start cursor-pointer p-2 rounded-2xl transition-all -mx-2 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 ${classMarcado}"><span class="text-[12px] font-bold bg-slate-200/80 dark:bg-slate-800 text-slate-600 dark:text-slate-400 px-2 py-1 rounded-lg shadow-sm mt-1.5 flex-shrink-0 pointer-events-none">${i + 1}</span><p class="flex-1 pointer-events-none">${texto}</p></div>`;
             });
-            document.getElementById('areaLeitura').innerHTML = html;
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            salvarEstadoLeitura();
+            document.getElementById('areaLeitura').innerHTML = html; window.scrollTo({ top: 0, behavior: 'smooth' }); salvarEstadoLeitura();
         }
 
         document.getElementById('selLivro').addEventListener('change', (e) => { indexLivro = parseInt(e.target.value); indexCapitulo = 0; preencherCapitulos(); exibirCapitulo(); });
@@ -334,14 +300,11 @@
         // 3. SELEÇÃO MÚLTIPLA
         // ----------------------------------------------------
         function toggleSelecaoVersiculo(lIdx, cIdx, vIdx) {
-            const idUnico = `${lIdx}-${cIdx}-${vIdx}`;
-            const divElement = document.getElementById(`v-${idUnico}`);
-            const indexNoArray = versiculosSelecionados.findIndex(v => v.idUnico === idUnico);
+            const idUnico = `${lIdx}-${cIdx}-${vIdx}`; const divElement = document.getElementById(`v-${idUnico}`); const indexNoArray = versiculosSelecionados.findIndex(v => v.idUnico === idUnico);
             if (indexNoArray > -1) { versiculosSelecionados.splice(indexNoArray, 1); divElement.classList.remove('versiculo-selecionado'); } 
             else { versiculosSelecionados.push({ lIdx, cIdx, vIdx, idUnico, texto: bibliaCompleta[lIdx].chapters[cIdx][vIdx], referencia: `${bibliaCompleta[lIdx].name} ${cIdx + 1}:${vIdx + 1}` }); divElement.classList.add('versiculo-selecionado'); }
             atualizarBarraSelecao();
         }
-
         function atualizarBarraSelecao() {
             const barra = document.getElementById('barraSelecao');
             if (versiculosSelecionados.length > 0) {
@@ -350,33 +313,18 @@
                 barra.classList.remove('translate-y-full');
             } else { barra.classList.add('translate-y-full'); }
         }
-
         function limparSelecao() { versiculosSelecionados.forEach(v => { const el = document.getElementById(`v-${v.idUnico}`); if(el) el.classList.remove('versiculo-selecionado'); }); versiculosSelecionados = []; atualizarBarraSelecao(); }
-        function ordenarSelecao() { versiculosSelecionados.sort((a, b) => a.vIdx - b.vIdx); }
-        function acaoMultiplaCopiar() { ordenarSelecao(); let texto = ""; versiculosSelecionados.forEach(v => { texto += `"${v.texto}" (${v.referencia})\n`; }); navigator.clipboard.writeText(texto.trim()).then(() => { limparSelecao(); alert("Copiado!"); }); }
-        
+        function acaoMultiplaCopiar() { versiculosSelecionados.sort((a, b) => a.vIdx - b.vIdx); let texto = ""; versiculosSelecionados.forEach(v => { texto += `"${v.texto}" (${v.referencia})\n`; }); navigator.clipboard.writeText(texto.trim()).then(() => { limparSelecao(); alert("Copiado!"); }); }
         function acaoMultiplaMarcar() {
             const todosMarcados = versiculosSelecionados.every(v => marcacoes[v.idUnico]);
-            versiculosSelecionados.forEach(v => {
-                if (todosMarcados) delete marcacoes[v.idUnico]; else marcacoes[v.idUnico] = true;
-                const el = document.getElementById(`v-${v.idUnico}`);
-                if(el) { if(marcacoes[v.idUnico]) el.classList.add('versiculo-marcado'); else el.classList.remove('versiculo-marcado'); }
-            });
+            versiculosSelecionados.forEach(v => { if (todosMarcados) delete marcacoes[v.idUnico]; else marcacoes[v.idUnico] = true; const el = document.getElementById(`v-${v.idUnico}`); if(el) { if(marcacoes[v.idUnico]) el.classList.add('versiculo-marcado'); else el.classList.remove('versiculo-marcado'); } });
             localStorage.setItem('biblia_marcacoes', JSON.stringify(marcacoes)); limparSelecao();
         }
-
         function acaoMultiplaExplicar() {
-            ordenarSelecao();
-            let blocoTexto = ""; versiculosSelecionados.forEach(v => { blocoTexto += `"${v.texto}" (${v.referencia})\n`; });
-            const promptContextual = `Por favor, explique esta passagem à luz da Palavra:\n\n${blocoTexto}`;
-            limparSelecao();
-            if(estadoChat === 'hidden') mudarEstadoChat('half');
-            const textarea = document.getElementById('campoPergunta');
-            textarea.value = promptContextual;
-            textarea.style.height = 'auto'; textarea.style.height = textarea.scrollHeight + 'px';
-            document.getElementById('btnEnviarMsg').style.opacity = '1';
-            document.getElementById('btnEnviarMsg').disabled = true;
-            setTimeout(() => { document.getElementById('btnEnviarMsg').disabled = false; document.getElementById('btnEnviarMsg').click(); }, 300);
+            versiculosSelecionados.sort((a, b) => a.vIdx - b.vIdx); let blocoTexto = ""; versiculosSelecionados.forEach(v => { blocoTexto += `"${v.texto}" (${v.referencia})\n`; });
+            limparSelecao(); if(estadoChat === 'hidden') mudarEstadoChat('half');
+            const textarea = document.getElementById('campoPergunta'); textarea.value = `Por favor, explique esta passagem à luz da Palavra:\n\n${blocoTexto}`; textarea.style.height = 'auto'; textarea.style.height = textarea.scrollHeight + 'px';
+            document.getElementById('btnEnviarMsg').style.opacity = '1'; document.getElementById('btnEnviarMsg').disabled = true; setTimeout(() => { document.getElementById('btnEnviarMsg').disabled = false; document.getElementById('btnEnviarMsg').click(); }, 300);
         }
 
         // ----------------------------------------------------
@@ -386,82 +334,47 @@
         function abrirBusca() { document.getElementById('telaBusca').classList.remove('translate-y-full'); document.getElementById('inputBusca').focus(); }
         function fecharBusca() { document.getElementById('telaBusca').classList.add('translate-y-full'); }
         function limparHistoricoBusca() { historicoBusca = []; localStorage.setItem('biblia_historico_busca', JSON.stringify(historicoBusca)); carregarHistoricoBusca(); }
-        function carregarHistoricoBusca() {
-            const container = document.getElementById('listaHistoricoBusca');
-            if(historicoBusca.length === 0) return container.innerHTML = '<span class="text-[13px] text-slate-400">Nenhuma busca recente.</span>';
-            container.innerHTML = historicoBusca.map(t => `<button onclick="document.getElementById('inputBusca').value='${t}'; executarBusca();" class="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[14px] font-medium rounded-xl active:scale-95 transition-all">${t}</button>`).join('');
-        }
+        function carregarHistoricoBusca() { const container = document.getElementById('listaHistoricoBusca'); if(historicoBusca.length === 0) return container.innerHTML = '<span class="text-[13px] text-slate-400">Nenhuma busca recente.</span>'; container.innerHTML = historicoBusca.map(t => `<button onclick="document.getElementById('inputBusca').value='${t}'; executarBusca();" class="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[14px] font-medium rounded-xl active:scale-95 transition-all">${t}</button>`).join(''); }
 
         function executarBusca() {
-            const input = document.getElementById('inputBusca');
-            const termo = input.value.trim();
-            if(termo.length < 2) return alert("Digite pelo menos 2 letras.");
-
+            const input = document.getElementById('inputBusca'); const termo = input.value.trim(); if(termo.length < 2) return alert("Digite pelo menos 2 letras.");
             if(!historicoBusca.includes(termo)) { historicoBusca.unshift(termo); if(historicoBusca.length > 8) historicoBusca.pop(); localStorage.setItem('biblia_historico_busca', JSON.stringify(historicoBusca)); carregarHistoricoBusca(); }
-
-            const areaRes = document.getElementById('listaResultadosBusca');
-            areaRes.innerHTML = `<div class="text-center p-6 text-blue-500 font-bold animate-pulse text-[15px]">Buscando...</div>`;
-            
+            const areaRes = document.getElementById('listaResultadosBusca'); areaRes.innerHTML = `<div class="text-center p-6 text-blue-500 font-bold animate-pulse text-[15px]">Buscando...</div>`;
             setTimeout(() => {
-                const termoLimpo = removerAcentos(termo);
-                let resultados = [];
-                for (let l = 0; l < bibliaCompleta.length; l++) { for (let c = 0; c < bibliaCompleta[l].chapters.length; c++) { for (let v = 0; v < bibliaCompleta[l].chapters[c].length; v++) {
-                    if (removerAcentos(bibliaCompleta[l].chapters[c][v]).includes(termoLimpo)) resultados.push({ l, c, v, livro: bibliaCompleta[l].name, texto: bibliaCompleta[l].chapters[c][v] });
-                }}}
+                const termoLimpo = removerAcentos(termo); let resultados = [];
+                for (let l = 0; l < bibliaCompleta.length; l++) { for (let c = 0; c < bibliaCompleta[l].chapters.length; c++) { for (let v = 0; v < bibliaCompleta[l].chapters[c].length; v++) { if (removerAcentos(bibliaCompleta[l].chapters[c][v]).includes(termoLimpo)) resultados.push({ l, c, v, livro: bibliaCompleta[l].name, texto: bibliaCompleta[l].chapters[c][v] }); }}}
                 if (resultados.length === 0) return areaRes.innerHTML = `<div class="text-center p-8 text-slate-500">Nada encontrado para "${termo}".</div>`;
-                let htmlRes = `<p class="text-[13px] font-bold text-slate-400 mb-4">${resultados.length} resultados</p>`;
-                const regex = new RegExp(`(${termo})`, 'gi');
-                resultados.forEach(res => {
-                    const txt = res.texto.replace(regex, '<span class="highlight-busca">$1</span>');
-                    htmlRes += `<div onclick="irParaResultado(${res.l}, ${res.c}, ${res.v})" class="p-5 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 cursor-pointer active:scale-95 fade-in mb-3 hover:border-blue-300 transition-colors"><span class="text-[12px] font-extrabold text-blue-600 dark:text-blue-400 block mb-1.5 uppercase tracking-wide">${res.livro} ${res.c + 1}:${res.v + 1}</span><p class="texto-biblia text-[17px] text-slate-700 dark:text-slate-300">${txt}</p></div>`;
-                });
-                areaRes.innerHTML = htmlRes;
+                let htmlRes = `<p class="text-[13px] font-bold text-slate-400 mb-4">${resultados.length} resultados</p>`; const regex = new RegExp(`(${termo})`, 'gi');
+                resultados.forEach(res => { const txt = res.texto.replace(regex, '<span class="highlight-busca">$1</span>'); htmlRes += `<div onclick="irParaResultado(${res.l}, ${res.c}, ${res.v})" class="p-5 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 cursor-pointer active:scale-95 fade-in mb-3 hover:border-blue-300 transition-colors"><span class="text-[12px] font-extrabold text-blue-600 dark:text-blue-400 block mb-1.5 uppercase tracking-wide">${res.livro} ${res.c + 1}:${res.v + 1}</span><p class="texto-biblia text-[17px] text-slate-700 dark:text-slate-300">${txt}</p></div>`; }); areaRes.innerHTML = htmlRes;
             }, 50);
         }
-        function irParaResultado(l, c, v) {
-            fecharBusca(); indexLivro = l; indexCapitulo = c;
-            document.getElementById('selLivro').value = l; preencherCapitulos(); exibirCapitulo();
-            setTimeout(() => { const el = document.getElementById(`v-${l}-${c}-${v}`); if(el) { window.scrollTo({ top: (el.getBoundingClientRect().top - document.body.getBoundingClientRect().top) - 100, behavior: 'smooth' }); el.style.transition = 'background-color 0.5s'; el.style.backgroundColor = 'rgba(59, 130, 246, 0.2)'; setTimeout(() => el.style.backgroundColor = '', 1500); } }, 300);
-        }
+        function irParaResultado(l, c, v) { fecharBusca(); indexLivro = l; indexCapitulo = c; document.getElementById('selLivro').value = l; preencherCapitulos(); exibirCapitulo(); setTimeout(() => { const el = document.getElementById(`v-${l}-${c}-${v}`); if(el) { window.scrollTo({ top: (el.getBoundingClientRect().top - document.body.getBoundingClientRect().top) - 100, behavior: 'smooth' }); el.style.transition = 'background-color 0.5s'; el.style.backgroundColor = 'rgba(59, 130, 246, 0.2)'; setTimeout(() => el.style.backgroundColor = '', 1500); } }, 300); }
         document.getElementById('inputBusca').addEventListener('keypress', e => { if (e.key === 'Enter') executarBusca(); });
 
         // ----------------------------------------------------
-        // 5. CHAT (SMART SCROLL E CÓPIA NATIVA)
+        // 5. CHAT COM IA & MEMÓRIA CONTÍNUA DE ALTA PERFORMANCE
         // ----------------------------------------------------
-        let estadoChat = 'hidden'; 
-        const gavetaChat = document.getElementById('gavetaChat');
-        const mainBiblia = document.getElementById('mainBiblia');
-        
+        let estadoChat = 'hidden'; const gavetaChat = document.getElementById('gavetaChat'); const mainBiblia = document.getElementById('mainBiblia');
         function mudarEstadoChat(novoEstado) {
-            estadoChat = novoEstado;
-            gavetaChat.classList.remove('sheet-hidden', 'sheet-half', 'sheet-full');
-            gavetaChat.classList.add(`sheet-${estadoChat}`);
+            estadoChat = novoEstado; gavetaChat.classList.remove('sheet-hidden', 'sheet-half', 'sheet-full'); gavetaChat.classList.add(`sheet-${estadoChat}`);
             if(estadoChat === 'hidden') mainBiblia.style.paddingBottom = '90px'; 
             else if (estadoChat === 'half') { mainBiblia.style.paddingBottom = 'calc(50dvh + 90px)'; document.getElementById('btnTamanhoChat').innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" /></svg>'; } 
             else if (estadoChat === 'full') { mainBiblia.style.paddingBottom = 'calc(100dvh + 90px)'; document.getElementById('btnTamanhoChat').innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 9V4.5M9 9H4.5M9 9 3.75 3.75M9 15v4.5M9 15H4.5M9 15l-5.25 5.25M15 9h4.5M15 9V4.5M15 9l5.25-5.25M15 15h4.5M15 15v4.5m0-4.5 5.25 5.25" /></svg>'; }
         }
-
         function toggleChat() { if (estadoChat === 'hidden') mudarEstadoChat('half'); else mudarEstadoChat('hidden'); }
         function toggleTamanhoChat() { if(estadoChat === 'half') mudarEstadoChat('full'); else if (estadoChat === 'full') mudarEstadoChat('half'); }
 
         let touchStartY = 0; const dragHandle = document.getElementById('dragHandle');
         dragHandle.addEventListener('touchstart', e => { touchStartY = e.changedTouches[0].screenY; }, {passive: true});
-        dragHandle.addEventListener('touchend', e => {
-            const diff = e.changedTouches[0].screenY - touchStartY;
-            if (diff < -40) { if (estadoChat === 'half') mudarEstadoChat('full'); } 
-            else if (diff > 40) { if (estadoChat === 'full') mudarEstadoChat('half'); else if (estadoChat === 'half') mudarEstadoChat('hidden'); }
-        });
+        dragHandle.addEventListener('touchend', e => { const diff = e.changedTouches[0].screenY - touchStartY; if (diff < -40) { if (estadoChat === 'half') mudarEstadoChat('full'); } else if (diff > 40) { if (estadoChat === 'full') mudarEstadoChat('half'); else if (estadoChat === 'half') mudarEstadoChat('hidden'); } });
         dragHandle.addEventListener('click', toggleTamanhoChat);
 
-        const listaMsg = document.getElementById('listaMensagens');
-        const inputMsg = document.getElementById('campoPergunta');
-        const modalConfig = document.getElementById('modalConfig');
+        const listaMsg = document.getElementById('listaMensagens'); const inputMsg = document.getElementById('campoPergunta'); const modalConfig = document.getElementById('modalConfig');
         const ALMA_INTERNA = "Atue como um exímio teólogo de mente neotestamentária, raiz protestante histórica e identidade pentecostal clássica das Assembleias de Deus, respondendo a partir dessa única consciência doutrinária indivisível.";
         let historicoChat = JSON.parse(localStorage.getItem('biblia_historico_chat')) || [];
 
         inputMsg.addEventListener('input', function() {
-            this.style.height = 'auto'; this.style.height = (this.scrollHeight) + 'px';
-            const btn = document.getElementById('btnEnviarMsg');
+            this.style.height = 'auto'; this.style.height = (this.scrollHeight) + 'px'; const btn = document.getElementById('btnEnviarMsg');
             if(this.value.trim() === '') { btn.style.opacity = '0.5'; btn.classList.remove('bg-blue-600'); btn.classList.add('bg-slate-300','dark:bg-slate-700'); } 
             else { btn.style.opacity = '1'; btn.classList.add('bg-blue-600'); btn.classList.remove('bg-slate-300','dark:bg-slate-700'); }
         });
@@ -472,78 +385,64 @@
 
         function carregarHistoricoChat() {
             if(historicoChat.length === 0) {
-                listaMsg.innerHTML = `<div class="flex flex-col items-center justify-center h-full text-center fade-in opacity-40 px-6 py-10"><div class="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-3xl mb-5 shadow-lg">✨</div><h2 class="text-xl font-bold mb-2 text-slate-800 dark:text-slate-200">Como posso ajudar?</h2><p class="text-[15px] text-slate-500">Faça sua pergunta teológica abaixo.</p></div>`;
-                return;
+                listaMsg.innerHTML = `<div class="flex flex-col items-center justify-center h-full text-center fade-in opacity-40 px-6 py-10"><div class="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-3xl mb-5 shadow-lg">✨</div><h2 class="text-xl font-bold mb-2 text-slate-800 dark:text-slate-200">A Paz do Senhor!</h2><p class="text-[15px] text-slate-500">Selecione versículos ou inicie um estudo.</p></div>`; return;
             }
-            listaMsg.innerHTML = '';
-            historicoChat.forEach((msg, idx) => renderizarBalao(msg.role, msg.texto, idx, false));
-            setTimeout(() => { listaMsg.scrollTop = listaMsg.scrollHeight; }, 100);
+            listaMsg.innerHTML = ''; historicoChat.forEach((msg, idx) => renderizarBalao(msg.role, msg.texto, idx, false)); setTimeout(() => { listaMsg.scrollTop = listaMsg.scrollHeight; }, 100);
         }
-
         function limparChat() { if(confirm("Limpar todo o estudo atual?")) { historicoChat = []; localStorage.removeItem('biblia_historico_chat'); carregarHistoricoChat(); } }
 
         window.copiarDoHistorico = function(index, btnElement) {
-            const texto = historicoChat[index].texto;
-            navigator.clipboard.writeText(texto).then(() => {
-                const originalHTML = btnElement.innerHTML;
-                btnElement.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg> Copiado!';
-                btnElement.classList.add('text-green-600', 'dark:text-green-400');
+            navigator.clipboard.writeText(historicoChat[index].texto).then(() => {
+                const originalHTML = btnElement.innerHTML; btnElement.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg> Copiado!'; btnElement.classList.add('text-green-600', 'dark:text-green-400');
                 setTimeout(() => { btnElement.innerHTML = originalHTML; btnElement.classList.remove('text-green-600', 'dark:text-green-400'); }, 2000);
             });
         };
 
         function renderizarBalao(role, texto, indexArray, animar = true) {
-            const anim = animar ? 'fade-in' : '';
-            if (listaMsg.querySelector('h2')) listaMsg.innerHTML = '';
-            
+            const anim = animar ? 'fade-in' : ''; if (listaMsg.querySelector('h2')) listaMsg.innerHTML = '';
             if(role === 'user') {
                 listaMsg.innerHTML += `<div class="flex justify-end mb-4 ${anim}"><div class="bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-slate-100 px-5 py-3.5 rounded-3xl rounded-tr-sm max-w-[85%] font-sans text-[16px] whitespace-pre-wrap texto-selecionavel shadow-sm">${texto}</div></div>`;
             } else {
-                listaMsg.innerHTML += `
-                <div id="msg-${indexArray}" class="flex gap-4 mb-8 mt-6 ${anim}">
-                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white flex-shrink-0 mt-1 shadow-sm"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4"><path fill-rule="evenodd" d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5Z" clip-rule="evenodd" /></svg></div>
-                    <div class="w-full">
-                        <div class="font-sans text-[16.5px] leading-8 w-full texto-selecionavel tracking-tight">
-                            ${formatarMarkdown(texto)}
-                        </div>
-                        <div class="mt-4 flex justify-start">
-                            <button onclick="copiarDoHistorico(${indexArray}, this)" class="flex items-center gap-1.5 text-[12px] font-bold text-slate-500 hover:text-slate-800 dark:hover:text-slate-300 active:scale-95 transition-all">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M15.666 3.888A2.25 2.25 0 0 0 13.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 0 1-.75.75H9a.75.75 0 0 1-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 0 1-2.25 2.25H6.75A2.25 2.25 0 0 1 4.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 0 1 1.927-.184" /></svg>
-                                Copiar
-                            </button>
-                        </div>
-                    </div>
-                </div>`;
+                listaMsg.innerHTML += `<div id="msg-${indexArray}" class="flex gap-4 mb-8 mt-6 ${anim}"><div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white flex-shrink-0 mt-1 shadow-sm"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4"><path fill-rule="evenodd" d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5Z" clip-rule="evenodd" /></svg></div><div class="w-full"><div class="font-sans text-[16.5px] leading-8 w-full texto-selecionavel tracking-tight text-slate-800 dark:text-slate-200">${formatarMarkdown(texto)}</div><div class="mt-4 flex justify-start"><button onclick="copiarDoHistorico(${indexArray}, this)" class="flex items-center gap-1.5 text-[12px] font-bold text-slate-500 hover:text-slate-800 dark:hover:text-slate-300 active:scale-95 transition-all"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M15.666 3.888A2.25 2.25 0 0 0 13.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 0 1-.75.75H9a.75.75 0 0 1-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 0 1-2.25 2.25H6.75A2.25 2.25 0 0 1 4.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 0 1 1.927-.184" /></svg> Copiar</button></div></div></div>`;
             }
         }
 
         document.getElementById('btnEnviarMsg').addEventListener('click', async () => {
-            const pergunta = inputMsg.value.trim();
-            if (!pergunta) return;
-            const chaveApi = localStorage.getItem('chave_secreta_gemini');
-            if (!chaveApi) return abrirModalConfig();
+            const pergunta = inputMsg.value.trim(); if (!pergunta) return;
+            const chaveApi = localStorage.getItem('chave_secreta_gemini'); if (!chaveApi) return abrirModalConfig();
 
-            const btnEnviar = document.getElementById('btnEnviarMsg');
-            btnEnviar.disabled = true;
-
+            const btnEnviar = document.getElementById('btnEnviarMsg'); btnEnviar.disabled = true;
             const extra = localStorage.getItem('perfil_ia_gemini') || '';
             const combinada = extra ? `${ALMA_INTERNA}\n\nProtocolo do usuário: ${extra}` : ALMA_INTERNA;
 
-            historicoChat.push({ role: 'user', texto: pergunta });
-            const indexUser = historicoChat.length - 1;
-            localStorage.setItem('biblia_historico_chat', JSON.stringify(historicoChat));
-            renderizarBalao('user', pergunta, indexUser, true);
-            
+            historicoChat.push({ role: 'user', texto: pergunta }); const indexUser = historicoChat.length - 1; localStorage.setItem('biblia_historico_chat', JSON.stringify(historicoChat)); renderizarBalao('user', pergunta, indexUser, true);
             inputMsg.value = ''; inputMsg.style.height = 'auto'; btnEnviar.style.opacity = '0.5'; btnEnviar.classList.remove('bg-blue-600'); btnEnviar.classList.add('bg-slate-300','dark:bg-slate-700');
 
             const idLoader = 'load-' + Date.now();
             listaMsg.innerHTML += `<div id="${idLoader}" class="flex gap-4 mb-8 mt-6 fade-in"><div class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-400 flex-shrink-0 mt-1 animate-pulse"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4"><path fill-rule="evenodd" d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5Z" clip-rule="evenodd" /></svg></div><div class="text-slate-400 font-sans text-[15px] italic mt-1.5 animate-pulse">Consultando as Escrituras...</div></div>`;
             setTimeout(() => { document.getElementById(idLoader).scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 50);
 
+            // MOTOR DE CONTEXTO ESTRITO (Multi-Turn Chat)
             let conteudosDaAPI = [];
-            const mensagensAntigas = historicoChat.slice(0, -1).slice(-4);
-            mensagensAntigas.forEach(m => { conteudosDaAPI.push({ role: m.role === 'user' ? 'user' : 'model', parts: [{ text: m.texto }] }); });
-            conteudosDaAPI.push({ role: 'user', parts: [{ text: pergunta }] });
+            // Remove erros técnicos do histórico para não corromper a memória da API
+            let historicoLimpo = historicoChat.filter(m => !m.texto.includes('⚠️') && !m.texto.includes('Irmão, estamos consultando'));
+            // Janela de Contexto Profunda: Lembra as últimas 30 mensagens (15 rodadas inteiras de perguntas e respostas)
+            let contextoLongo = historicoLimpo.slice(-30);
+            
+            let ultimoPapel = '';
+            contextoLongo.forEach(m => {
+                let papel = m.role === 'user' ? 'user' : 'model';
+                // A API do Google exige estritamente que a conversa comece com o 'user'
+                if (conteudosDaAPI.length === 0 && papel !== 'user') return;
+                
+                if (papel !== ultimoPapel) {
+                    conteudosDaAPI.push({ role: papel, parts: [{ text: m.texto }] });
+                    ultimoPapel = papel;
+                } else {
+                    // Evita falhas (Error 400 da API) juntando duas falas seguidas do mesmo autor num bloco só
+                    conteudosDaAPI[conteudosDaAPI.length - 1].parts[0].text += "\n\n" + m.texto;
+                }
+            });
 
             try {
                 const resposta = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${chaveApi}`, {
@@ -558,35 +457,23 @@
                     let m = dadosJson.error.message;
                     if (m.includes("Quota") || m.includes("429")) m = "Irmão, estamos consultando muito rápido. Por favor, aguarde cerca de 30 segundos.";
                     else if (m.includes("API key not valid")) m = "Sua chave da API é inválida.";
-                    historicoChat.push({ role: 'ia', texto: m });
-                    renderizarBalao('ia', m, historicoChat.length - 1, true); 
-                    btnEnviar.disabled = false;
-                    return;
+                    else m = `⚠️ Falha técnica: ${m}`;
+                    
+                    historicoChat.push({ role: 'ia', texto: m }); renderizarBalao('ia', m, historicoChat.length - 1, true); btnEnviar.disabled = false; return;
                 }
                 
                 const textoIA = dadosJson.candidates?.[0]?.content?.parts?.[0]?.text || "Falha ao formular.";
-                historicoChat.push({ role: 'ia', texto: textoIA });
-                localStorage.setItem('biblia_historico_chat', JSON.stringify(historicoChat));
+                historicoChat.push({ role: 'ia', texto: textoIA }); localStorage.setItem('biblia_historico_chat', JSON.stringify(historicoChat));
                 
-                const novoIndexIA = historicoChat.length - 1;
-                renderizarBalao('ia', textoIA, novoIndexIA, true);
-                
-                setTimeout(() => {
-                    const msgEl = document.getElementById(`msg-${novoIndexIA}`);
-                    if(msgEl) listaMsg.scrollTo({ top: msgEl.offsetTop - 20, behavior: 'smooth' });
-                }, 100);
+                const novoIndexIA = historicoChat.length - 1; renderizarBalao('ia', textoIA, novoIndexIA, true);
+                setTimeout(() => { const msgEl = document.getElementById(`msg-${novoIndexIA}`); if(msgEl) listaMsg.scrollTo({ top: msgEl.offsetTop - 20, behavior: 'smooth' }); }, 100);
 
-            } catch (e) { 
-                document.getElementById(idLoader).remove(); 
-                historicoChat.push({ role: 'ia', texto: "Erro de conexão de rede." });
-                renderizarBalao('ia', "Erro de conexão de rede.", historicoChat.length - 1, true); 
-            }
+            } catch (e) { document.getElementById(idLoader).remove(); historicoChat.push({ role: 'ia', texto: "Erro de rede." }); renderizarBalao('ia', "⚠️ Erro de rede. Verifique sua conexão.", historicoChat.length - 1, true); }
             btnEnviar.disabled = false;
         });
 
         document.getElementById('campoPergunta').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if(!document.getElementById('btnEnviarMsg').disabled) document.getElementById('btnEnviarMsg').click(); }});
         window.onload = iniciarBiblia;
-
         if ('serviceWorker' in navigator) { window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js')); }
     </script>
 </body>
