@@ -6,22 +6,21 @@
     <title>Bíblia ARC Pro</title>
     
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#131314">
+    <meta name="theme-color" content="#0f172a">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3073/3073403.png">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
     <style>
-        /* BASE E ANTIALIASING PREMIUM */
+        /* BASE & TYPOGRAPHY - Crisp & Smooth */
         body { 
             font-family: 'Inter', sans-serif; 
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
             -webkit-tap-highlight-color: transparent; 
             touch-action: manipulation; 
-            transition: padding-bottom 0.3s ease, background-color 0.3s ease, color 0.3s ease;
-            user-select: none; 
-            -webkit-user-select: none; 
+            transition: background-color 0.4s ease, color 0.4s ease;
+            user-select: none; -webkit-user-select: none;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
         
         .texto-selecionavel { user-select: text; -webkit-user-select: text; cursor: text; }
@@ -30,145 +29,173 @@
         .texto-biblia { font-family: 'Lora', serif; line-height: 1.85; letter-spacing: -0.01em; }
         .altura-dinamica { height: 100dvh; }
         
-        .modal { transition: opacity 0.25s ease; opacity: 0; pointer-events: none; }
+        /* ANIMATIONS */
+        .modal { transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1); opacity: 0; pointer-events: none; }
         .modal.aberto { opacity: 1; pointer-events: auto; }
         .fade-in { animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
         
+        /* PREMIUM SCROLLBAR */
         .scroll-suave::-webkit-scrollbar { width: 5px; }
-        .scroll-suave::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 5px; }
+        .scroll-suave::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         .dark .scroll-suave::-webkit-scrollbar-thumb { background: #334155; }
         
         /* VERSÍCULOS */
-        .versiculo-marcado { background-color: rgba(250, 204, 21, 0.35); border-radius: 0.5rem; transition: background-color 0.2s; }
-        .dark .versiculo-marcado { background-color: rgba(161, 98, 7, 0.4); }
-        .versiculo-selecionado { background-color: rgba(59, 130, 246, 0.08); border-left: 4px solid #2563eb; border-radius: 0 0.5rem 0.5rem 0; }
+        .versiculo-marcado { background-color: rgba(250, 204, 21, 0.3); border-radius: 0.75rem; transition: all 0.3s ease; }
+        .dark .versiculo-marcado { background-color: rgba(161, 98, 7, 0.3); }
+        .versiculo-selecionado { background-color: rgba(59, 130, 246, 0.08); border-left: 4px solid #3b82f6; border-radius: 0 0.75rem 0.75rem 0; }
         .dark .versiculo-selecionado { background-color: rgba(59, 130, 246, 0.15); border-left-color: #60a5fa; }
-        .highlight-busca { font-weight: 700; color: #2563eb; background-color: rgba(59, 130, 246, 0.15); padding: 0 2px; border-radius: 4px; }
-        .dark .highlight-busca { color: #60a5fa; background-color: rgba(59, 130, 246, 0.25); }
+        .highlight-busca { font-weight: 600; color: #1d4ed8; background-color: rgba(59, 130, 246, 0.15); padding: 0 4px; border-radius: 4px; }
+        .dark .highlight-busca { color: #93c5fd; background-color: rgba(59, 130, 246, 0.25); }
 
-        /* GAVETA INTELIGENTE (Fundo adaptado para padrão de mercado) */
+        /* GAVETA INTELIGENTE (BOTTOM SHEET) - Smoother Physics */
         .bottom-sheet {
             position: fixed; left: 0; right: 0; bottom: 76px; z-index: 50;
             background: #ffffff; display: flex; flex-direction: column;
-            border-radius: 1.5rem 1.5rem 0 0; box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.12);
-            transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1), height 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+            border-radius: 1.75rem 1.75rem 0 0; 
+            box-shadow: 0 -10px 40px -10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1), height 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+            border-top: 1px solid rgba(255,255,255,0.5);
         }
-        .dark .bottom-sheet { background: #1e1e20; box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.6); border-top: 1px solid #2d2d30; }
+        .dark .bottom-sheet { 
+            background: #0f172a; 
+            box-shadow: 0 -15px 50px -10px rgba(0, 0, 0, 0.5); 
+            border-top: 1px solid rgba(255,255,255,0.05); 
+        }
         .sheet-hidden { transform: translateY(120%); opacity: 0; pointer-events: none; }
         .sheet-half { transform: translateY(0); height: 55dvh; opacity: 1; pointer-events: auto; }
         .sheet-full { transform: translateY(0); height: calc(100dvh - 76px); opacity: 1; pointer-events: auto; }
-        
-        /* Cores base personalizadas para Dark Mode Premium (Estilo Gemini) */
-        .dark body { background-color: #131314; color: #e3e3e3; }
+
+        /* CHAT MARKDOWN STYLING */
+        .prose h1, .prose h2, .prose h3 { color: #111827; font-weight: 700; margin-top: 1.5em; margin-bottom: 0.5em; line-height: 1.3; }
+        .dark .prose h1, .dark .prose h2, .dark .prose h3 { color: #f9fafb; }
+        .prose p { margin-bottom: 1em; }
+        .prose ul { padding-left: 1.25em; list-style-type: disc; margin-bottom: 1em; }
+        .prose li { margin-bottom: 0.25em; }
+        .prose strong { font-weight: 600; color: #1f2937; }
+        .dark .prose strong { color: #f3f4f6; }
     </style>
 </head>
-<body class="bg-white text-gray-900 transition-colors duration-300 dark:bg-[#131314] dark:text-[#e3e3e3] pb-safe">
+<body class="bg-slate-50 text-slate-900 dark:bg-[#0b1120] dark:text-slate-100 pb-safe">
 
-    <header class="fixed top-0 left-0 right-0 bg-white/90 dark:bg-[#131314]/90 backdrop-blur-lg border-b border-gray-100 dark:border-[#2d2d30] z-30 p-4 shadow-sm">
-        <div class="max-w-3xl mx-auto">
-            <div class="flex justify-between items-center mb-4">
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">Bíblia ARC</h1>
+    <header class="fixed top-0 left-0 right-0 bg-white/80 dark:bg-[#0b1120]/80 backdrop-blur-xl border-b border-slate-200/80 dark:border-slate-800/80 z-30 p-4 shadow-sm transition-colors">
+        <div class="max-w-md mx-auto">
+            <div class="flex justify-between items-center mb-3">
+                <h1 class="text-2xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 tracking-tight">Bíblia ARC</h1>
                 <div class="flex items-center gap-2">
-                    <button onclick="abrirBusca()" class="p-2.5 bg-gray-50 dark:bg-[#1e1e20] rounded-full text-lg hover:bg-gray-100 dark:hover:bg-[#2d2d30] transition-colors" title="Buscar Palavra">🔍</button>
-                    <button onclick="abrirModalConfig()" class="p-2.5 bg-gray-50 dark:bg-[#1e1e20] rounded-full text-lg hover:bg-gray-100 dark:hover:bg-[#2d2d30] transition-colors" title="Configurar IA">⚙️</button>
-                    <button id="btnTema" class="p-2.5 bg-gray-50 dark:bg-[#1e1e20] rounded-full text-lg hover:bg-gray-100 dark:hover:bg-[#2d2d30] transition-colors" title="Mudar Tema">🌓</button>
+                    <button onclick="abrirBusca()" class="w-10 h-10 flex items-center justify-center bg-slate-100 dark:bg-slate-800 rounded-full text-slate-600 dark:text-slate-300 shadow-sm active:scale-95 transition-all hover:bg-slate-200 dark:hover:bg-slate-700" title="Buscar Palavra">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
+                    </button>
+                    <button onclick="abrirModalConfig()" class="w-10 h-10 flex items-center justify-center bg-slate-100 dark:bg-slate-800 rounded-full text-slate-600 dark:text-slate-300 shadow-sm active:scale-95 transition-all hover:bg-slate-200 dark:hover:bg-slate-700" title="Configurar IA">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M10.343 3.94c.09-.542.56-.94 1.11-.94h1.093c.55 0 1.02.398 1.11.94l.149.894c.07.424.384.764.78.93.398.164.855.142 1.205-.108l.737-.527a1.125 1.125 0 0 1 1.45.12l.773.774c.39.389.44 1.002.12 1.45l-.527.737c-.25.35-.272.806-.107 1.204.165.397.505.71.93.78l.893.15c.543.09.94.559.94 1.109v1.094c0 .55-.397 1.02-.94 1.11l-.894.149c-.424.07-.764.383-.929.78-.165.398-.143.854.107 1.204l.527.738c.32.447.269 1.06-.12 1.45l-.774.773a1.125 1.125 0 0 1-1.449.12l-.738-.527c-.35-.25-.806-.272-1.203-.107-.398.165-.71.505-.781.929l-.149.894c-.09.542-.56.94-1.11.94h-1.094c-.55 0-1.019-.398-1.11-.94l-.148-.894c-.071-.424-.384-.764-.781-.93-.398-.164-.854-.142-1.204.108l-.738.527c-.447.32-1.06.269-1.45-.12l-.773-.774a1.125 1.125 0 0 1-.12-1.45l.527-.737c.25-.35.272-.806.108-1.204-.165-.397-.506-.71-.93-.78l-.894-.15c-.542-.09-.94-.56-.94-1.109v-1.094c0-.55.398-1.02.94-1.11l.894-.149c.424-.07.765-.383.93-.78.165-.398.143-.854-.108-1.204l-.526-.738a1.125 1.125 0 0 1 .12-1.45l.773-.773a1.125 1.125 0 0 1 1.45-.12l.737.527c.35.25.807.272 1.204.107.397-.165.71-.505.78-.929l.15-.894Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>
+                    </button>
+                    <button id="btnTema" class="w-10 h-10 flex items-center justify-center bg-slate-100 dark:bg-slate-800 rounded-full text-slate-600 dark:text-slate-300 shadow-sm active:scale-95 transition-all hover:bg-slate-200 dark:hover:bg-slate-700" title="Mudar Tema">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" /></svg>
+                    </button>
                 </div>
             </div>
             <div class="flex gap-2">
-                <select id="selLivro" class="flex-[2] bg-gray-50 dark:bg-[#1e1e20] border border-gray-200 dark:border-[#2d2d30] p-3 rounded-2xl text-[15px] outline-none focus:ring-2 focus:ring-blue-500 appearance-none font-medium text-gray-800 dark:text-gray-200 shadow-sm"></select>
-                <select id="selCapitulo" class="flex-1 bg-gray-50 dark:bg-[#1e1e20] border border-gray-200 dark:border-[#2d2d30] p-3 rounded-2xl text-[15px] outline-none focus:ring-2 focus:ring-blue-500 appearance-none font-medium text-center text-gray-800 dark:text-gray-200 shadow-sm"></select>
+                <select id="selLivro" class="flex-[2] bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 p-2.5 rounded-2xl text-[15px] outline-none focus:ring-2 focus:ring-blue-500 appearance-none font-semibold text-slate-800 dark:text-slate-200 backdrop-blur-md transition-colors"></select>
+                <select id="selCapitulo" class="flex-1 bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 p-2.5 rounded-2xl text-[15px] outline-none focus:ring-2 focus:ring-blue-500 appearance-none font-semibold text-center text-slate-800 dark:text-slate-200 backdrop-blur-md transition-colors"></select>
             </div>
         </div>
     </header>
 
-    <main id="mainBiblia" class="pt-36 pb-24 px-5 max-w-3xl mx-auto min-h-screen">
-        <div id="areaLeitura" class="texto-biblia text-[19px] md:text-[21px] text-gray-800 dark:text-[#e3e3e3]">
-            <div class="flex flex-col items-center justify-center mt-32 text-blue-600 dark:text-blue-400">
-                <svg class="w-10 h-10 mb-4 animate-spin opacity-80" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                <p class="font-sans font-medium text-base animate-pulse">Preparando as Escrituras...</p>
+    <main id="mainBiblia" class="pt-[140px] pb-24 px-4 max-w-md mx-auto min-h-screen">
+        <div id="areaLeitura" class="texto-biblia text-[19px] md:text-[21px] text-slate-800 dark:text-slate-200">
+            <div class="flex flex-col items-center justify-center mt-32 text-blue-500">
+                <svg class="w-10 h-10 mb-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                <p class="font-sans font-medium text-lg animate-pulse tracking-wide">Preparando as Escrituras...</p>
             </div>
         </div>
     </main>
 
-    <nav id="navInferior" class="fixed bottom-0 left-0 right-0 h-[76px] bg-white/95 dark:bg-[#131314]/95 backdrop-blur-lg border-t border-gray-100 dark:border-[#2d2d30] p-3 z-40">
-        <div class="max-w-3xl mx-auto flex gap-3">
-            <button id="btnAnterior" class="flex-none w-14 bg-gray-50 dark:bg-[#1e1e20] p-3 rounded-2xl font-bold active:scale-95 transition-transform flex items-center justify-center text-xl text-gray-700 dark:text-gray-300">←</button>
-            <button onclick="toggleChat()" class="flex-1 bg-gray-900 dark:bg-white text-white dark:text-gray-900 shadow-md p-3 rounded-2xl font-semibold flex items-center justify-center gap-2 active:scale-95 transition-transform whitespace-nowrap text-[15px]">
-                <span class="text-xl">✨</span> Assistente da Bíblia
+    <nav id="navInferior" class="fixed bottom-0 left-0 right-0 h-[76px] bg-white/90 dark:bg-[#0b1120]/90 backdrop-blur-xl border-t border-slate-200/80 dark:border-slate-800/80 p-3 z-40 transition-colors">
+        <div class="max-w-md mx-auto flex gap-2">
+            <button id="btnAnterior" class="flex-none w-14 bg-slate-100 dark:bg-slate-800 p-3 rounded-2xl font-bold active:scale-95 transition-all hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300">←</button>
+            <button onclick="toggleChat()" class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-[0_8px_20px_-6px_rgba(59,130,246,0.5)] p-3 rounded-2xl font-semibold flex items-center justify-center gap-2 active:scale-95 transition-all whitespace-nowrap text-[16px]">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z" clip-rule="evenodd" /></svg>
+                Assistente da Bíblia
             </button>
-            <button id="btnProximo" class="flex-none w-14 bg-gray-50 dark:bg-[#1e1e20] p-3 rounded-2xl font-bold active:scale-95 transition-transform flex items-center justify-center text-xl text-gray-700 dark:text-gray-300">→</button>
+            <button id="btnProximo" class="flex-none w-14 bg-slate-100 dark:bg-slate-800 p-3 rounded-2xl font-bold active:scale-95 transition-all hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300">→</button>
         </div>
     </nav>
 
     <div id="gavetaChat" class="bottom-sheet sheet-hidden">
-        <div id="dragHandle" class="w-full pt-4 pb-2 flex justify-center cursor-pointer touch-none" title="Arraste para cima/baixo">
-            <div class="w-10 h-1 bg-gray-300 dark:bg-[#474747] rounded-full"></div>
+        <div id="dragHandle" class="w-full pt-4 pb-2 flex justify-center cursor-pointer touch-none">
+            <div class="w-10 h-1.5 bg-slate-300 dark:bg-slate-600 rounded-full"></div>
         </div>
-        <div class="px-5 pb-3 flex justify-between items-center bg-white dark:bg-[#1e1e20]">
+        
+        <div class="px-5 pb-3 border-b border-slate-100 dark:border-slate-800/60 bg-white/60 dark:bg-[#0f172a]/60 backdrop-blur-md flex justify-between items-center sticky top-0 z-10">
             <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-sm shadow-sm">✨</div>
+                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 shadow-md flex items-center justify-center text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6"><path fill-rule="evenodd" d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5Z" clip-rule="evenodd" /></svg>
+                </div>
                 <div>
-                    <h3 class="font-semibold text-[17px] text-gray-900 dark:text-gray-100 leading-tight">Assistente da Bíblia</h3>
+                    <h3 class="font-bold text-[17px] text-slate-900 dark:text-slate-100 leading-tight tracking-tight">Assistente da Bíblia</h3>
+                    <p class="text-[12px] text-slate-500 dark:text-slate-400 font-medium">Ortodoxia & Teologia</p>
                 </div>
             </div>
-            <div class="flex items-center gap-2">
-                <button onclick="limparChat()" class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 rounded-full transition-colors" title="Limpar Conversa">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+            <div class="flex items-center gap-1.5">
+                <button onclick="limparChat()" class="p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-red-500 rounded-full font-bold transition-all" title="Limpar Conversa">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" /></svg>
                 </button>
-                <button onclick="toggleTamanhoChat()" id="btnTamanhoChat" class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 rounded-full transition-colors" title="Tela Cheia">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" /></svg>
+                <button onclick="toggleTamanhoChat()" id="btnTamanhoChat" class="p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-blue-500 rounded-full font-bold transition-all" title="Tela Cheia">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" /></svg>
                 </button>
-                <button onclick="mudarEstadoChat('hidden')" class="p-2 text-gray-500 hover:text-gray-800 dark:hover:text-white rounded-full transition-colors">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                <button onclick="mudarEstadoChat('hidden')" class="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white rounded-full transition-all">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
                 </button>
             </div>
         </div>
         
-        <div id="listaMensagens" class="flex-1 overflow-y-auto px-5 py-6 space-y-8 scroll-suave bg-white dark:bg-[#1e1e20]">
+        <div id="listaMensagens" class="flex-1 overflow-y-auto px-4 py-6 space-y-8 scroll-suave bg-slate-50/50 dark:bg-[#0f172a]">
         </div>
-        
-        <div class="px-4 py-3 bg-white dark:bg-[#1e1e20] pb-safe">
-            <div class="max-w-3xl mx-auto flex gap-2 items-end bg-gray-100 dark:bg-[#2d2d30] rounded-3xl px-4 py-2 border border-transparent focus-within:bg-white focus-within:border-gray-300 dark:focus-within:bg-[#1e1e20] dark:focus-within:border-[#474747] transition-all shadow-sm">
-                <textarea id="campoPergunta" rows="1" placeholder="Escreva aqui..." class="flex-1 max-h-32 min-h-[44px] py-3 bg-transparent border-none outline-none text-[16px] font-sans resize-none text-gray-900 dark:text-[#e3e3e3] overflow-y-auto scroll-suave placeholder-gray-500 dark:placeholder-gray-400 texto-selecionavel"></textarea>
-                <button id="btnEnviarMsg" class="w-10 h-10 mb-1 flex-shrink-0 bg-transparent text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 rounded-full flex items-center justify-center transition-colors disabled:opacity-30 disabled:hover:text-gray-400">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6"><path d="M3.478 2.404a.75.75 0 0 0-.926.941l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.404Z" /></svg>
+
+        <div class="px-4 py-3 bg-white dark:bg-[#0f172a] pb-safe">
+            <div class="max-w-3xl mx-auto flex items-end bg-slate-100 dark:bg-slate-800 rounded-[1.5rem] p-1.5 border border-slate-200/50 dark:border-slate-700/50 shadow-[0_2px_10px_rgba(0,0,0,0.02)] focus-within:ring-2 focus-within:ring-blue-500/20 transition-all">
+                <textarea id="campoPergunta" rows="1" placeholder="Pergunte ao assistente..." class="flex-1 max-h-32 min-h-[46px] p-3 pl-4 bg-transparent border-none outline-none text-[16px] font-sans resize-none text-slate-900 dark:text-slate-100 overflow-y-auto scroll-suave texto-selecionavel leading-relaxed placeholder-slate-400 dark:placeholder-slate-500"></textarea>
+                <button id="btnEnviarMsg" class="w-11 h-11 mb-0.5 flex-shrink-0 bg-blue-600 hover:bg-blue-700 text-white rounded-[1.1rem] flex items-center justify-center transition-all shadow-sm opacity-50 disabled:opacity-50">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5"><path d="M3.478 2.404a.75.75 0 0 0-.926.941l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.404Z" /></svg>
                 </button>
             </div>
+            <p class="text-center text-[11px] text-slate-400 dark:text-slate-500 mt-2.5 tracking-wide">A IA pode cometer erros. Avalie à luz da Bíblia.</p>
         </div>
     </div>
 
-    <div id="barraSelecao" class="fixed bottom-0 left-0 right-0 bg-[#0b57d0] dark:bg-[#a8c7fa] text-white dark:text-gray-900 p-4 z-[60] transition-transform duration-300 translate-y-full shadow-[0_-15px_40px_rgba(0,0,0,0.2)] pb-6 rounded-t-3xl min-h-[90px]">
+    <div id="barraSelecao" class="fixed bottom-0 left-0 right-0 bg-slate-900 dark:bg-slate-800 text-white p-4 z-[60] transition-transform duration-400 cubic-bezier(0.32, 0.72, 0, 1) translate-y-full shadow-[0_-20px_50px_rgba(0,0,0,0.25)] pb-6 rounded-t-3xl min-h-[90px]">
         <div class="max-w-md mx-auto flex justify-between items-center px-2">
             <div class="flex items-center gap-3">
-                <button onclick="limparSelecao()" class="bg-white/20 hover:bg-white/30 dark:bg-black/10 dark:hover:bg-black/20 rounded-full w-9 h-9 flex items-center justify-center font-bold text-xl active:scale-95 transition-colors">&times;</button>
-                <span id="contadorSelecao" class="font-semibold text-[15px]">0 selecionados</span>
+                <button onclick="limparSelecao()" class="bg-slate-800 dark:bg-slate-700 hover:bg-slate-700 rounded-full w-9 h-9 flex items-center justify-center font-bold text-lg active:scale-95 transition-colors">&times;</button>
+                <span id="contadorSelecao" class="font-medium text-[15px] tracking-wide">0 selecionados</span>
             </div>
-            <div class="flex gap-6">
-                <button onclick="acaoMultiplaCopiar()" class="flex flex-col items-center justify-center active:scale-95 transition-transform opacity-90 hover:opacity-100">
-                    <span class="text-2xl mb-1">📋</span><span class="text-[11px] font-semibold tracking-wide">Copiar</span>
+            <div class="flex gap-4">
+                <button onclick="acaoMultiplaCopiar()" class="flex flex-col items-center justify-center active:scale-95 transition-transform text-slate-300 hover:text-white px-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 mb-1"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 0 1-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H9.75" /></svg>
+                    <span class="text-[11px] font-semibold">Copiar</span>
                 </button>
-                <button onclick="acaoMultiplaMarcar()" class="flex flex-col items-center justify-center active:scale-95 transition-transform opacity-90 hover:opacity-100">
-                    <span class="text-2xl mb-1">🖍️</span><span id="textoBtnMarcar" class="text-[11px] font-semibold tracking-wide">Marcar</span>
+                <button onclick="acaoMultiplaMarcar()" class="flex flex-col items-center justify-center active:scale-95 transition-transform text-slate-300 hover:text-white px-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 mb-1"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg>
+                    <span id="textoBtnMarcar" class="text-[11px] font-semibold">Marcar</span>
                 </button>
-                <button onclick="acaoMultiplaExplicar()" class="flex flex-col items-center justify-center active:scale-95 transition-transform bg-white text-[#0b57d0] dark:bg-gray-900 dark:text-[#a8c7fa] px-4 py-2 rounded-2xl shadow-sm">
-                    <span class="text-xl leading-none">✨</span><span class="text-[11px] font-bold mt-1 tracking-wider uppercase">Explicar</span>
+                <button onclick="acaoMultiplaExplicar()" class="flex flex-col items-center justify-center active:scale-95 transition-transform font-bold bg-white text-slate-900 px-4 py-2 rounded-2xl shadow-sm ml-2 hover:bg-slate-100">
+                    <span class="text-xl">✨</span><span class="text-[10px] mt-0.5 tracking-wide">EXPLICAR</span>
                 </button>
             </div>
         </div>
     </div>
 
-    <div id="telaBusca" class="fixed inset-0 bg-white dark:bg-[#131314] z-[70] flex flex-col transition-transform duration-300 translate-y-full altura-dinamica">
-        <div class="p-4 border-b border-gray-100 dark:border-[#2d2d30] flex items-center gap-3">
-            <button onclick="fecharBusca()" class="p-2 text-2xl text-gray-500 hover:text-gray-900 dark:hover:text-white">←</button>
-            <input type="text" id="inputBusca" placeholder="Pesquisar..." class="flex-1 p-3.5 rounded-2xl bg-gray-100 dark:bg-[#1e1e20] border-none outline-none focus:ring-2 focus:ring-blue-500 text-[16px] font-sans texto-selecionavel">
-            <button onclick="executarBusca()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3.5 rounded-2xl font-semibold shadow-sm active:scale-95">Buscar</button>
+    <div id="telaBusca" class="fixed inset-0 bg-slate-50 dark:bg-slate-900 z-[70] flex flex-col transition-transform duration-400 translate-y-full altura-dinamica">
+        <div class="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center gap-3 bg-white dark:bg-slate-900">
+            <button onclick="fecharBusca()" class="p-2 text-2xl text-slate-500 hover:text-slate-800 dark:hover:text-white">&times;</button>
+            <input type="text" id="inputBusca" placeholder="Buscar palavra na Bíblia..." class="flex-1 p-3 rounded-2xl bg-slate-100 dark:bg-slate-800 border-none outline-none focus:ring-2 focus:ring-blue-500 text-[16px] font-sans texto-selecionavel placeholder-slate-400 dark:placeholder-slate-500">
+            <button onclick="executarBusca()" class="bg-blue-600 hover:bg-blue-700 text-white p-3 px-5 rounded-2xl font-bold shadow-sm active:scale-95 transition-colors">Ir</button>
         </div>
-        <div class="flex-1 overflow-y-auto p-5 scroll-suave" id="areaResultadosBusca">
+        <div class="flex-1 overflow-y-auto p-4 scroll-suave" id="areaResultadosBusca">
             <div id="containerHistoricoBusca" class="mb-6">
                 <div class="flex justify-between items-center mb-4">
-                    <h4 class="text-sm font-semibold text-gray-500">Buscas Recentes</h4>
-                    <button onclick="limparHistoricoBusca()" class="text-sm text-blue-600 dark:text-blue-400 font-medium active:scale-95">Limpar</button>
+                    <h4 class="text-[13px] font-bold text-slate-500 uppercase tracking-wider">Buscas Recentes</h4>
+                    <button onclick="limparHistoricoBusca()" class="text-[13px] text-blue-600 dark:text-blue-400 font-bold active:scale-95">Limpar</button>
                 </div>
                 <div id="listaHistoricoBusca" class="flex flex-wrap gap-2"></div>
             </div>
@@ -176,30 +203,30 @@
         </div>
     </div>
 
-    <div id="modalConfig" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[80] flex items-center justify-center p-5 modal">
-        <div class="bg-white dark:bg-[#1e1e20] rounded-3xl p-6 w-full max-w-md shadow-2xl transform transition-all max-h-[90vh] overflow-y-auto scroll-suave">
+    <div id="modalConfig" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[80] flex items-center justify-center p-4 modal">
+        <div class="bg-white dark:bg-slate-800 rounded-[2rem] p-6 w-full max-w-md shadow-2xl transform transition-all max-h-[90vh] overflow-y-auto scroll-suave">
             <div class="flex items-center justify-between mb-6">
-                <h3 class="font-bold text-[20px] flex items-center gap-2">Configurações</h3>
-                <button onclick="fecharModalConfig()" class="text-gray-400 hover:text-gray-800 dark:hover:text-white font-bold text-2xl active:scale-95">&times;</button>
+                <h3 class="font-bold text-xl flex items-center gap-2"><span class="text-2xl">⚙️</span> Configurações</h3>
+                <button onclick="fecharModalConfig()" class="w-8 h-8 bg-slate-100 dark:bg-slate-700 rounded-full text-slate-500 font-bold text-xl active:scale-95 flex items-center justify-center">&times;</button>
             </div>
-            <div class="mb-6">
-                <label class="block text-[14px] font-semibold text-gray-800 dark:text-gray-200 mb-2">Chave da API (Gemini)</label>
-                <input type="text" id="inputChaveApi" class="w-full p-4 border border-gray-200 dark:border-[#474747] rounded-2xl text-gray-900 dark:text-white dark:bg-[#131314] outline-none focus:ring-2 focus:ring-blue-500 font-mono text-[14px] texto-selecionavel" placeholder="Coloque sua chave aqui...">
+            <div class="mb-5">
+                <label class="block text-[14px] font-bold text-slate-700 dark:text-slate-300 mb-2">Chave da API (Gemini)</label>
+                <input type="text" id="inputChaveApi" class="w-full p-3.5 border border-slate-200 dark:border-slate-600 rounded-2xl text-slate-900 dark:text-white dark:bg-slate-700/50 outline-none focus:ring-2 focus:ring-blue-500 font-mono text-[14px] shadow-inner texto-selecionavel transition-all" placeholder="Ex: AIzaSyB...">
             </div>
             <div class="mb-8">
-                <label class="block text-[14px] font-semibold text-gray-800 dark:text-gray-200 mb-1">Instruções Adicionais (Opcional)</label>
-                <p class="text-[12px] text-gray-500 dark:text-gray-400 mb-3 leading-relaxed">
-                    A alma do Assistente (Regra de Fé e Ortodoxia) já está fixada internamente. Adicione aqui apenas comandos extras de formatação de texto.
+                <label class="block text-[14px] font-bold text-slate-700 dark:text-slate-300 mb-1">Instruções Adicionais</label>
+                <p class="text-[12px] text-slate-500 dark:text-slate-400 mb-3 leading-relaxed">
+                    A alma do Assistente (Regra de Fé e Ortodoxia) já está blindada. Adicione aqui apenas comandos de formatação.
                 </p>
-                <textarea id="inputPerfil" rows="3" class="w-full p-4 border border-gray-200 dark:border-[#474747] rounded-2xl text-gray-900 dark:text-white dark:bg-[#131314] outline-none focus:ring-2 focus:ring-blue-500 text-[14px] resize-none texto-selecionavel" placeholder="Ex: Use parágrafos curtos..."></textarea>
+                <textarea id="inputPerfil" rows="3" class="w-full p-3.5 border border-slate-200 dark:border-slate-600 rounded-2xl text-slate-900 dark:text-white dark:bg-slate-700/50 outline-none focus:ring-2 focus:ring-blue-500 text-[15px] shadow-inner resize-none texto-selecionavel transition-all" placeholder="Ex: Responda em tópicos..."></textarea>
             </div>
-            <button onclick="salvarConfig()" class="w-full p-4 rounded-2xl font-semibold bg-gray-900 dark:bg-white text-white dark:text-gray-900 shadow-md active:scale-95 transition-transform text-[16px]">Salvar Configurações</button>
+            <button onclick="salvarConfig()" class="w-full p-4 rounded-2xl font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-md active:scale-95 transition-all text-[16px]">Salvar Configurações</button>
         </div>
     </div>
 
     <script>
         // ----------------------------------------------------
-        // 1. ESTADO GLOBAL, UTILITÁRIOS E MARKDOWN PREMIUM
+        // 1. ESTADO GLOBAL, UTILITÁRIOS E MARKDOWN
         // ----------------------------------------------------
         let bibliaCompleta = [];
         let indexLivro = parseInt(localStorage.getItem('leitura_livro')) || 0;
@@ -209,26 +236,19 @@
 
         function removerAcentos(str) { return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(); }
 
+        // MARKDOWN PARSER (Refinado com as tags prose e tipografia premium)
         function formatarMarkdown(texto) {
             let html = texto.trim();
-            // Headers com espaçamento de leitura (Padrão Artigo)
-            html = html.replace(/^### (.*$)/gim, '<h3 class="text-[18px] font-semibold mt-6 mb-2 text-gray-900 dark:text-[#f8f9fa]">$1</h3>');
-            html = html.replace(/^## (.*$)/gim, '<h2 class="text-[20px] font-semibold mt-7 mb-3 text-gray-900 dark:text-[#f8f9fa]">$1</h2>');
-            html = html.replace(/^# (.*$)/gim, '<h1 class="text-[24px] font-bold mt-7 mb-4 text-gray-900 dark:text-[#f8f9fa]">$1</h1>');
-            // Formatação Inline
-            html = html.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-gray-900 dark:text-[#f8f9fa]">$1</strong>');
-            html = html.replace(/\*(.*?)\*/g, '<em class="text-gray-700 dark:text-gray-300">$1</em>');
-            // Listas
-            html = html.replace(/^\* (.*$)/gim, '<li class="ml-5 list-disc mb-1.5 pl-1 marker:text-gray-400">$1</li>');
-            html = html.replace(/^- (.*$)/gim, '<li class="ml-5 list-disc mb-1.5 pl-1 marker:text-gray-400">$1</li>');
-            // Parágrafos (Substitui dupla quebra por margem e quebra simples por br)
-            html = html.split('\n\n').join('</p><p class="mb-4">');
+            html = html.replace(/^### (.*$)/gim, '<h3 class="text-[19px] font-bold mt-6 mb-2">$1</h3>');
+            html = html.replace(/^## (.*$)/gim, '<h2 class="text-[21px] font-bold mt-7 mb-3">$1</h2>');
+            html = html.replace(/^# (.*$)/gim, '<h1 class="text-[24px] font-extrabold mt-8 mb-4">$1</h1>');
+            html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+            html = html.replace(/^\* (.*$)/gim, '<li class="ml-5 list-disc mb-1.5">$1</li>');
+            html = html.replace(/^- (.*$)/gim, '<li class="ml-5 list-disc mb-1.5">$1</li>');
             html = html.split('\n').join('<br>');
-            html = `<p class="mb-4">${html}</p>`;
-            // Limpeza de tags HTML quebradas
-            html = html.replace(/<p class="mb-4"><\/li>/g, '</li>').replace(/<\/h3><br>/g, '</h3>').replace(/<\/h2><br>/g, '</h2>');
-            html = html.replace(/<br><\/p>/g, '</p>');
-            return html;
+            html = html.replace(/<\/li><br>/g, '</li>').replace(/<\/h3><br>/g, '</h3>').replace(/<\/h2><br>/g, '</h2>').replace(/<\/h1><br>/g, '</h1>');
+            return `<div class="prose dark:prose-invert">${html}</div>`;
         }
 
         // ----------------------------------------------------
@@ -246,30 +266,24 @@
                 preencherLivros(); exibirCapitulo(); carregarHistoricoBusca(); carregarHistoricoChat();
                 mudarEstadoChat('hidden'); 
             } catch (erro) {
-                document.getElementById('areaLeitura').innerHTML = `<div class="text-center mt-20 text-red-500 font-bold">Erro de conexão.</div>`;
+                document.getElementById('areaLeitura').innerHTML = `<div class="text-center mt-20 text-red-500 font-bold">Erro ao conectar. Verifique a internet.</div>`;
             }
         }
 
         function salvarEstadoLeitura() { localStorage.setItem('leitura_livro', indexLivro); localStorage.setItem('leitura_capitulo', indexCapitulo); }
         function preencherLivros() { const select = document.getElementById('selLivro'); select.innerHTML = bibliaCompleta.map((l, i) => `<option value="${i}">${l.name}</option>`).join(''); select.value = indexLivro; preencherCapitulos(); }
-        function preencherCapitulos() { const select = document.getElementById('selCapitulo'); const total = bibliaCompleta[indexLivro].chapters.length; let options = ''; for(let i = 0; i < total; i++) options += `<option value="${i}">Capítulo ${i + 1}</option>`; select.innerHTML = options; select.value = indexCapitulo; }
+        function preencherCapitulos() { const select = document.getElementById('selCapitulo'); const total = bibliaCompleta[indexLivro].chapters.length; let options = ''; for(let i = 0; i < total; i++) options += `<option value="${i}">${i + 1}</option>`; select.innerHTML = options; select.value = indexCapitulo; }
 
         function exibirCapitulo() {
             if(bibliaCompleta.length === 0) return;
             limparSelecao();
             const livroAtual = bibliaCompleta[indexLivro];
             const versiculos = livroAtual.chapters[indexCapitulo];
-            
-            let html = `<h2 class="text-3xl font-extrabold mb-10 text-gray-900 dark:text-gray-100 text-center fade-in">${livroAtual.name} ${indexCapitulo + 1}</h2>`;
-            
+            let html = `<h2 class="text-3xl font-extrabold mb-10 text-slate-900 dark:text-slate-100 text-center fade-in">${livroAtual.name} ${indexCapitulo + 1}</h2>`;
             versiculos.forEach((texto, i) => {
                 const idUnico = `${indexLivro}-${indexCapitulo}-${i}`;
                 const classMarcado = marcacoes[idUnico] ? 'versiculo-marcado' : '';
-                html += `
-                <div id="v-${idUnico}" onclick="toggleSelecaoVersiculo(${indexLivro}, ${indexCapitulo}, ${i})" class="flex gap-4 mb-6 items-start cursor-pointer p-2.5 rounded-2xl transition-all -mx-2 hover:bg-gray-50 dark:hover:bg-[#1e1e20] ${classMarcado}">
-                    <span class="text-[12px] font-bold bg-gray-100 dark:bg-[#2d2d30] text-gray-500 dark:text-gray-400 px-2 py-1 rounded-lg mt-1.5 flex-shrink-0 pointer-events-none">${i + 1}</span>
-                    <p class="flex-1 pointer-events-none">${texto}</p>
-                </div>`;
+                html += `<div id="v-${idUnico}" onclick="toggleSelecaoVersiculo(${indexLivro}, ${indexCapitulo}, ${i})" class="flex gap-4 mb-6 items-start cursor-pointer p-2 rounded-2xl transition-all -mx-2 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 ${classMarcado}"><span class="text-[12px] font-bold bg-slate-200/80 dark:bg-slate-800 text-slate-600 dark:text-slate-400 px-2 py-1 rounded-lg shadow-sm mt-1.5 flex-shrink-0 pointer-events-none">${i + 1}</span><p class="flex-1 pointer-events-none">${texto}</p></div>`;
             });
             document.getElementById('areaLeitura').innerHTML = html;
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -288,14 +302,8 @@
             const idUnico = `${lIdx}-${cIdx}-${vIdx}`;
             const divElement = document.getElementById(`v-${idUnico}`);
             const indexNoArray = versiculosSelecionados.findIndex(v => v.idUnico === idUnico);
-            
-            if (indexNoArray > -1) {
-                versiculosSelecionados.splice(indexNoArray, 1);
-                divElement.classList.remove('versiculo-selecionado');
-            } else {
-                versiculosSelecionados.push({ lIdx, cIdx, vIdx, idUnico, texto: bibliaCompleta[lIdx].chapters[cIdx][vIdx], referencia: `${bibliaCompleta[lIdx].name} ${cIdx + 1}:${vIdx + 1}` });
-                divElement.classList.add('versiculo-selecionado');
-            }
+            if (indexNoArray > -1) { versiculosSelecionados.splice(indexNoArray, 1); divElement.classList.remove('versiculo-selecionado'); } 
+            else { versiculosSelecionados.push({ lIdx, cIdx, vIdx, idUnico, texto: bibliaCompleta[lIdx].chapters[cIdx][vIdx], referencia: `${bibliaCompleta[lIdx].name} ${cIdx + 1}:${vIdx + 1}` }); divElement.classList.add('versiculo-selecionado'); }
             atualizarBarraSelecao();
         }
 
@@ -305,9 +313,7 @@
                 document.getElementById('contadorSelecao').innerText = `${versiculosSelecionados.length} selecionado${versiculosSelecionados.length > 1 ? 's' : ''}`;
                 document.getElementById('textoBtnMarcar').innerText = versiculosSelecionados.every(v => marcacoes[v.idUnico]) ? "Desmarcar" : "Marcar";
                 barra.classList.remove('translate-y-full');
-            } else {
-                barra.classList.add('translate-y-full');
-            }
+            } else { barra.classList.add('translate-y-full'); }
         }
 
         function limparSelecao() { versiculosSelecionados.forEach(v => { const el = document.getElementById(`v-${v.idUnico}`); if(el) el.classList.remove('versiculo-selecionado'); }); versiculosSelecionados = []; atualizarBarraSelecao(); }
@@ -327,12 +333,13 @@
         function acaoMultiplaExplicar() {
             ordenarSelecao();
             let blocoTexto = ""; versiculosSelecionados.forEach(v => { blocoTexto += `"${v.texto}" (${v.referencia})\n`; });
-            const promptContextual = `Explique esta passagem bíblica:\n\n${blocoTexto}`;
+            const promptContextual = `Por favor, explique esta passagem à luz da Palavra:\n\n${blocoTexto}`;
             limparSelecao();
             if(estadoChat === 'hidden') mudarEstadoChat('half');
             const textarea = document.getElementById('campoPergunta');
             textarea.value = promptContextual;
             textarea.style.height = 'auto'; textarea.style.height = textarea.scrollHeight + 'px';
+            document.getElementById('btnEnviarMsg').style.opacity = '1';
             document.getElementById('btnEnviarMsg').disabled = true;
             setTimeout(() => { document.getElementById('btnEnviarMsg').disabled = false; document.getElementById('btnEnviarMsg').click(); }, 300);
         }
@@ -344,11 +351,10 @@
         function abrirBusca() { document.getElementById('telaBusca').classList.remove('translate-y-full'); document.getElementById('inputBusca').focus(); }
         function fecharBusca() { document.getElementById('telaBusca').classList.add('translate-y-full'); }
         function limparHistoricoBusca() { historicoBusca = []; localStorage.setItem('biblia_historico_busca', JSON.stringify(historicoBusca)); carregarHistoricoBusca(); }
-        
         function carregarHistoricoBusca() {
             const container = document.getElementById('listaHistoricoBusca');
-            if(historicoBusca.length === 0) return container.innerHTML = '<span class="text-[14px] text-gray-400">Nenhuma pesquisa recente.</span>';
-            container.innerHTML = historicoBusca.map(t => `<button onclick="document.getElementById('inputBusca').value='${t}'; executarBusca();" class="px-4 py-2 bg-gray-100 dark:bg-[#1e1e20] text-[14px] text-gray-700 dark:text-gray-300 font-medium rounded-xl active:scale-95 transition-transform">${t}</button>`).join('');
+            if(historicoBusca.length === 0) return container.innerHTML = '<span class="text-[13px] text-slate-400">Nenhuma busca recente.</span>';
+            container.innerHTML = historicoBusca.map(t => `<button onclick="document.getElementById('inputBusca').value='${t}'; executarBusca();" class="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[14px] font-medium rounded-xl active:scale-95 transition-all">${t}</button>`).join('');
         }
 
         function executarBusca() {
@@ -359,7 +365,7 @@
             if(!historicoBusca.includes(termo)) { historicoBusca.unshift(termo); if(historicoBusca.length > 8) historicoBusca.pop(); localStorage.setItem('biblia_historico_busca', JSON.stringify(historicoBusca)); carregarHistoricoBusca(); }
 
             const areaRes = document.getElementById('listaResultadosBusca');
-            areaRes.innerHTML = `<div class="text-center p-6 text-blue-500 font-medium animate-pulse">Consultando as Escrituras...</div>`;
+            areaRes.innerHTML = `<div class="text-center p-6 text-blue-500 font-bold animate-pulse text-[15px]">Buscando...</div>`;
             
             setTimeout(() => {
                 const termoLimpo = removerAcentos(termo);
@@ -367,12 +373,12 @@
                 for (let l = 0; l < bibliaCompleta.length; l++) { for (let c = 0; c < bibliaCompleta[l].chapters.length; c++) { for (let v = 0; v < bibliaCompleta[l].chapters[c].length; v++) {
                     if (removerAcentos(bibliaCompleta[l].chapters[c][v]).includes(termoLimpo)) resultados.push({ l, c, v, livro: bibliaCompleta[l].name, texto: bibliaCompleta[l].chapters[c][v] });
                 }}}
-                if (resultados.length === 0) return areaRes.innerHTML = `<div class="text-center p-8 text-gray-500">Nenhuma passagem encontrada.</div>`;
-                let htmlRes = `<p class="text-[13px] font-medium text-gray-500 mb-5 ml-1">${resultados.length} resultados encontrados</p>`;
+                if (resultados.length === 0) return areaRes.innerHTML = `<div class="text-center p-8 text-slate-500">Nada encontrado para "${termo}".</div>`;
+                let htmlRes = `<p class="text-[13px] font-bold text-slate-400 mb-4">${resultados.length} resultados</p>`;
                 const regex = new RegExp(`(${termo})`, 'gi');
                 resultados.forEach(res => {
                     const txt = res.texto.replace(regex, '<span class="highlight-busca">$1</span>');
-                    htmlRes += `<div onclick="irParaResultado(${res.l}, ${res.c}, ${res.v})" class="p-5 bg-gray-50 dark:bg-[#1e1e20] rounded-2xl cursor-pointer active:scale-95 transition-transform mb-4 border border-transparent hover:border-gray-200 dark:hover:border-[#2d2d30]"><span class="text-[12px] font-bold text-blue-600 dark:text-blue-400 block mb-2 tracking-wide uppercase">${res.livro} ${res.c + 1}:${res.v + 1}</span><p class="texto-biblia text-[17px]">${txt}</p></div>`;
+                    htmlRes += `<div onclick="irParaResultado(${res.l}, ${res.c}, ${res.v})" class="p-5 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 cursor-pointer active:scale-95 fade-in mb-3 hover:border-blue-300 transition-colors"><span class="text-[12px] font-extrabold text-blue-600 dark:text-blue-400 block mb-1.5 uppercase tracking-wide">${res.livro} ${res.c + 1}:${res.v + 1}</span><p class="texto-biblia text-[17px] text-slate-700 dark:text-slate-300">${txt}</p></div>`;
                 });
                 areaRes.innerHTML = htmlRes;
             }, 50);
@@ -380,12 +386,12 @@
         function irParaResultado(l, c, v) {
             fecharBusca(); indexLivro = l; indexCapitulo = c;
             document.getElementById('selLivro').value = l; preencherCapitulos(); exibirCapitulo();
-            setTimeout(() => { const el = document.getElementById(`v-${l}-${c}-${v}`); if(el) { window.scrollTo({ top: (el.getBoundingClientRect().top - document.body.getBoundingClientRect().top) - 150, behavior: 'smooth' }); el.style.transition = 'background-color 0.5s'; el.style.backgroundColor = 'rgba(59, 130, 246, 0.2)'; setTimeout(() => el.style.backgroundColor = '', 1500); } }, 300);
+            setTimeout(() => { const el = document.getElementById(`v-${l}-${c}-${v}`); if(el) { window.scrollTo({ top: (el.getBoundingClientRect().top - document.body.getBoundingClientRect().top) - 100, behavior: 'smooth' }); el.style.transition = 'background-color 0.5s'; el.style.backgroundColor = 'rgba(59, 130, 246, 0.2)'; setTimeout(() => el.style.backgroundColor = '', 1500); } }, 300);
         }
         document.getElementById('inputBusca').addEventListener('keypress', e => { if (e.key === 'Enter') executarBusca(); });
 
         // ----------------------------------------------------
-        // 5. CHAT COM IA (Design Premium Padrão de Mercado)
+        // 5. CHAT (UI PREMIUM, ANTI-BLEED E SMART SCROLL)
         // ----------------------------------------------------
         let estadoChat = 'hidden'; 
         const gavetaChat = document.getElementById('gavetaChat');
@@ -396,8 +402,8 @@
             gavetaChat.classList.remove('sheet-hidden', 'sheet-half', 'sheet-full');
             gavetaChat.classList.add(`sheet-${estadoChat}`);
             if(estadoChat === 'hidden') mainBiblia.style.paddingBottom = '90px'; 
-            else if (estadoChat === 'half') { mainBiblia.style.paddingBottom = 'calc(55dvh + 90px)'; document.getElementById('btnTamanhoChat').innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" /></svg>'; } 
-            else if (estadoChat === 'full') { mainBiblia.style.paddingBottom = 'calc(100dvh + 90px)'; document.getElementById('btnTamanhoChat').innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>'; }
+            else if (estadoChat === 'half') { mainBiblia.style.paddingBottom = 'calc(50dvh + 90px)'; document.getElementById('btnTamanhoChat').innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" /></svg>'; } 
+            else if (estadoChat === 'full') { mainBiblia.style.paddingBottom = 'calc(100dvh + 90px)'; document.getElementById('btnTamanhoChat').innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 9V4.5M9 9H4.5M9 9 3.75 3.75M9 15v4.5M9 15H4.5M9 15l-5.25 5.25M15 9h4.5M15 9V4.5M15 9l5.25-5.25M15 15h4.5M15 15v4.5m0-4.5 5.25 5.25" /></svg>'; }
         }
 
         function toggleChat() { if (estadoChat === 'hidden') mudarEstadoChat('half'); else mudarEstadoChat('hidden'); }
@@ -421,8 +427,8 @@
         inputMsg.addEventListener('input', function() {
             this.style.height = 'auto'; this.style.height = (this.scrollHeight) + 'px';
             const btn = document.getElementById('btnEnviarMsg');
-            if(this.value.trim() === '') { btn.disabled = true; btn.classList.remove('text-blue-600', 'dark:text-blue-400'); } 
-            else { btn.disabled = false; btn.classList.add('text-blue-600', 'dark:text-blue-400'); }
+            if(this.value.trim() === '') { btn.style.opacity = '0.5'; btn.classList.remove('bg-blue-600'); btn.classList.add('bg-slate-300','dark:bg-slate-700'); } 
+            else { btn.style.opacity = '1'; btn.classList.add('bg-blue-600'); btn.classList.remove('bg-slate-300','dark:bg-slate-700'); }
         });
 
         function abrirModalConfig() { document.getElementById('inputChaveApi').value = localStorage.getItem('chave_secreta_gemini') || ''; document.getElementById('inputPerfil').value = localStorage.getItem('perfil_ia_gemini') || ''; modalConfig.classList.add('aberto'); }
@@ -431,12 +437,7 @@
 
         function carregarHistoricoChat() {
             if(historicoChat.length === 0) {
-                listaMsg.innerHTML = `
-                <div class="flex flex-col items-center justify-center h-full text-center fade-in px-6">
-                    <div class="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-3xl shadow-lg mb-6 opacity-90">✨</div>
-                    <h2 class="text-[22px] font-semibold text-gray-900 dark:text-[#f8f9fa] mb-2 tracking-tight">Paz do Senhor!</h2>
-                    <p class="text-[15px] text-gray-500 dark:text-gray-400">Qual será o estudo bíblico de hoje?</p>
-                </div>`;
+                listaMsg.innerHTML = `<div class="flex flex-col items-center justify-center h-full text-center fade-in opacity-40 px-6 py-10"><div class="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-3xl mb-5 shadow-lg">✨</div><h2 class="text-xl font-bold mb-2 text-slate-800 dark:text-slate-200">Como posso ajudar?</h2><p class="text-[15px] text-slate-500">Faça sua pergunta teológica abaixo.</p></div>`;
                 return;
             }
             listaMsg.innerHTML = '';
@@ -444,13 +445,13 @@
             setTimeout(() => { listaMsg.scrollTop = listaMsg.scrollHeight; }, 100);
         }
 
-        function limparChat() { if(confirm("Iniciar novo estudo em branco?")) { historicoChat = []; localStorage.removeItem('biblia_historico_chat'); carregarHistoricoChat(); } }
+        function limparChat() { if(confirm("Limpar todo o estudo atual?")) { historicoChat = []; localStorage.removeItem('biblia_historico_chat'); carregarHistoricoChat(); } }
 
         window.copiarDoHistorico = function(index, btnElement) {
             const texto = historicoChat[index].texto;
             navigator.clipboard.writeText(texto).then(() => {
                 const originalHTML = btnElement.innerHTML;
-                btnElement.innerHTML = '✅ Copiado';
+                btnElement.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg> Copiado!';
                 btnElement.classList.add('text-green-600', 'dark:text-green-400');
                 setTimeout(() => { btnElement.innerHTML = originalHTML; btnElement.classList.remove('text-green-600', 'dark:text-green-400'); }, 2000);
             });
@@ -461,23 +462,18 @@
             if (listaMsg.querySelector('h2')) listaMsg.innerHTML = '';
             
             if(role === 'user') {
-                // Layout do Usuário (Alinhamento à direita, bolha limpa)
-                listaMsg.innerHTML += `
-                <div class="flex justify-end mb-6 ${anim}">
-                    <div class="bg-gray-100 dark:bg-[#2d2d30] text-gray-900 dark:text-[#e3e3e3] px-5 py-3 rounded-[1.5rem] rounded-tr-md max-w-[85%] font-sans text-[16px] whitespace-pre-wrap texto-selecionavel leading-relaxed">${texto}</div>
-                </div>`;
+                listaMsg.innerHTML += `<div class="flex justify-end mb-4 ${anim}"><div class="bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-slate-100 px-5 py-3.5 rounded-3xl rounded-tr-sm max-w-[85%] font-sans text-[16px] whitespace-pre-wrap texto-selecionavel">${texto}</div></div>`;
             } else {
-                // Layout da IA (Avatar à esquerda, texto formatado solto, botão de copiar)
                 listaMsg.innerHTML += `
-                <div id="msg-${indexArray}" class="flex gap-4 mb-8 ${anim}">
-                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white flex-shrink-0 mt-1 shadow-sm"><span class="text-sm">✨</span></div>
-                    <div class="w-full min-w-0">
-                        <div class="text-gray-800 dark:text-[#e3e3e3] font-sans text-[16px] leading-[1.75] w-full texto-selecionavel tracking-[0.01em]">
+                <div id="msg-${indexArray}" class="flex gap-4 mb-8 mt-6 ${anim}">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white flex-shrink-0 mt-1 shadow-sm"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4"><path fill-rule="evenodd" d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5Z" clip-rule="evenodd" /></svg></div>
+                    <div class="w-full">
+                        <div class="font-sans text-[16.5px] leading-8 w-full texto-selecionavel tracking-tight">
                             ${formatarMarkdown(texto)}
                         </div>
                         <div class="mt-4 flex justify-start">
-                            <button onclick="copiarDoHistorico(${indexArray}, this)" class="flex items-center gap-1.5 text-[13px] font-medium text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                            <button onclick="copiarDoHistorico(${indexArray}, this)" class="flex items-center gap-1.5 text-[12px] font-bold text-slate-500 hover:text-slate-800 dark:hover:text-slate-300 active:scale-95 transition-all">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M15.666 3.888A2.25 2.25 0 0 0 13.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 0 1-.75.75H9a.75.75 0 0 1-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 0 1-2.25 2.25H6.75A2.25 2.25 0 0 1 4.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 0 1 1.927-.184" /></svg>
                                 Copiar
                             </button>
                         </div>
@@ -503,36 +499,21 @@
             localStorage.setItem('biblia_historico_chat', JSON.stringify(historicoChat));
             renderizarBalao('user', pergunta, indexUser, true);
             
-            inputMsg.value = ''; inputMsg.style.height = 'auto'; btnEnviar.classList.remove('text-blue-600', 'dark:text-blue-400');
-            rolarChatParaBaixo();
+            inputMsg.value = ''; inputMsg.style.height = 'auto'; btnEnviar.style.opacity = '0.5'; btnEnviar.classList.remove('bg-blue-600'); btnEnviar.classList.add('bg-slate-300','dark:bg-slate-700');
 
             const idLoader = 'load-' + Date.now();
-            listaMsg.innerHTML += `
-            <div id="${idLoader}" class="flex gap-4 mb-8 fade-in">
-                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-gray-300 to-gray-400 dark:from-gray-600 dark:to-gray-700 flex items-center justify-center text-white flex-shrink-0 mt-1 animate-pulse">✨</div>
-                <div class="w-full flex items-center h-10">
-                    <div class="flex gap-1">
-                        <div class="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style="animation-delay: 0s"></div>
-                        <div class="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
-                        <div class="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style="animation-delay: 0.4s"></div>
-                    </div>
-                </div>
-            </div>`;
-            setTimeout(() => { document.getElementById(idLoader).scrollIntoView({ behavior: 'smooth', block: 'end' }); }, 50);
+            listaMsg.innerHTML += `<div id="${idLoader}" class="flex gap-4 mb-8 mt-6 fade-in"><div class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-400 flex-shrink-0 mt-1 animate-pulse"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4"><path fill-rule="evenodd" d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5Z" clip-rule="evenodd" /></svg></div><div class="text-slate-400 font-sans text-[15px] italic mt-1.5 animate-pulse">Consultando as Escrituras...</div></div>`;
+            setTimeout(() => { document.getElementById(idLoader).scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 50);
 
             let conteudosDaAPI = [];
-            const mensagensAntigas = historicoChat.slice(0, -1).slice(-4); 
+            const mensagensAntigas = historicoChat.slice(0, -1).slice(-4);
             mensagensAntigas.forEach(m => { conteudosDaAPI.push({ role: m.role === 'user' ? 'user' : 'model', parts: [{ text: m.texto }] }); });
             conteudosDaAPI.push({ role: 'user', parts: [{ text: pergunta }] });
 
             try {
                 const resposta = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${chaveApi}`, {
                     method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        system_instruction: { parts: [{ text: combinada }] },
-                        contents: conteudosDaAPI,
-                        generationConfig: { temperature: 0.3, maxOutputTokens: 8192, topP: 0.95 }
-                    })
+                    body: JSON.stringify({ system_instruction: { parts: [{ text: combinada }] }, contents: conteudosDaAPI, generationConfig: { temperature: 0.3, maxOutputTokens: 8192, topP: 0.95 } })
                 });
                 
                 const dadosJson = await resposta.json();
@@ -540,27 +521,32 @@
 
                 if (dadosJson.error) {
                     let m = dadosJson.error.message;
-                    if (m.includes("Quota") || m.includes("429")) m = "Por favor, aguarde alguns segundos antes de enviar outra pergunta.";
+                    if (m.includes("Quota") || m.includes("429")) m = "Irmão, estamos consultando muito rápido. Por favor, aguarde cerca de 30 segundos.";
                     else if (m.includes("API key not valid")) m = "Sua chave da API é inválida.";
                     historicoChat.push({ role: 'ia', texto: m });
                     renderizarBalao('ia', m, historicoChat.length - 1, true); 
+                    btnEnviar.disabled = false;
                     return;
                 }
                 
-                const textoIA = dadosJson.candidates?.[0]?.content?.parts?.[0]?.text || "Falha de comunicação.";
+                const textoIA = dadosJson.candidates?.[0]?.content?.parts?.[0]?.text || "Falha ao formular.";
                 historicoChat.push({ role: 'ia', texto: textoIA });
                 localStorage.setItem('biblia_historico_chat', JSON.stringify(historicoChat));
                 
                 const novoIndexIA = historicoChat.length - 1;
                 renderizarBalao('ia', textoIA, novoIndexIA, true);
                 
-                // Ancoragem de leitura refinada
                 setTimeout(() => {
                     const msgEl = document.getElementById(`msg-${novoIndexIA}`);
-                    if(msgEl) { listaMsg.scrollTo({ top: msgEl.offsetTop - 24, behavior: 'smooth' }); }
+                    if(msgEl) listaMsg.scrollTo({ top: msgEl.offsetTop - 20, behavior: 'smooth' });
                 }, 100);
 
-            } catch (e) { document.getElementById(idLoader).remove(); historicoChat.push({ role: 'ia', texto: "Erro de conexão." }); renderizarBalao('ia', "Erro de conexão.", historicoChat.length - 1, true); }
+            } catch (e) { 
+                document.getElementById(idLoader).remove(); 
+                historicoChat.push({ role: 'ia', texto: "Erro de conexão de rede." });
+                renderizarBalao('ia', "Erro de conexão de rede.", historicoChat.length - 1, true); 
+            }
+            btnEnviar.disabled = false;
         });
 
         document.getElementById('campoPergunta').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if(!document.getElementById('btnEnviarMsg').disabled) document.getElementById('btnEnviarMsg').click(); }});
