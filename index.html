@@ -22,12 +22,15 @@
             -webkit-tap-highlight-color: transparent; 
             touch-action: manipulation; 
             transition: background-color 0.3s ease, color 0.3s ease, padding-bottom 0.3s ease;
-            user-select: none; -webkit-user-select: none;
-            -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+            user-select: none; 
+            -webkit-user-select: none;
+            -webkit-font-smoothing: antialiased; 
+            -moz-osx-font-smoothing: grayscale;
         }
         
         * { transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease; }
         
+        /* SELEÇÃO PERMITIDA APENAS NO CHAT */
         .texto-selecionavel { user-select: text; -webkit-user-select: text; cursor: text; }
         textarea { user-select: text; -webkit-user-select: text; }
 
@@ -160,8 +163,8 @@
         
         <div id="listaMensagens" class="flex-1 overflow-y-auto px-4 py-6 space-y-8 scroll-suave bg-slate-50/50 dark:bg-[#0f172a]"></div>
 
-        <div class="px-4 py-3 bg-white dark:bg-[#0f172a] pb-safe">
-            <div class="max-w-3xl mx-auto flex items-end bg-slate-100 dark:bg-slate-800 rounded-[1.5rem] p-1.5 border border-slate-200/50 dark:border-slate-700/50 shadow-[0_2px_10px_rgba(0,0,0,0.02)] focus-within:ring-2 focus-within:ring-blue-500/20 transition-all">
+        <div class="px-4 py-3 bg-white dark:bg-[#0f172a] pb-safe shadow-[0_-5px_15px_rgba(0,0,0,0.02)]">
+            <div class="max-w-3xl mx-auto flex items-end bg-slate-100 dark:bg-slate-800 rounded-[1.5rem] p-1.5 border border-slate-200/50 dark:border-slate-700/50 focus-within:ring-2 focus-within:ring-blue-500/20 transition-all">
                 <textarea id="campoPergunta" rows="1" placeholder="Pergunte ao assistente..." class="flex-1 max-h-32 min-h-[46px] p-3 pl-4 bg-transparent border-none outline-none text-[16px] font-sans resize-none text-slate-900 dark:text-slate-100 overflow-y-auto scroll-suave texto-selecionavel leading-relaxed placeholder-slate-400 dark:placeholder-slate-500"></textarea>
                 <button id="btnEnviarMsg" class="w-11 h-11 mb-0.5 flex-shrink-0 bg-blue-600 hover:bg-blue-700 text-white rounded-[1.1rem] flex items-center justify-center transition-all shadow-sm opacity-50 disabled:opacity-50">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5"><path d="M3.478 2.404a.75.75 0 0 0-.926.941l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.404Z" /></svg>
@@ -171,22 +174,22 @@
         </div>
     </div>
 
-    <div id="barraSelecao" class="fixed bottom-0 left-0 right-0 bg-slate-900 dark:bg-slate-800 text-white p-4 z-[60] transition-transform duration-400 cubic-bezier(0.32, 0.72, 0, 1) translate-y-full shadow-[0_-20px_50px_rgba(0,0,0,0.25)] pb-6 rounded-t-3xl min-h-[90px]">
+    <div id="barraSelecao" class="fixed bottom-0 left-0 right-0 bg-blue-600 dark:bg-blue-800 text-white p-4 z-[60] transition-transform duration-400 cubic-bezier(0.32, 0.72, 0, 1) translate-y-full shadow-[0_-20px_50px_rgba(0,0,0,0.25)] pb-6 rounded-t-3xl min-h-[90px]">
         <div class="max-w-md mx-auto flex justify-between items-center px-2">
             <div class="flex items-center gap-3">
-                <button onclick="limparSelecao()" class="bg-slate-800 dark:bg-slate-700 hover:bg-slate-700 rounded-full w-9 h-9 flex items-center justify-center font-bold text-lg active:scale-95 transition-colors">&times;</button>
+                <button onclick="limparSelecao()" class="bg-blue-700 hover:bg-blue-900 rounded-full w-9 h-9 flex items-center justify-center font-bold text-lg active:scale-95 transition-colors">&times;</button>
                 <span id="contadorSelecao" class="font-medium text-[15px] tracking-wide">0 selecionados</span>
             </div>
             <div class="flex gap-4">
-                <button onclick="acaoMultiplaCopiar()" class="flex flex-col items-center justify-center active:scale-95 transition-transform text-slate-300 hover:text-white px-2">
+                <button onclick="acaoMultiplaCopiar()" class="flex flex-col items-center justify-center active:scale-95 transition-transform text-blue-100 hover:text-white px-2">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 mb-1"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 0 1-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H9.75" /></svg>
                     <span class="text-[11px] font-semibold">Copiar</span>
                 </button>
-                <button onclick="acaoMultiplaMarcar()" class="flex flex-col items-center justify-center active:scale-95 transition-transform text-slate-300 hover:text-white px-2">
+                <button onclick="acaoMultiplaMarcar()" class="flex flex-col items-center justify-center active:scale-95 transition-transform text-blue-100 hover:text-white px-2">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 mb-1"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg>
                     <span id="textoBtnMarcar" class="text-[11px] font-semibold">Marcar</span>
                 </button>
-                <button onclick="acaoMultiplaExplicar()" class="flex flex-col items-center justify-center active:scale-95 transition-transform font-bold bg-white text-slate-900 px-4 py-2 rounded-2xl shadow-sm ml-2 hover:bg-slate-100">
+                <button onclick="acaoMultiplaExplicar()" class="flex flex-col items-center justify-center active:scale-95 transition-transform font-bold bg-white text-blue-700 px-4 py-2 rounded-2xl shadow-sm ml-2 hover:bg-blue-50">
                     <span class="text-xl">✨</span><span class="text-[10px] mt-0.5 tracking-wide">EXPLICAR</span>
                 </button>
             </div>
@@ -223,7 +226,9 @@
             </div>
             <div class="mb-8">
                 <label class="block text-[14px] font-bold text-slate-700 dark:text-slate-300 mb-1">Instruções Adicionais</label>
-                <p class="text-[12px] text-slate-500 dark:text-slate-400 mb-3 leading-relaxed">A alma do Assistente (Regra de Fé e Ortodoxia) já está blindada. Adicione aqui apenas comandos de formatação.</p>
+                <p class="text-[12px] text-slate-500 dark:text-slate-400 mb-3 leading-relaxed">
+                    A alma do Assistente (Regra de Fé e Ortodoxia) já está blindada. Adicione aqui apenas comandos de formatação.
+                </p>
                 <textarea id="inputPerfil" rows="3" class="w-full p-3.5 border border-slate-200 dark:border-slate-600 rounded-2xl text-slate-900 dark:text-white dark:bg-slate-700/50 outline-none focus:ring-2 focus:ring-blue-500 text-[15px] shadow-inner resize-none texto-selecionavel transition-all" placeholder="Ex: Responda em tópicos..."></textarea>
             </div>
             <button onclick="salvarConfig()" class="w-full p-4 rounded-2xl font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-md active:scale-95 transition-all text-[16px]">Salvar Configurações</button>
@@ -239,10 +244,9 @@
 
         function atualizarCoresDoNavegador() {
             const isDark = htmlElement.classList.contains('dark');
-            document.getElementById('meta-theme-color').content = isDark ? "#0f172a" : "#ffffff";
+            document.getElementById('meta-theme-color').content = isDark ? "#0f172a" : "#f8fafc";
         }
 
-        // Lê a preferência do LocalStorage OU o sistema operacional do usuário
         if (localStorage.getItem('tema') === 'dark' || (!('tema' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             htmlElement.classList.add('dark');
         } else {
@@ -258,14 +262,10 @@
         });
 
         // ----------------------------------------------------
-        // UTILITÁRIOS
+        // BÍBLIA & NAVEGAÇÃO & SELEÇÃO & BUSCA
         // ----------------------------------------------------
         let bibliaCompleta = []; let indexLivro = parseInt(localStorage.getItem('leitura_livro')) || 0; let indexCapitulo = parseInt(localStorage.getItem('leitura_capitulo')) || 0; let marcacoes = JSON.parse(localStorage.getItem('biblia_marcacoes')) || {}; let versiculosSelecionados = [];
-        function removerAcentos(str) { return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(); }
-
-        // ----------------------------------------------------
-        // BÍBLIA & NAVEGAÇÃO
-        // ----------------------------------------------------
+        
         async function iniciarBiblia() {
             try {
                 const resposta = await fetch('https://raw.githubusercontent.com/maatheusgois/bible/main/versions/pt-br/arc.json');
@@ -296,9 +296,6 @@
         document.getElementById('btnProximo').addEventListener('click', () => { if (indexCapitulo < bibliaCompleta[indexLivro].chapters.length - 1) indexCapitulo++; else if (indexLivro < bibliaCompleta.length - 1) { indexLivro++; indexCapitulo = 0; } document.getElementById('selLivro').value = indexLivro; preencherCapitulos(); exibirCapitulo(); });
         document.getElementById('btnAnterior').addEventListener('click', () => { if (indexCapitulo > 0) indexCapitulo--; else if (indexLivro > 0) { indexLivro--; indexCapitulo = bibliaCompleta[indexLivro].chapters.length - 1; } document.getElementById('selLivro').value = indexLivro; preencherCapitulos(); exibirCapitulo(); });
 
-        // ----------------------------------------------------
-        // 3. SELEÇÃO MÚLTIPLA
-        // ----------------------------------------------------
         function toggleSelecaoVersiculo(lIdx, cIdx, vIdx) {
             const idUnico = `${lIdx}-${cIdx}-${vIdx}`; const divElement = document.getElementById(`v-${idUnico}`); const indexNoArray = versiculosSelecionados.findIndex(v => v.idUnico === idUnico);
             if (indexNoArray > -1) { versiculosSelecionados.splice(indexNoArray, 1); divElement.classList.remove('versiculo-selecionado'); } 
@@ -327,9 +324,6 @@
             document.getElementById('btnEnviarMsg').style.opacity = '1'; document.getElementById('btnEnviarMsg').disabled = true; setTimeout(() => { document.getElementById('btnEnviarMsg').disabled = false; document.getElementById('btnEnviarMsg').click(); }, 300);
         }
 
-        // ----------------------------------------------------
-        // 4. MOTOR DE BUSCA
-        // ----------------------------------------------------
         let historicoBusca = JSON.parse(localStorage.getItem('biblia_historico_busca')) || [];
         function abrirBusca() { document.getElementById('telaBusca').classList.remove('translate-y-full'); document.getElementById('inputBusca').focus(); }
         function fecharBusca() { document.getElementById('telaBusca').classList.add('translate-y-full'); }
@@ -352,7 +346,7 @@
         document.getElementById('inputBusca').addEventListener('keypress', e => { if (e.key === 'Enter') executarBusca(); });
 
         // ----------------------------------------------------
-        // 5. CHAT COM IA & MEMÓRIA CONTÍNUA DE ALTA PERFORMANCE
+        // 5. CHAT COM IA & MEMÓRIA CONTÍNUA
         // ----------------------------------------------------
         let estadoChat = 'hidden'; const gavetaChat = document.getElementById('gavetaChat'); const mainBiblia = document.getElementById('mainBiblia');
         function mudarEstadoChat(novoEstado) {
@@ -391,13 +385,6 @@
         }
         function limparChat() { if(confirm("Limpar todo o estudo atual?")) { historicoChat = []; localStorage.removeItem('biblia_historico_chat'); carregarHistoricoChat(); } }
 
-        window.copiarDoHistorico = function(index, btnElement) {
-            navigator.clipboard.writeText(historicoChat[index].texto).then(() => {
-                const originalHTML = btnElement.innerHTML; btnElement.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg> Copiado!'; btnElement.classList.add('text-green-600', 'dark:text-green-400');
-                setTimeout(() => { btnElement.innerHTML = originalHTML; btnElement.classList.remove('text-green-600', 'dark:text-green-400'); }, 2000);
-            });
-        };
-
         function renderizarBalao(role, texto, indexArray, animar = true) {
             const anim = animar ? 'fade-in' : ''; if (listaMsg.querySelector('h2')) listaMsg.innerHTML = '';
             if(role === 'user') {
@@ -422,26 +409,16 @@
             listaMsg.innerHTML += `<div id="${idLoader}" class="flex gap-4 mb-8 mt-6 fade-in"><div class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-400 flex-shrink-0 mt-1 animate-pulse"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4"><path fill-rule="evenodd" d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5Z" clip-rule="evenodd" /></svg></div><div class="text-slate-400 font-sans text-[15px] italic mt-1.5 animate-pulse">Consultando as Escrituras...</div></div>`;
             setTimeout(() => { document.getElementById(idLoader).scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 50);
 
-            // MOTOR DE CONTEXTO ESTRITO (Multi-Turn Chat)
             let conteudosDaAPI = [];
-            // Remove erros técnicos do histórico para não corromper a memória da API
             let historicoLimpo = historicoChat.filter(m => !m.texto.includes('⚠️') && !m.texto.includes('Irmão, estamos consultando'));
-            // Janela de Contexto Profunda: Lembra as últimas 30 mensagens (15 rodadas inteiras de perguntas e respostas)
             let contextoLongo = historicoLimpo.slice(-30);
             
             let ultimoPapel = '';
             contextoLongo.forEach(m => {
                 let papel = m.role === 'user' ? 'user' : 'model';
-                // A API do Google exige estritamente que a conversa comece com o 'user'
                 if (conteudosDaAPI.length === 0 && papel !== 'user') return;
-                
-                if (papel !== ultimoPapel) {
-                    conteudosDaAPI.push({ role: papel, parts: [{ text: m.texto }] });
-                    ultimoPapel = papel;
-                } else {
-                    // Evita falhas (Error 400 da API) juntando duas falas seguidas do mesmo autor num bloco só
-                    conteudosDaAPI[conteudosDaAPI.length - 1].parts[0].text += "\n\n" + m.texto;
-                }
+                if (papel !== ultimoPapel) { conteudosDaAPI.push({ role: papel, parts: [{ text: m.texto }] }); ultimoPapel = papel; } 
+                else { conteudosDaAPI[conteudosDaAPI.length - 1].parts[0].text += "\n\n" + m.texto; }
             });
 
             try {
@@ -455,19 +432,17 @@
 
                 if (dadosJson.error) {
                     let m = dadosJson.error.message;
-                    if (m.includes("Quota") || m.includes("429")) m = "Irmão, estamos consultando muito rápido. Por favor, aguarde cerca de 30 segundos.";
+                    if (m.includes("Quota") || m.includes("429")) m = "Irmão, estamos consultando muito rápido. Por favor, aguarde cerca de 30 segundos antes de continuar o estudo.";
                     else if (m.includes("API key not valid")) m = "Sua chave da API é inválida.";
                     else m = `⚠️ Falha técnica: ${m}`;
-                    
                     historicoChat.push({ role: 'ia', texto: m }); renderizarBalao('ia', m, historicoChat.length - 1, true); btnEnviar.disabled = false; return;
                 }
                 
                 const textoIA = dadosJson.candidates?.[0]?.content?.parts?.[0]?.text || "Falha ao formular.";
                 historicoChat.push({ role: 'ia', texto: textoIA }); localStorage.setItem('biblia_historico_chat', JSON.stringify(historicoChat));
-                
                 const novoIndexIA = historicoChat.length - 1; renderizarBalao('ia', textoIA, novoIndexIA, true);
+                
                 setTimeout(() => { const msgEl = document.getElementById(`msg-${novoIndexIA}`); if(msgEl) listaMsg.scrollTo({ top: msgEl.offsetTop - 20, behavior: 'smooth' }); }, 100);
-
             } catch (e) { document.getElementById(idLoader).remove(); historicoChat.push({ role: 'ia', texto: "Erro de rede." }); renderizarBalao('ia', "⚠️ Erro de rede. Verifique sua conexão.", historicoChat.length - 1, true); }
             btnEnviar.disabled = false;
         });
