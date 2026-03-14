@@ -6,9 +6,19 @@
     <title>Bíblia ARC Pro</title>
     
     <link rel="manifest" href="manifest.json">
-    <meta id="metaThemeColor" name="theme-color" content="#ffffff">
+    <meta name="theme-color" id="meta-theme-color" content="#ffffff">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3073/3073403.png">
     
+    <script>
+        if (localStorage.getItem('tema_biblia') === 'dark' || (!('tema_biblia' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+            document.getElementById('meta-theme-color').setAttribute('content', '#0b1120');
+        } else {
+            document.documentElement.classList.remove('dark');
+            document.getElementById('meta-theme-color').setAttribute('content', '#ffffff');
+        }
+    </script>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
     <style>
@@ -76,9 +86,9 @@
         .dark .prose strong { color: #f3f4f6; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-900 dark:bg-[#0b1120] dark:text-slate-100 pb-safe transition-colors duration-500">
+<body class="bg-white text-slate-900 dark:bg-[#0b1120] dark:text-slate-100 pb-safe transition-colors duration-300">
 
-    <header class="fixed top-0 left-0 right-0 bg-white/80 dark:bg-[#0b1120]/80 backdrop-blur-xl border-b border-slate-200/80 dark:border-slate-800/80 z-30 p-4 shadow-sm transition-colors">
+    <header class="fixed top-0 left-0 right-0 bg-white/80 dark:bg-[#0b1120]/80 backdrop-blur-xl border-b border-slate-200/80 dark:border-slate-800/80 z-30 p-4 shadow-sm transition-colors duration-300">
         <div class="max-w-md mx-auto">
             <div class="flex justify-between items-center mb-3">
                 <h1 class="text-2xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 tracking-tight">Bíblia ARC</h1>
@@ -89,8 +99,7 @@
                     <button onclick="abrirModalConfig()" class="w-10 h-10 flex items-center justify-center bg-slate-100 dark:bg-slate-800 rounded-full text-slate-600 dark:text-slate-300 shadow-sm active:scale-95 transition-all hover:bg-slate-200 dark:hover:bg-slate-700" title="Configurar IA">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M10.343 3.94c.09-.542.56-.94 1.11-.94h1.093c.55 0 1.02.398 1.11.94l.149.894c.07.424.384.764.78.93.398.164.855.142 1.205-.108l.737-.527a1.125 1.125 0 0 1 1.45.12l.773.774c.39.389.44 1.002.12 1.45l-.527.737c-.25.35-.272.806-.107 1.204.165.397.505.71.93.78l.893.15c.543.09.94.559.94 1.109v1.094c0 .55-.397 1.02-.94 1.11l-.894.149c-.424.07-.764.383-.929.78-.165.398-.143.854.107 1.204l.527.738c.32.447.269 1.06-.12 1.45l-.774.773a1.125 1.125 0 0 1-1.449.12l-.738-.527c-.35-.25-.806-.272-1.203-.107-.398.165-.71.505-.781.929l-.149.894c-.09.542-.56.94-1.11.94h-1.094c-.55 0-1.019-.398-1.11-.94l-.148-.894c-.071-.424-.384-.764-.781-.93-.398-.164-.854-.142-1.204.108l-.738.527c-.447.32-1.06.269-1.45-.12l-.773-.774a1.125 1.125 0 0 1-.12-1.45l.527-.737c.25-.35.272-.806.108-1.204-.165-.397-.506-.71-.93-.78l-.894-.15c-.542-.09-.94-.56-.94-1.109v-1.094c0-.55.398-1.02.94-1.11l.894-.149c.424-.07.765-.383.93-.78.165-.398.143-.854-.108-1.204l-.526-.738a1.125 1.125 0 0 1 .12-1.45l.773-.773a1.125 1.125 0 0 1 1.45-.12l.737.527c.35.25.807.272 1.204.107.397-.165.71-.505.78-.929l.15-.894Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>
                     </button>
-                    <button id="btnTema" class="w-10 h-10 flex items-center justify-center bg-slate-100 dark:bg-slate-800 rounded-full text-slate-600 dark:text-slate-300 shadow-sm active:scale-95 transition-all hover:bg-slate-200 dark:hover:bg-slate-700" title="Mudar Tema">
-                        </button>
+                    <button id="btnTema" class="w-10 h-10 flex items-center justify-center bg-slate-100 dark:bg-slate-800 rounded-full text-slate-600 dark:text-slate-300 shadow-sm active:scale-95 transition-all hover:bg-slate-200 dark:hover:bg-slate-700" title="Mudar Tema"></button>
                 </div>
             </div>
             <div class="flex gap-2">
@@ -101,7 +110,7 @@
     </header>
 
     <main id="mainBiblia" class="pt-[140px] pb-24 px-4 max-w-md mx-auto min-h-screen">
-        <div id="areaLeitura" class="texto-biblia text-[19px] md:text-[21px] text-slate-800 dark:text-slate-200">
+        <div id="areaLeitura" class="texto-biblia text-[19px] md:text-[21px] text-slate-800 dark:text-slate-200 transition-colors duration-300">
             <div class="flex flex-col items-center justify-center mt-32 text-blue-500">
                 <svg class="w-10 h-10 mb-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                 <p class="font-sans font-medium text-lg animate-pulse tracking-wide">Preparando as Escrituras...</p>
@@ -109,7 +118,7 @@
         </div>
     </main>
 
-    <nav id="navInferior" class="fixed bottom-0 left-0 right-0 h-[76px] bg-white/90 dark:bg-[#0b1120]/90 backdrop-blur-xl border-t border-slate-200/80 dark:border-slate-800/80 p-3 z-40 transition-colors">
+    <nav id="navInferior" class="fixed bottom-0 left-0 right-0 h-[76px] bg-white/90 dark:bg-[#0b1120]/90 backdrop-blur-xl border-t border-slate-200/80 dark:border-slate-800/80 p-3 z-40 transition-colors duration-300">
         <div class="max-w-md mx-auto flex gap-2">
             <button id="btnAnterior" class="flex-none w-14 bg-slate-100 dark:bg-slate-800 p-3 rounded-2xl font-bold active:scale-95 transition-all hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300">←</button>
             <button onclick="toggleChat()" class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-[0_8px_20px_-6px_rgba(59,130,246,0.5)] p-3 rounded-2xl font-semibold flex items-center justify-center gap-2 active:scale-95 transition-all whitespace-nowrap text-[16px]">
@@ -125,7 +134,7 @@
             <div class="w-10 h-1.5 bg-slate-300 dark:bg-slate-600 rounded-full"></div>
         </div>
         
-        <div class="px-5 pb-3 border-b border-slate-100 dark:border-slate-800/60 bg-white/60 dark:bg-[#0f172a]/60 backdrop-blur-md flex justify-between items-center sticky top-0 z-10">
+        <div class="px-5 pb-3 border-b border-slate-100 dark:border-slate-800/60 bg-white/60 dark:bg-[#0f172a]/60 backdrop-blur-md flex justify-between items-center sticky top-0 z-10 transition-colors">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 shadow-md flex items-center justify-center text-white">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6"><path fill-rule="evenodd" d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5Z" clip-rule="evenodd" /></svg>
@@ -148,10 +157,10 @@
             </div>
         </div>
         
-        <div id="listaMensagens" class="flex-1 overflow-y-auto px-4 py-6 space-y-8 scroll-suave bg-slate-50/50 dark:bg-[#0f172a]">
+        <div id="listaMensagens" class="flex-1 overflow-y-auto px-4 py-6 space-y-8 scroll-suave bg-slate-50/50 dark:bg-[#0f172a] transition-colors duration-300">
         </div>
 
-        <div class="px-4 py-3 bg-white dark:bg-[#0f172a] pb-safe">
+        <div class="px-4 py-3 bg-white dark:bg-[#0f172a] pb-safe transition-colors duration-300">
             <div class="max-w-3xl mx-auto flex items-end bg-slate-100 dark:bg-slate-800 rounded-[1.5rem] p-1.5 border border-slate-200/50 dark:border-slate-700/50 shadow-[0_2px_10px_rgba(0,0,0,0.02)] focus-within:ring-2 focus-within:ring-blue-500/20 transition-all">
                 <textarea id="campoPergunta" rows="1" placeholder="Pergunte ao assistente..." class="flex-1 max-h-32 min-h-[46px] p-3 pl-4 bg-transparent border-none outline-none text-[16px] font-sans resize-none text-slate-900 dark:text-slate-100 overflow-y-auto scroll-suave texto-selecionavel leading-relaxed placeholder-slate-400 dark:placeholder-slate-500"></textarea>
                 <button id="btnEnviarMsg" class="w-11 h-11 mb-0.5 flex-shrink-0 bg-blue-600 hover:bg-blue-700 text-white rounded-[1.1rem] flex items-center justify-center transition-all shadow-sm opacity-50 disabled:opacity-50">
@@ -225,51 +234,31 @@
 
     <script>
         // ----------------------------------------------------
-        // 0. THEME MANAGER (MODO NOTURNO DE ÚLTIMA GERAÇÃO)
+        // LÓGICA DE TEMA (DARK MODE INTELIGENTE E ÍCONES)
         // ----------------------------------------------------
-        const themeToggleBtn = document.getElementById('btnTema');
-        const metaThemeColor = document.getElementById('metaThemeColor');
+        const btnTema = document.getElementById('btnTema');
+        const metaThemeColor = document.getElementById('meta-theme-color');
         
-        // Ícones SVG para Sol e Lua
+        const iconeSol = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" /></svg>`;
         const iconeLua = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" /></svg>`;
-        const iconeSol = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" /></svg>`;
 
-        function updateThemeUI(isDark) {
-            if (isDark) {
-                document.documentElement.classList.add('dark');
-                themeToggleBtn.innerHTML = iconeSol;
-                metaThemeColor.setAttribute('content', '#0b1120'); // Cor da barra de status do celular
-                localStorage.setItem('biblia_tema', 'dark');
-            } else {
-                document.documentElement.classList.remove('dark');
-                themeToggleBtn.innerHTML = iconeLua;
-                metaThemeColor.setAttribute('content', '#f8fafc'); // Cor clara
-                localStorage.setItem('biblia_tema', 'light');
-            }
-        }
-
-        // Inicialização do Tema
-        function initTheme() {
-            const savedTheme = localStorage.getItem('biblia_tema');
-            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            
-            if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) {
-                updateThemeUI(true);
-            } else {
-                updateThemeUI(false);
-            }
-        }
-
-        themeToggleBtn.addEventListener('click', () => {
+        function atualizarTemaUI() {
             const isDark = document.documentElement.classList.contains('dark');
-            updateThemeUI(!isDark);
+            btnTema.innerHTML = isDark ? iconeSol : iconeLua;
+            metaThemeColor.setAttribute('content', isDark ? '#0b1120' : '#ffffff');
+        }
+
+        btnTema.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.contains('dark');
+            localStorage.setItem('tema_biblia', isDark ? 'dark' : 'light');
+            atualizarTemaUI();
         });
 
-        // Executa a leitura do tema ao iniciar
-        initTheme();
+        atualizarTemaUI(); // Roda ao carregar a página
 
         // ----------------------------------------------------
-        // 1. ESTADO GLOBAL E MARKDOWN
+        // ESTADO GLOBAL
         // ----------------------------------------------------
         let bibliaCompleta = [];
         let indexLivro = parseInt(localStorage.getItem('leitura_livro')) || 0;
@@ -279,6 +268,7 @@
 
         function removerAcentos(str) { return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(); }
 
+        // MARKDOWN PARSER
         function formatarMarkdown(texto) {
             let html = texto.trim();
             html = html.replace(/^### (.*$)/gim, '<h3 class="text-[19px] font-bold mt-6 mb-2">$1</h3>');
@@ -294,7 +284,7 @@
         }
 
         // ----------------------------------------------------
-        // 2. BÍBLIA
+        // BÍBLIA
         // ----------------------------------------------------
         async function iniciarBiblia() {
             const urlArc = 'https://raw.githubusercontent.com/maatheusgois/bible/main/versions/pt-br/arc.json';
@@ -338,7 +328,7 @@
         document.getElementById('btnAnterior').addEventListener('click', () => { if (indexCapitulo > 0) indexCapitulo--; else if (indexLivro > 0) { indexLivro--; indexCapitulo = bibliaCompleta[indexLivro].chapters.length - 1; } document.getElementById('selLivro').value = indexLivro; preencherCapitulos(); exibirCapitulo(); });
 
         // ----------------------------------------------------
-        // 3. SELEÇÃO MÚLTIPLA
+        // SELEÇÃO MÚLTIPLA
         // ----------------------------------------------------
         function toggleSelecaoVersiculo(lIdx, cIdx, vIdx) {
             const idUnico = `${lIdx}-${cIdx}-${vIdx}`;
@@ -387,7 +377,7 @@
         }
 
         // ----------------------------------------------------
-        // 4. MOTOR DE BUSCA
+        // MOTOR DE BUSCA
         // ----------------------------------------------------
         let historicoBusca = JSON.parse(localStorage.getItem('biblia_historico_busca')) || [];
         function abrirBusca() { document.getElementById('telaBusca').classList.remove('translate-y-full'); document.getElementById('inputBusca').focus(); }
@@ -433,7 +423,7 @@
         document.getElementById('inputBusca').addEventListener('keypress', e => { if (e.key === 'Enter') executarBusca(); });
 
         // ----------------------------------------------------
-        // 5. CHAT (IA)
+        // CHAT (UI PREMIUM E SMART SCROLL)
         // ----------------------------------------------------
         let estadoChat = 'hidden'; 
         const gavetaChat = document.getElementById('gavetaChat');
@@ -444,7 +434,7 @@
             gavetaChat.classList.remove('sheet-hidden', 'sheet-half', 'sheet-full');
             gavetaChat.classList.add(`sheet-${estadoChat}`);
             if(estadoChat === 'hidden') mainBiblia.style.paddingBottom = '90px'; 
-            else if (estadoChat === 'half') { mainBiblia.style.paddingBottom = 'calc(50dvh + 90px)'; document.getElementById('btnTamanhoChat').innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" /></svg>'; } 
+            else if (estadoChat === 'half') { mainBiblia.style.paddingBottom = 'calc(55dvh + 90px)'; document.getElementById('btnTamanhoChat').innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" /></svg>'; } 
             else if (estadoChat === 'full') { mainBiblia.style.paddingBottom = 'calc(100dvh + 90px)'; document.getElementById('btnTamanhoChat').innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 9V4.5M9 9H4.5M9 9 3.75 3.75M9 15v4.5M9 15H4.5M9 15l-5.25 5.25M15 9h4.5M15 9V4.5M15 9l5.25-5.25M15 15h4.5M15 15v4.5m0-4.5 5.25 5.25" /></svg>'; }
         }
 
