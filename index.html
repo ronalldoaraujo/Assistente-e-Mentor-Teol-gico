@@ -6,13 +6,13 @@
     <title>Bíblia ARC Pro</title>
     
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#0f172a">
+    <meta id="metaThemeColor" name="theme-color" content="#ffffff">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3073/3073403.png">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
     <style>
-        /* BASE & TYPOGRAPHY - Crisp & Smooth */
+        /* BASE & TYPOGRAPHY */
         body { 
             font-family: 'Inter', sans-serif; 
             -webkit-tap-highlight-color: transparent; 
@@ -48,7 +48,7 @@
         .highlight-busca { font-weight: 600; color: #1d4ed8; background-color: rgba(59, 130, 246, 0.15); padding: 0 4px; border-radius: 4px; }
         .dark .highlight-busca { color: #93c5fd; background-color: rgba(59, 130, 246, 0.25); }
 
-        /* GAVETA INTELIGENTE (BOTTOM SHEET) - Smoother Physics */
+        /* GAVETA INTELIGENTE (BOTTOM SHEET) */
         .bottom-sheet {
             position: fixed; left: 0; right: 0; bottom: 76px; z-index: 50;
             background: #ffffff; display: flex; flex-direction: column;
@@ -76,7 +76,7 @@
         .dark .prose strong { color: #f3f4f6; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-900 dark:bg-[#0b1120] dark:text-slate-100 pb-safe">
+<body class="bg-slate-50 text-slate-900 dark:bg-[#0b1120] dark:text-slate-100 pb-safe transition-colors duration-500">
 
     <header class="fixed top-0 left-0 right-0 bg-white/80 dark:bg-[#0b1120]/80 backdrop-blur-xl border-b border-slate-200/80 dark:border-slate-800/80 z-30 p-4 shadow-sm transition-colors">
         <div class="max-w-md mx-auto">
@@ -90,8 +90,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M10.343 3.94c.09-.542.56-.94 1.11-.94h1.093c.55 0 1.02.398 1.11.94l.149.894c.07.424.384.764.78.93.398.164.855.142 1.205-.108l.737-.527a1.125 1.125 0 0 1 1.45.12l.773.774c.39.389.44 1.002.12 1.45l-.527.737c-.25.35-.272.806-.107 1.204.165.397.505.71.93.78l.893.15c.543.09.94.559.94 1.109v1.094c0 .55-.397 1.02-.94 1.11l-.894.149c-.424.07-.764.383-.929.78-.165.398-.143.854.107 1.204l.527.738c.32.447.269 1.06-.12 1.45l-.774.773a1.125 1.125 0 0 1-1.449.12l-.738-.527c-.35-.25-.806-.272-1.203-.107-.398.165-.71.505-.781.929l-.149.894c-.09.542-.56.94-1.11.94h-1.094c-.55 0-1.019-.398-1.11-.94l-.148-.894c-.071-.424-.384-.764-.781-.93-.398-.164-.854-.142-1.204.108l-.738.527c-.447.32-1.06.269-1.45-.12l-.773-.774a1.125 1.125 0 0 1-.12-1.45l.527-.737c.25-.35.272-.806.108-1.204-.165-.397-.506-.71-.93-.78l-.894-.15c-.542-.09-.94-.56-.94-1.109v-1.094c0-.55.398-1.02.94-1.11l.894-.149c.424-.07.765-.383.93-.78.165-.398.143-.854-.108-1.204l-.526-.738a1.125 1.125 0 0 1 .12-1.45l.773-.773a1.125 1.125 0 0 1 1.45-.12l.737.527c.35.25.807.272 1.204.107.397-.165.71-.505.78-.929l.15-.894Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>
                     </button>
                     <button id="btnTema" class="w-10 h-10 flex items-center justify-center bg-slate-100 dark:bg-slate-800 rounded-full text-slate-600 dark:text-slate-300 shadow-sm active:scale-95 transition-all hover:bg-slate-200 dark:hover:bg-slate-700" title="Mudar Tema">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" /></svg>
-                    </button>
+                        </button>
                 </div>
             </div>
             <div class="flex gap-2">
@@ -226,7 +225,51 @@
 
     <script>
         // ----------------------------------------------------
-        // 1. ESTADO GLOBAL, UTILITÁRIOS E MARKDOWN
+        // 0. THEME MANAGER (MODO NOTURNO DE ÚLTIMA GERAÇÃO)
+        // ----------------------------------------------------
+        const themeToggleBtn = document.getElementById('btnTema');
+        const metaThemeColor = document.getElementById('metaThemeColor');
+        
+        // Ícones SVG para Sol e Lua
+        const iconeLua = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" /></svg>`;
+        const iconeSol = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" /></svg>`;
+
+        function updateThemeUI(isDark) {
+            if (isDark) {
+                document.documentElement.classList.add('dark');
+                themeToggleBtn.innerHTML = iconeSol;
+                metaThemeColor.setAttribute('content', '#0b1120'); // Cor da barra de status do celular
+                localStorage.setItem('biblia_tema', 'dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+                themeToggleBtn.innerHTML = iconeLua;
+                metaThemeColor.setAttribute('content', '#f8fafc'); // Cor clara
+                localStorage.setItem('biblia_tema', 'light');
+            }
+        }
+
+        // Inicialização do Tema
+        function initTheme() {
+            const savedTheme = localStorage.getItem('biblia_tema');
+            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) {
+                updateThemeUI(true);
+            } else {
+                updateThemeUI(false);
+            }
+        }
+
+        themeToggleBtn.addEventListener('click', () => {
+            const isDark = document.documentElement.classList.contains('dark');
+            updateThemeUI(!isDark);
+        });
+
+        // Executa a leitura do tema ao iniciar
+        initTheme();
+
+        // ----------------------------------------------------
+        // 1. ESTADO GLOBAL E MARKDOWN
         // ----------------------------------------------------
         let bibliaCompleta = [];
         let indexLivro = parseInt(localStorage.getItem('leitura_livro')) || 0;
@@ -236,7 +279,6 @@
 
         function removerAcentos(str) { return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(); }
 
-        // MARKDOWN PARSER (Refinado com as tags prose e tipografia premium)
         function formatarMarkdown(texto) {
             let html = texto.trim();
             html = html.replace(/^### (.*$)/gim, '<h3 class="text-[19px] font-bold mt-6 mb-2">$1</h3>');
@@ -391,7 +433,7 @@
         document.getElementById('inputBusca').addEventListener('keypress', e => { if (e.key === 'Enter') executarBusca(); });
 
         // ----------------------------------------------------
-        // 5. CHAT (UI PREMIUM, ANTI-BLEED E SMART SCROLL)
+        // 5. CHAT (IA)
         // ----------------------------------------------------
         let estadoChat = 'hidden'; 
         const gavetaChat = document.getElementById('gavetaChat');
@@ -467,8 +509,8 @@
                 listaMsg.innerHTML += `
                 <div id="msg-${indexArray}" class="flex gap-4 mb-8 mt-6 ${anim}">
                     <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white flex-shrink-0 mt-1 shadow-sm"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4"><path fill-rule="evenodd" d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5Z" clip-rule="evenodd" /></svg></div>
-                    <div class="w-full">
-                        <div class="font-sans text-[16.5px] leading-8 w-full texto-selecionavel tracking-tight">
+                    <div class="w-full overflow-hidden">
+                        <div class="font-sans text-[16.5px] leading-8 w-full texto-selecionavel tracking-tight break-words">
                             ${formatarMarkdown(texto)}
                         </div>
                         <div class="mt-4 flex justify-start">
@@ -550,7 +592,6 @@
         });
 
         document.getElementById('campoPergunta').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if(!document.getElementById('btnEnviarMsg').disabled) document.getElementById('btnEnviarMsg').click(); }});
-        document.getElementById('btnTema').addEventListener('click', () => { document.documentElement.classList.toggle('dark'); });
         window.onload = iniciarBiblia;
 
         if ('serviceWorker' in navigator) { window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js')); }
